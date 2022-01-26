@@ -1,0 +1,26 @@
+import { Ref } from "vue-demi"
+
+/**
+ * Wrap an async function to track the loading state of the `Promise`.
+ * @param isLoading Reactive `Ref` used to track the loading state.
+ * @param func Function to wrap. 
+ */
+export const loadify = <R, TS extends any[]>(
+    isLoading: Ref<boolean>,
+    func: (...args: TS) => Promise<R>,
+) => {
+
+    /**
+     * Wrapped function.
+     * @see func
+     */
+    const wrappedFunc = async (...args: TS): Promise<R> => {
+        isLoading.value = true
+        const result = await func(...args)
+            .finally(() => isLoading.value = false)
+        return result
+    }
+
+    //--- Return the wrapped function.
+    return wrappedFunc
+}

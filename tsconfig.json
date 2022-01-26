@@ -1,0 +1,18 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "display": "Node 14",
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "strict": true,
+        "rootDir": ".",
+        "paths": { "~/*": ["./src/*"] },
+        "types": [
+            "@types/node",
+            "@types/lodash-es"
+        ]
+    },
+    "include": ["./src/**/*"]
+}
