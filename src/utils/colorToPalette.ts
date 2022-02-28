@@ -1,26 +1,38 @@
-import Color from 'color'
+import Color, { ColorInput } from 'tinycolor2'
+
+export interface ColorPalette {
+    DEFAULT: string
+    50: string
+    100: string
+    200: string
+    300: string
+    400: string
+    500: string
+    600: string
+    700: string
+    800: string
+    900: string
+}
 
 /**
  * Generate a TailwindCSS palette from a single hex color.
- * @param {Color} color Input color, can be any format. For example : `#ff9` or `#rgb(200,30, 40)`
- * @return {Record<number,string>} Generated TailwindCSS Palette
+ * @param {ColorInput} color Input color, can be any format. For example : `#ff9` or `#rgb(200,30, 40)`
+ * @return {ColorPalette} Generated TailwindCSS Palette
  */
-export default function colorToPalette(color: Color<any>): Record<number,string> {
-
-    //--- Instantiate Color object.
-    color = Color(color)
+export function colorToPalette(color: ColorInput): ColorPalette {
 
     //--- Return palette.
     return {
-        50: color.lighten(0.95).toString(),
-        100: color.lighten(0.90).toString(),
-        200: color.lighten(0.75).toString(),
-        300: color.lighten(0.60).toString(),
-        400: color.lighten(0.30).toString(),
-        500: color.lighten(0.00).toString(),
-        600: color.darken(0.10).toString(),
-        700: color.darken(0.25).toString(),
-        800: color.darken(0.40).toString(),
-        900: color.darken(0.51).toString(),
+        DEFAULT: Color(color).toHexString(),
+        50: Color(color).lighten(30).toString(),
+        100: Color(color).lighten(25).toString(),
+        200: Color(color).lighten(20).toString(),
+        300: Color(color).lighten(15).toString(),
+        400: Color(color).lighten(10).toString(),
+        500: Color(color).toHexString(),
+        600: Color(color).darken(10).toString(),
+        700: Color(color).darken(15).toString(),
+        800: Color(color).darken(30).toString(),
+        900: Color(color).darken(50).toString(),
     }
 }
