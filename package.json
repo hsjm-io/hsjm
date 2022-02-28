@@ -32,7 +32,7 @@
     "lodash-es": "^4.17.21",
     "milsymbol": "^2.0.0",
     "vue-demi": "^0.12.1",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",

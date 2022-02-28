@@ -30,7 +30,7 @@ specifiers:
   unplugin-vue-components: ^0.17.21
   vue: ^3.2.31
   vue-demi: ^0.12.1
-  vue-router: ^4.0.12
+  vue-router: ^4.0.13
 
 dependencies:
   '@purge-icons/generated': 0.8.0
@@ -41,7 +41,7 @@ dependencies:
   lodash-es: 4.17.21
   milsymbol: 2.0.0
   vue-demi: 0.12.1_vue@3.2.31
-  vue-router: 4.0.12_vue@3.2.31
+  vue-router: 4.0.13_vue@3.2.31
 
 devDependencies:
   '@babel/core': 7.17.5
@@ -1875,10 +1875,10 @@ packages:
       vue: 3.2.31
     dev: false
 
-  /vue-router/4.0.12_vue@3.2.31:
-    resolution: {integrity: sha512-CPXvfqe+mZLB1kBWssssTiWg4EQERyqJZes7USiqfW9B5N2x+nHlnsM1D3b5CaJ6qgCvMmYJnz+G0iWjNCvXrg==}
+  /vue-router/4.0.13_vue@3.2.31:
+    resolution: {integrity: sha512-LmXrC+BkDRLak+d5xTMgUYraT3Nj0H/vCbP+7usGvIl9Viqd1UP6AsP0i69pSbn9O0dXK/xCdp4yPw21HqV9Jw==}
     peerDependencies:
-      vue: ^3.0.0
+      vue: ^3.2.0
     dependencies:
       '@vue/devtools-api': 6.0.12
       vue: 3.2.31
