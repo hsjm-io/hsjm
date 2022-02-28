@@ -1,5 +1,5 @@
-// export * from './colorToPalette'
+export * from './colorToPalette'
 export * from './convertToUnit'
+export * from './compose'
 // export * from './createHash'
 export * from './toBuffer'
-export * from './compose'
