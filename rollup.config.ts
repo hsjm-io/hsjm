@@ -15,16 +15,7 @@ import { terser } from 'rollup-plugin-terser'
 /** Exported config object. */
 const baseConfig = defineConfig({
   input: './src/index.ts',
-  external: [
-    'vue-demi',
-    '@vueuse/core',
-    '@vueuse/shared',
-    'lodash',
-    'lodash-es',
-    '@purge-icons/generated',
-    'milsymbol'
-  ],
-  // Object.keys(pkg.dependencies),
+  external: Object.keys(pkg.dependencies),
 })
 
 // --- Config for `*.mjs` export.
@@ -41,7 +32,7 @@ const configModule = defineConfig({
     typescript({ sourceMap: true }),
     nodeResolve({ preferBuiltins: true, browser: true }),
     commonJs({ transformMixedEsModules: true }),
-    optimizeLodashImports({ useLodashEs: true, appendDotJs: false }),
+    // optimizeLodashImports({ useLodashEs: true, appendDotJs: false }),
     babel({ babelHelpers: 'bundled' }),
     analyze({ limit: 0, summaryOnly : true }),
   ]
@@ -59,7 +50,7 @@ const configCommonJs = defineConfig({
   plugins: [
     typescript({ sourceMap: true }),
     nodeResolve({ preferBuiltins: true, browser: true }),
-    optimizeLodashImports({ appendDotJs: true }),
+    // optimizeLodashImports({ appendDotJs: true }),
     commonJs({ transformMixedEsModules: true, exclude: 'lodash/*' }),
     babel({ babelHelpers: 'bundled' }),
     analyze({ limit: 0, summaryOnly : true }),
