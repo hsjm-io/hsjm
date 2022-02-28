@@ -1,18 +1,20 @@
 {
-    "$schema": "https://json.schemastore.org/tsconfig",
-    "display": "Node 14",
-    "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
-        "moduleResolution": "Node",
-        "esModuleInterop": true,
-        "strict": true,
-        "rootDir": ".",
-        "paths": { "~/*": ["./src/*"] },
-        "types": [
-            "@types/node",
-            "@types/lodash-es"
-        ]
-    },
-    "include": ["./src/**/*"]
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Node 14",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "strict": true,
+    "rootDir": ".",
+    "paths": { "~/*": ["./src/*"] },
+    "typeRoots": ["@types"],
+    "types": [
+      "@types/node",
+      "@types/lodash-es",
+      "@types/tinycolor2"
+    ]
+  },
+  "include": ["./src/**/*"]
 }
