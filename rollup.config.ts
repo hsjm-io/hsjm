@@ -1,4 +1,3 @@
-//--- Import dependencies.
 import { defineConfig } from "rollup"
 import pkg from './package.json'
 
@@ -15,7 +14,10 @@ import { terser } from 'rollup-plugin-terser'
 /** Exported config object. */
 const baseConfig = defineConfig({
   input: './src/index.ts',
-  external: Object.keys(pkg.dependencies),
+  external: [
+    ...Object.keys(pkg.dependencies),
+    /lodash\/.*/
+  ],
 })
 
 // --- Config for `*.mjs` export.
@@ -29,31 +31,30 @@ const configModule = defineConfig({
   },
 
   plugins: [
-    typescript({ sourceMap: true }),
+    analyze({ limit: 0, summaryOnly: true }),
+    typescript({ sourceMap: true, removeComments: true }),
     nodeResolve({ preferBuiltins: true, browser: true }),
     commonJs({ transformMixedEsModules: true }),
-    // optimizeLodashImports({ useLodashEs: true, appendDotJs: false }),
+    optimizeLodashImports({ appendDotJs: true }),
     babel({ babelHelpers: 'bundled' }),
-    analyze({ limit: 0, summaryOnly : true }),
   ]
 })
 
 // --- Config for `*.cjs` export.
 const configCommonJs = defineConfig({
   ...baseConfig,
-  
+
   output: [
     { file: pkg.main, format: 'cjs', sourcemap: true },
-    // { file: pkg.main.replace('.cjs', '.min.cjs'), sourcemap: true, format: 'cjs', plugins: [terser()] },
+    { file: pkg.main.replace('.cjs', '.min.cjs'), sourcemap: true, format: 'cjs', plugins: [terser()] },
   ],
 
   plugins: [
-    typescript({ sourceMap: true }),
+    typescript({ sourceMap: true, removeComments: true }),
     nodeResolve({ preferBuiltins: true, browser: true }),
-    // optimizeLodashImports({ appendDotJs: true }),
-    commonJs({ transformMixedEsModules: true, exclude: 'lodash/*' }),
+    commonJs({ transformMixedEsModules: true }),
+    optimizeLodashImports(),
     babel({ babelHelpers: 'bundled' }),
-    analyze({ limit: 0, summaryOnly : true }),
   ]
 })
 
