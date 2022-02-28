@@ -15,7 +15,15 @@ import { terser } from 'rollup-plugin-terser'
 /** Exported config object. */
 const baseConfig = defineConfig({
   input: './src/index.ts',
-  external: ['vue-demi', '@vueuse/core', '@vueuse/shared', 'lodash', 'lodash-es'],
+  external: [
+    'vue-demi',
+    '@vueuse/core',
+    '@vueuse/shared',
+    'lodash',
+    'lodash-es',
+    '@purge-icons/generated',
+    'milsymbol'
+  ],
   // Object.keys(pkg.dependencies),
 })
 
