@@ -1,4 +1,3 @@
-//--- Import dependencies.
 import firebase from 'firebase/app'
 import { createSharedComposable } from '@vueuse/core'
 

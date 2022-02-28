@@ -1,4 +1,3 @@
-//--- Import dependencies.
 import type { MaybeRef } from '@vueuse/shared'
 import { computed, isRef, ref, unref } from 'vue-demi'
 

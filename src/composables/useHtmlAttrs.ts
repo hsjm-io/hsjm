@@ -1,4 +1,3 @@
-//--- Import dependencies.
 import { useVModel } from '@vueuse/core'
 import { computed, reactive } from 'vue-demi'
 import { convertToUnit } from '~/utils'

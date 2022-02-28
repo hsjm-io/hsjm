@@ -1,4 +1,3 @@
-//--- Import dependencies.
 import { createHash as _createHash } from 'crypto'
 
 /**

@@ -1,4 +1,3 @@
-//--- Import dependencies.
 import { isArray, isString, uniq } from 'lodash';
 import { computed } from 'vue-demi'
 

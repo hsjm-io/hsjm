@@ -1,4 +1,3 @@
-//--- Import dependencies.
 import type firebase from 'firebase/app'
 import type { Ref, ComputedRef } from 'vue-demi'
 import type { MaybeRef } from '@vueuse/core'

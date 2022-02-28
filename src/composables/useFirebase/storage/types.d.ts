@@ -1,4 +1,3 @@
-//--- Import dependencies.
 import type firebase from 'firebase/app'
 import type { ComputedRef, Ref, UnwrapRef } from 'vue-demi'
 
