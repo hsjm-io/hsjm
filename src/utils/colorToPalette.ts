@@ -1,7 +1,7 @@
 import Color, { ColorInput } from 'tinycolor2'
 
 export interface ColorPalette {
-    DEFAULT: string
+    default: string
     50: string
     100: string
     200: string
@@ -15,7 +15,7 @@ export interface ColorPalette {
 }
 
 /**
- * Generate a TailwindCSS palette from a single hex color.
+ * Generate a TailwindCSS / WindiCSS palette from a single hex color.
  * @param {ColorInput} color Input color, can be any format. For example : `#ff9` or `#rgb(200,30, 40)`
  * @return {ColorPalette} Generated TailwindCSS Palette
  */
@@ -23,7 +23,7 @@ export function colorToPalette(color: ColorInput): ColorPalette {
 
     //--- Return palette.
     return {
-        DEFAULT: Color(color).toHexString(),
+        default: Color(color).toString(),
         50: Color(color).lighten(30).toString(),
         100: Color(color).lighten(25).toString(),
         200: Color(color).lighten(20).toString(),
