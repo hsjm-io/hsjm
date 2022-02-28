@@ -10,8 +10,8 @@
     if (!input && input !== 0) return undefined
 
     //--- If input is not a valid number.
-    else if (isNaN(+input)) return String(input)
+    else if (isNaN(+input)) return input.toString()
 
     //--- Convert to unit.
-    else return `${Number(input)}${unit}`
+    else return `${+input}${unit}`
 }
