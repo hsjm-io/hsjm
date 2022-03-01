@@ -1,5 +1,5 @@
-import { isArray, isString, uniq } from 'lodash';
 import { computed } from 'vue-demi'
+import { isArray, isString, uniq } from 'lodash'
 
 /**
  * Computes a list of applied CSS classes from the prop values.
