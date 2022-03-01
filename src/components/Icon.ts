@@ -1,52 +1,45 @@
-import { defineComponent, h, nextTick, onMounted, PropType, ref, watch } from 'vue-demi'
-import Iconify from '@purge-icons/generated'
+import { templateRef } from '@vueuse/core';
+import { defineComponent, h, nextTick, onMounted, PropType, watch } from 'vue-demi'
+import Iconify, { IconifyIconCustomisations } from '@iconify/iconify'
 
 export const Icon = defineComponent({
-  props: {
-    as: {
-      type: String as PropType<keyof HTMLElementTagNameMap>,
-      default: 'span'
-    },
+  name: 'Icon',
 
-    icon: {
-      type: String,
-      required: true,
-    },
+  props: {
+    as: { type: String as PropType<keyof HTMLElementTagNameMap>, default: 'span' },
+    icon: { type: String, required: true },
+    options: { type: Object as PropType<IconifyIconCustomisations>, default: {} }
   },
 
-  setup: (props, { slots }) => {
-    const el = ref<HTMLElement | null>(null)
-    
-    const update = async() => {
+  setup: (props) => {
+    const el = templateRef('el')
 
-      await nextTick()
+    // --- Create and append the icon in the template.
+    const update = () => nextTick().then(() => {
+
+      // --- Abort if the element was not rendered.
       if (!el.value) return
 
-      const svg = Iconify.renderSVG(props.icon, {}) 
+      // --- Generate the icon as SVG.
+      const svg = Iconify.renderSVG(props.icon, props.options)
 
+      // --- If successful, append it in the template.
       if (svg) {
         el.value.textContent = ''
         el.value.appendChild(svg)
       }
+    })
 
-      else {
-        const span = document.createElement('span')
-        span.className = 'iconify'
-        span.dataset.icon = props.icon
-        el.value.textContent = ''
-        el.value.appendChild(span)
-      }
-    }
-    
-    watch(
-      () => props.icon,
-      update,
-      { flush: 'post' },
-    )
-    
+    // --- Generate icon on init or on `icon` change.
     onMounted(update)
+    watch(() => [props.icon, props.options], update, { flush: 'post', deep: true })
 
-    return () => h(props.as, slots)
-  }
-
+    // @ts-ignore --- Render the VNode.
+    return () => h(props.as, {
+      ref: 'el',
+      role: 'img',
+      'aria-labelledby': props.icon,
+      'aria-hidden': 'true'
+    })
+  },
 })
