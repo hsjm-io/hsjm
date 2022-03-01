@@ -1,6 +1,6 @@
-import { createSharedComposable } from "@vueuse/shared"
-import { delay, uniqueId } from "lodash"
-import { ref, Ref } from "vue-demi"
+import { createSharedComposable } from '@vueuse/shared'
+import { delay, uniqueId } from 'lodash'
+import { ref, Ref } from 'vue-demi'
 
 /** Configurable alert object. */
 interface Alert {
@@ -15,7 +15,7 @@ interface Alert {
 }
 
 export const useAlert = createSharedComposable(() => {
-  
+
   // --- Initialize global alert pool.
   const alerts = ref([] as Alert[])
 
