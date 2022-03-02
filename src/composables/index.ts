@@ -1,6 +1,7 @@
 export * from './useFirebase'
 export * from './useMapbox'
 export * from './useAlert'
+export * from './useCheckbox'
 export * from './useFileInput'
 export * from './useHtmlAttrs'
 export * from './useLayout'
