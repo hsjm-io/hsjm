@@ -16,7 +16,8 @@ const baseConfig = defineConfig({
   input: './src/index.ts',
   external: [
     ...Object.keys(pkg.dependencies),
-    /lodash\/.*/
+    /lodash\/.*/,
+    /firebase\/.*/
   ],
 })
 
