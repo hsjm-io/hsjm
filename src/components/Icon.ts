@@ -1,4 +1,4 @@
-import { templateRef } from '@vueuse/core';
+import { templateRef } from '@vueuse/core'
 import { defineComponent, h, nextTick, onMounted, PropType, watch } from 'vue-demi'
 import Iconify, { IconifyIconCustomisations } from '@iconify/iconify'
 
@@ -15,7 +15,8 @@ export const Icon = defineComponent({
     const el = templateRef('el')
 
     // --- Create and append the icon in the template.
-    const update = () => nextTick().then(() => {
+    const update = async () => {
+      await nextTick()
 
       // --- Abort if the element was not rendered.
       if (!el.value) return
@@ -28,7 +29,7 @@ export const Icon = defineComponent({
         el.value.textContent = ''
         el.value.appendChild(svg)
       }
-    })
+    }
 
     // --- Generate icon on init or on `icon` change.
     onMounted(update)
