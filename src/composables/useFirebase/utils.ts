@@ -40,46 +40,44 @@ function unpeelSnapshot<T extends DocumentData>(snapshot: DocumentSnapshot<T> | 
   }
 }
 
-export function resolveReference<T extends DocumentData>(path: string): CollectionReference<T>
-export function resolveReference<T extends DocumentData>(path: string, filter?: string): DocumentReference<T>
-export function resolveReference<T extends DocumentData>(path: string, filter?: Filter[] | Filter): Query<T>
-export function resolveReference<T extends DocumentData>(path: string, filter?: string | Filter[] | Filter) {
+export function resolveReference<T extends DocumentData>(path: string, filter: []): CollectionReference<T>
+export function resolveReference<T extends DocumentData>(path: string, filter: string): DocumentReference<T>
+export function resolveReference<T extends DocumentData>(path: string, filter: Filter | Filter[]): Query<T>
+export function resolveReference<T extends DocumentData>(path: string, filter: string | [] | Filter | Filter[]): DocumentReference<T> |  CollectionReference<T> | Query<T>
+export function resolveReference<T extends DocumentData>(path: string, filter: string | any[]) {
   const colRef = collection(getFirestore(), path) as CollectionReference<T>
   if (typeof filter === 'string') return doc(colRef, filter)
   else if (isFilter(filter)) return query(colRef, where(...filter))
   else if (filter?.every(isFilter)) return query(colRef, ...filter.map(x => where(...x)))
-  else if (filter === undefined) return colRef
+  else if (filter?.length === 0) return colRef
   else throw Error('Cannot resolve Firestore reference: Invalid `filter` argument.')
 }
 
-export function get<T extends DocumentData>(path: string): Promise<T[]>
 export function get<T extends DocumentData>(path: string, filter: string): Promise<T>
-export function get<T extends DocumentData>(path: string, filter?: string | Filter | Filter[]): Promise<T | T[]>
-export function get<T extends DocumentData>(path: string, filter?: string | Filter | Filter[]): Promise<T | T[]> {
+export function get<T extends DocumentData>(path: string, filter: [] | Filter | Filter[]): Promise<T[]>
+export function get<T extends DocumentData>(path: string, filter: string | [] | Filter | Filter[]): Promise<T | T[]>
+export function get(path: string, filter: string | any[]) {
   return typeof filter === 'string'
-    ? getDoc(resolveReference(path, filter)).then(unpeelSnapshot) as Promise<T>
-    : getDocs(resolveReference(path, filter)).then(unpeelSnapshot) as Promise<T[]>
+    ? getDoc(resolveReference(path, filter)).then(unpeelSnapshot)
+    : getDocs(resolveReference(path, filter)).then(unpeelSnapshot)
 }
 
 export function sync<T extends DocumentData>(data: Ref<T>, path: string, filter: string, onError?: (error: FirestoreError) => void): Unsubscribe
-export function sync<T extends DocumentData>(data: Ref<T[]>, path: string, filter?: Filter[] | Filter, onError?: (error: FirestoreError) => void): Unsubscribe
-export function sync<T extends DocumentData>(data: Ref<T | T[]>, path: string, filter?: string | Filter[] | Filter, onError?: (error: FirestoreError) => void): Unsubscribe
-export function sync<T extends DocumentData>(
-  data: Ref<T | T[]>,
+export function sync<T extends DocumentData>(data: Ref<T[]>, path: string, filter: [] | Filter[] | Filter, onError?: (error: FirestoreError) => void): Unsubscribe
+export function sync<T extends DocumentData>(data: Ref<T | T[]>, path: string, filter: string | [] | Filter[] | Filter, onError?: (error: FirestoreError) => void): Unsubscribe
+export function sync(
+  data: Ref<any>,
   path: string,
-  filter?: string | Filter[] | Filter,
+  filter: string | any[],
   onError?: (error: FirestoreError) => void
 ) {
   return typeof filter === 'string'
-    ? onSnapshot<T>(resolveReference(path, filter), snapshot => data.value = unpeelSnapshot(snapshot), onError)
-    : onSnapshot<T>(resolveReference(path, filter), snapshot => data.value = unpeelSnapshot(snapshot), onError)
+    ? onSnapshot(resolveReference(path, filter), snapshot => data.value = unpeelSnapshot(snapshot), onError)
+    : onSnapshot(resolveReference(path, filter), snapshot => data.value = unpeelSnapshot(snapshot), onError)
 }
 
-export function remove<T extends DocumentData>(path: string, data: T): Promise<void>
-export function remove<T extends DocumentData>(path: string, data: T[]): Promise<void>
-export function remove<T extends DocumentData>(path: string, data: string): Promise<void>
-export function remove<T extends DocumentData>(path: string, data: string[]): Promise<void>
-export function remove(path: string, data: any | any[]) {
+export function erase<T extends DocumentData>(path: string, data: T | T[] | string | string[]): Promise<void>
+export function erase(path: string, data: any) {
   const colRef = collection(getFirestore(), path)
   if(isArray(data)) {
     const batch = writeBatch(getFirestore())
@@ -89,10 +87,8 @@ export function remove(path: string, data: any | any[]) {
   else return deleteDoc(doc(colRef, data.id ?? data))
 }
 
-export function save<T extends DocumentData>(path: string, data: T): Promise<void>
-export function save<T extends DocumentData>(path: string, data: T[]): Promise<void>
 export function save<T extends DocumentData>(path: string, data: T | T[]): Promise<void>
-export function save(path: string, data: DocumentData | DocumentData[]) {
+export function save(path: string, data: any) {
   const colRef = collection(getFirestore(), path)
   if(isArray(data)) {
     const batch = writeBatch(getFirestore())

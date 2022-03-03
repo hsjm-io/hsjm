@@ -16,14 +16,14 @@ interface UseFirebaseOptions extends
  * @param name Optional name of the app to initialize.
  */
 export const useFirebase = createSharedComposable((
-  options = {} as UseFirebaseOptions,
+  options: UseFirebaseOptions,
   name?: string,
 ) => {
   const app = initializeApp(options, name)
 
   if(options.reCaptchaV3ProviderKey) {
     const provider = new ReCaptchaV3Provider(options.reCaptchaV3ProviderKey)
-    const appCheck = initializeAppCheck(app, { provider, ...options })
+    const appCheck = initializeAppCheck(app, { ...options, provider })
   }
 
   return app
