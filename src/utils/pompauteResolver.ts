@@ -15,10 +15,6 @@ export const PompauteResolver = (options = {} as PompauteResolverOptions): Compo
       [`${prefix}Icon`]: { path: 'pompaute', importName: 'Icon' },
       [`${prefix}Nato`]: { path: 'pompaute', importName: 'Nato' },
       [`${prefix}Layout`]: { path: 'pompaute', importName: 'Layout' },
-      [`${prefix}ButtonLazy`]: { path: 'pompaute', importName: 'ButtonLazy' },
-      [`${prefix}IconLazy`]: { path: 'pompaute', importName: 'IconLazy' },
-      [`${prefix}NatoLazy`]: { path: 'pompaute', importName: 'NatoLazy' },
-      [`${prefix}LayoutLazy`]: { path: 'pompaute', importName: 'LayoutLazy' },
     }[name]
   }
 })
