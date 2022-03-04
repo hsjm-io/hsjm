@@ -8,10 +8,6 @@ import { partial } from 'lodash'
 interface UseFirestoreOptions {
   /** Generic error handler. */
   onError?: (error: FirestoreError) => void
-  /** Handles life-cycle manually. */
-  manual?: boolean
-  /** Handles life-cycle manually. */
-  autoSave?: boolean
 }
 
 /**
@@ -29,15 +25,26 @@ interface UseFirestoreOptions {
   //--- Destructure and defaults options.
   const { onError = console.error } = options
 
+  const getCached: Record<string, Ref<any>> = {}
+  const syncCached: Record<string, Ref<any>> = {}
+
   function _get(filter: MaybeRef<any[]>, initialValue?: T[]): Ref<T[]>
   function _get(filter: MaybeRef<string>, initialValue?: T): Ref<T>
   function _get(filter: MaybeRef<string | any[]>, initialValue?: any) {
-    return asyncComputed(() => get<T>(path, unref(filter)), initialValue)
+    const getId = filter.toString()
+    if(syncCached[getId]) return syncCached[getId]
+    if(getCached[getId]) return getCached[getId]
+    const data = asyncComputed(() => get<T>(path, unref(filter)), initialValue)
+    getCached[getId] = data
+    return data
   }
 
   function _sync(filter: MaybeRef<any[]>, initialValue?: T[]): Ref<T[]>
   function _sync(filter: MaybeRef<string>, initialValue?: T): Ref<T>
   function _sync(filter: MaybeRef<string | any[]>, initialValue?: any) {
+
+    const syncId = filter.toString()
+    if(syncCached[syncId]) return syncCached[syncId]
 
     if(!initialValue) initialValue = typeof unref(filter) === 'string' ? {} : []
     const data = ref(initialValue)
@@ -45,18 +52,21 @@ interface UseFirestoreOptions {
     let stopOnSnapshot: Function | undefined
 
     const update = () => {
+      // data.value = await get(data, unref(filter))
       stopOnSnapshot && stopOnSnapshot()
       stopOnSnapshot = sync(data, path, unref(filter), onError)
     }
-    
-    tryOnMounted(update, false)
+
+    tryOnMounted(update)
     stopWatch = watch(() => filter, update, { deep: true })
 
     tryOnScopeDispose(() => {
       stopWatch && stopWatch()
       stopOnSnapshot && stopOnSnapshot()
+      delete syncCached[syncId]
     })
 
+    syncCached[syncId] = data
     return data
   }
 
