@@ -1,8 +1,8 @@
 import { asyncComputed } from '@vueuse/core';
 import { ref, watch, Ref, unref } from 'vue-demi'
 import { tryOnScopeDispose, tryOnMounted, MaybeRef } from '@vueuse/shared'
-import { where, DocumentData, FirestoreError } from 'firebase/firestore'
-import { get, sync, erase, save } from './utils'
+import { DocumentData, FirestoreError } from 'firebase/firestore'
+import { get, sync, erase, save, QueryFilter } from './utils'
 import { partial } from 'lodash'
 
 interface UseFirestoreOptions {
@@ -25,26 +25,28 @@ interface UseFirestoreOptions {
   //--- Destructure and defaults options.
   const { onError = console.error } = options
 
-  const getCached: Record<string, Ref<any>> = {}
-  const syncCached: Record<string, Ref<any>> = {}
+  let getCached: [QueryFilter, Ref<any>][] = []
+  let syncCached: [QueryFilter, Ref<any>][] = []
 
-  function _get(filter: MaybeRef<any[]>, initialValue?: T[]): Ref<T[]>
   function _get(filter: MaybeRef<string>, initialValue?: T): Ref<T>
-  function _get(filter: MaybeRef<string | any[]>, initialValue?: any) {
+  function _get(filter: MaybeRef<QueryFilter>, initialValue?: T[]): Ref<T[]>
+  function _get(filter: MaybeRef<string | QueryFilter>, initialValue?: any) {
     const getId = filter.toString()
-    if(syncCached[getId]) return syncCached[getId]
-    if(getCached[getId]) return getCached[getId]
+    const getCachedHit = getCached.find(([x]) => x === filter)
+    const syncCachedHit = syncCached.find(([x]) => x === filter)
+    if(getCachedHit) return filter
+    if(syncCachedHit) return filter
     const data = asyncComputed(() => get<T>(path, unref(filter)), initialValue)
-    getCached[getId] = data
+    getCached.push([filter, data])
     return data
   }
 
-  function _sync(filter: MaybeRef<any[]>, initialValue?: T[]): Ref<T[]>
   function _sync(filter: MaybeRef<string>, initialValue?: T): Ref<T>
-  function _sync(filter: MaybeRef<string | any[]>, initialValue?: any) {
+  function _sync(filter: MaybeRef<QueryFilter>, initialValue?: T[]): Ref<T[]>
+  function _sync(filter: MaybeRef<string | QueryFilter>, initialValue?: any) {
 
-    const syncId = filter.toString()
-    if(syncCached[syncId]) return syncCached[syncId]
+    const syncHit = syncCached.find(([x]) => x === filter)
+    if(syncHit) return syncHit[1]
 
     if(!initialValue) initialValue = typeof unref(filter) === 'string' ? {} : []
     const data = ref(initialValue)
@@ -63,10 +65,10 @@ interface UseFirestoreOptions {
     tryOnScopeDispose(() => {
       stopWatch && stopWatch()
       stopOnSnapshot && stopOnSnapshot()
-      delete syncCached[syncId]
+      syncCached = syncCached.filter(([x]) => x !== filter)
     })
 
-    syncCached[syncId] = data
+    syncCached.push([filter, data])
     return data
   }
 
