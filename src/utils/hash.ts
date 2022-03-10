@@ -1,5 +1,3 @@
-import { btoa } from "buffer";
-
 /**
  * 
  * @param data 
@@ -18,12 +16,31 @@ import { btoa } from "buffer";
   return (4294967296 * (2097151 & h2) + (h1>>>0)).toString(32)
 }
 
+export function hashJenk(data: string){
+  let hash = 0;
+  for (let i = 0; i < data.length; i++) {
+      hash += data[i].charCodeAt(0)
+      hash += (hash << 10);
+      hash ^= (hash >> 6);
+  }
+  hash += (hash << 3);
+  hash ^= (hash >> 11);
+  hash += (hash << 15);
+  return (hash).toString(32);
+}
+
 /**
  * Hash a buffer or string and return it's base64 representation.
  * @param data String or buffer to hash.
  * @param algorithm Hashing algorithm
  */
- export const hash = (data: string | ArrayBuffer, algorithm = 'cybr53' as string): string => {
+ export const hash = (data: string | ArrayBuffer, algorithm = 'jenk' as string) => {
   data = typeof data !== 'string' ? Buffer.from(data).toString() : data
-  return hashCyrb53(data)
+
+  switch(algorithm) {
+    case 'cybr53': return hashCyrb53(data);
+    case 'jenk':
+    case 'fast':
+    default: return hashJenk(data)
+  }
 }
