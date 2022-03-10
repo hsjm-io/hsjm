@@ -1,38 +1,50 @@
-import Color, { ColorInput } from 'tinycolor2'
+import { clamp } from "lodash"
 
-export interface ColorPalette {
-    default: string
-    50: string
-    100: string
-    200: string
-    300: string
-    400: string
-    500: string
-    600: string
-    700: string
-    800: string
-    900: string
+/**
+ * Adjust color brightness.
+ * @param color Color to adjust.
+ * @param amount Relative brightness.
+ */
+ const colorBrightness = (color: string, amount: number) => {
+  var hex = parseInt(color.replace(/^#/, ''), 16)
+  var r = clamp((hex >> 16) + amount, 0, 255)
+  var b = clamp(((hex >> 8) & 0x00FF) + amount, 0, 255)
+  var g = clamp((hex & 0x0000FF) + amount, 0, 255)
+  var newColor = g | (b << 8) | (r << 16)
+  return '#' + newColor.toString(16)
 }
 
 /**
- * Generate a TailwindCSS / WindiCSS palette from a single hex color.
- * @param {ColorInput} color Input color, can be any format. For example : `#ff9` or `#rgb(200,30, 40)`
- * @return {ColorPalette} Generated TailwindCSS Palette
+ * TailwindCSS / WindiCSS color palette.
  */
-export function colorToPalette(color: ColorInput): ColorPalette {
-
-    //--- Return palette.
-    return {
-        default: Color(color).toString(),
-        50: Color(color).lighten(30).toString(),
-        100: Color(color).lighten(25).toString(),
-        200: Color(color).lighten(20).toString(),
-        300: Color(color).lighten(15).toString(),
-        400: Color(color).lighten(10).toString(),
-        500: Color(color).toHexString(),
-        600: Color(color).darken(10).toString(),
-        700: Color(color).darken(15).toString(),
-        800: Color(color).darken(30).toString(),
-        900: Color(color).darken(50).toString(),
-    }
+ interface ColorPalette {
+  default: string
+  50: string
+  100: string
+  200: string
+  300: string
+  400: string
+  500: string
+  600: string
+  700: string
+  800: string
+  900: string
 }
+
+/**
+ * Generate a TailwindCSS / WindiCSS color palette from a single hex color.
+ * @param color Input color, can be any format. For example : `#ff9` or `#rgb(200,30, 40)`
+ */
+ export const colorToPalette = (color: string): ColorPalette => ({
+  default: color,
+  50: colorBrightness(color, 130),
+  100: colorBrightness(color, 120),
+  200: colorBrightness(color, 90),
+  300: colorBrightness(color, 60),
+  400: colorBrightness(color, 30),
+  500: color,
+  600: colorBrightness(color, -30),
+  700: colorBrightness(color, -60),
+  800: colorBrightness(color, -90),
+  900: colorBrightness(color, -120),
+})
