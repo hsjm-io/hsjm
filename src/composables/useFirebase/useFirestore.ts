@@ -1,13 +1,17 @@
-import { asyncComputed } from '@vueuse/core';
-import { ref, watch, Ref, unref } from 'vue-demi'
-import { tryOnScopeDispose, tryOnMounted, MaybeRef } from '@vueuse/shared'
-import { DocumentData, FirestoreError } from 'firebase/firestore'
+import { asyncComputed } from '@vueuse/core'
+import { ref, watch, Ref, unref, readonly, WatchStopHandle } from 'vue-demi'
+import { tryOnScopeDispose, MaybeRef, extendRef } from '@vueuse/shared'
+import { DocumentData, FirestoreError, Unsubscribe } from 'firebase/firestore'
 import { get, sync, erase, save, QueryFilter } from './utils'
-import { partial } from 'lodash'
+import { defaults, partial } from 'lodash'
 
 interface UseFirestoreOptions {
   /** Generic error handler. */
-  onError?: (error: FirestoreError) => void
+  onError?: (error: FirestoreError) => void,
+}
+
+const defaultOptions: UseFirestoreOptions = {
+  onError: (error: FirestoreError) => { console.log(error.message) },
 }
 
 /**
@@ -17,59 +21,81 @@ interface UseFirestoreOptions {
  * @param query Reference or query to use to get the data. 
  * @param options Options to use.
  */
- export const useFirestore = <T extends DocumentData>(
-  path: string,
-  options = {} as UseFirestoreOptions
-) => {
+ export const useFirestore = <T extends DocumentData>(path: string, options = {} as UseFirestoreOptions) => {
 
-  //--- Destructure and defaults options.
-  const { onError = console.error } = options
+  // --- Destructure and defaults options.
+  const { onError } = defaults(options, defaultOptions)
 
-  let getCached: [QueryFilter, Ref<any>][] = []
-  let syncCached: [QueryFilter, Ref<any>][] = []
+  // --- Cache register.
+  const cache: Record<string, any> = {}
 
-  function _get(filter: MaybeRef<string>, initialValue?: T): Ref<T>
-  function _get(filter: MaybeRef<QueryFilter>, initialValue?: T[]): Ref<T[]>
-  function _get(filter: MaybeRef<string | QueryFilter>, initialValue?: any) {
-    const getId = filter.toString()
-    const getCachedHit = getCached.find(([x]) => x === filter)
-    const syncCachedHit = syncCached.find(([x]) => x === filter)
-    if(getCachedHit) return filter
-    if(syncCachedHit) return filter
-    const data = asyncComputed(() => get<T>(path, unref(filter)), initialValue)
-    getCached.push([filter, data])
-    return data
-  }
+  function _get(filter: MaybeRef<string>, initialValue?: T, _options?: UseFirestoreOptions): Readonly<Ref<T>> & { ready: Promise<void> }
+  function _get(filter: MaybeRef<QueryFilter>, initialValue?: T[], _options?: UseFirestoreOptions): Readonly<Ref<T[]>> & { ready: Promise<void> }
+  function _get(filter: MaybeRef<string | QueryFilter>, initialValue?: any, _options?: UseFirestoreOptions) {
 
-  function _sync(filter: MaybeRef<string>, initialValue?: T): Ref<T>
-  function _sync(filter: MaybeRef<QueryFilter>, initialValue?: T[]): Ref<T[]>
-  function _sync(filter: MaybeRef<string | QueryFilter>, initialValue?: any) {
+    // --- Caching.
+    const cacheId = 'get:' + JSON.stringify(filter)
+    if(cacheId in cache) cache[cacheId]
 
-    const syncHit = syncCached.find(([x]) => x === filter)
-    if(syncHit) return syncHit[1]
+    // --- Promise.
+    let readyResolve: (value?: unknown) => void
+    let ready = new Promise(resolve => readyResolve = resolve)
 
-    if(!initialValue) initialValue = typeof unref(filter) === 'string' ? {} : []
-    const data = ref(initialValue)
-    let stopWatch: Function | undefined
-    let stopOnSnapshot: Function | undefined
-
-    const update = () => {
-      // data.value = await get(data, unref(filter))
-      stopOnSnapshot && stopOnSnapshot()
-      stopOnSnapshot = sync(data, path, unref(filter), onError)
+    // --- Fetching.
+    const update = async () => {
+      const _data = await get<T>(path, unref(filter))
+      readyResolve()
+      return _data
     }
 
-    tryOnMounted(update)
-    stopWatch = watch(() => filter, update, { deep: true })
+    // --- Init `data` computed.
+    if(!initialValue) initialValue = typeof unref(filter) === 'string' ? {} : []
+    const data = asyncComputed(update, initialValue, { onError: onError as any })
+    extendRef(data, { ready })
 
+    // --- Return readonly data ref.
+    return (cache[cacheId] = readonly(data))
+  }
+
+  function _sync(filter: MaybeRef<string>, initialValue?: T, _options?: UseFirestoreOptions): Readonly<Ref<T>> & { ready: Promise<void> }
+  function _sync(filter: MaybeRef<QueryFilter>, initialValue?:T[], _options?: UseFirestoreOptions): Readonly<Ref<T[]>> & { ready: Promise<void> }
+  function _sync(filter: MaybeRef<string | QueryFilter>, initialValue?: any, _options?: UseFirestoreOptions) {
+
+    // --- Caching.
+    const cacheId = 'sync:' + JSON.stringify(filter)
+    if(cacheId in cache) cache[cacheId]
+
+    // --- Handle promise.
+    let readyResolve: (value?: unknown) => void
+    let ready = new Promise(resolve => readyResolve = resolve)
+
+    // --- Init `data` ref.
+    if(!initialValue) initialValue = typeof unref(filter) === 'string' ? {} : []
+    const data = ref(initialValue)
+    extendRef(data, { ready })
+
+    // --- Init local variables.
+    let stopSync: Unsubscribe
+    let stopWatch: WatchStopHandle
+
+    // --- Unregister watcher and init a new one.
+    const update = () => {
+      stopSync && stopSync()
+      stopSync = sync(data, path, unref(filter), { onError, onNext: readyResolve })
+    }
+
+    // --- Start `filter` watcher.
+    stopWatch = watch(() => filter, update, { deep: true, immediate: true })
+
+    // --- stopSync from `onSnapshot`, watcher and remove from cache.
     tryOnScopeDispose(() => {
+      stopSync && stopSync()
       stopWatch && stopWatch()
-      stopOnSnapshot && stopOnSnapshot()
-      syncCached = syncCached.filter(([x]) => x !== filter)
+      cache[cacheId] && delete cache[cacheId]
     })
 
-    syncCached.push([filter, data])
-    return data
+    // --- Return readonly data ref.
+    return (cache[cacheId] = readonly(data))
   }
 
   //--- Return data and methods.

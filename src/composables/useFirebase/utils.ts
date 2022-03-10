@@ -5,7 +5,7 @@ import {
   getDoc, getDocs, onSnapshot, setDoc, writeBatch, deleteDoc,
   DocumentSnapshot, QueryDocumentSnapshot, QuerySnapshot,
   DocumentData, DocumentReference, CollectionReference, Query,
-  FirestoreError, Unsubscribe, QueryConstraint, startAt, startAfter, endAt, endBefore
+  FirestoreError, Unsubscribe, QueryConstraint, startAt, startAfter, endAt, endBefore, SnapshotListenOptions
 } from 'firebase/firestore'
 
 function unpeelSnapshot<T extends DocumentData>(snapshot: QuerySnapshot<T>): T[]
@@ -87,18 +87,30 @@ export function get(path: string, filter: QueryFilter) {
     : getDocs(createQuery(path, filter)).then(unpeelSnapshot)
 }
 
-export function sync<T extends DocumentData>(data: Ref<T>, path: string, filter: string, onError?: (error: FirestoreError) => void): Unsubscribe
-export function sync<T extends DocumentData>(data: Ref<T[]>, path: string, filter: QueryConstraintObject | QueryConstraint[], onError?: (error: FirestoreError) => void): Unsubscribe
-export function sync<T extends DocumentData>(data: Ref<T | T[]>, path: string, filter: QueryFilter, onError?: (error: FirestoreError) => void): Unsubscribe
+interface SyncOptions extends SnapshotListenOptions {
+  onNext?: Parameters<typeof onSnapshot>[2] | (() => void),
+  onError?: Parameters<typeof onSnapshot>[3] | (() => void),
+  onCompletion?: Parameters<typeof onSnapshot>[4],
+} 
+
+export function sync<T extends DocumentData>(data: Ref<T>, path: string, filter: string, options?: SyncOptions): Unsubscribe
+export function sync<T extends DocumentData>(data: Ref<T[]>, path: string, filter: QueryConstraintObject | QueryConstraint[], options?: SyncOptions): Unsubscribe
+export function sync<T extends DocumentData>(data: Ref<T | T[]>, path: string, filter: QueryFilter, options?: SyncOptions): Unsubscribe
 export function sync(
   data: Ref<any>,
   path: string,
   filter: QueryFilter,
-  onError?: (error: FirestoreError) => void
+  options = {} as SyncOptions
 ) {
-  return typeof filter === 'string'
-    ? onSnapshot(createQuery(path, filter), snapshot => data.value = unpeelSnapshot(snapshot), onError)
-    : onSnapshot(createQuery(path, filter), snapshot => data.value = unpeelSnapshot(snapshot), onError)
+  return onSnapshot(
+    createQuery(path, filter as any),
+    (snapshot: any) => {
+      data.value = unpeelSnapshot(snapshot)
+      if(options.onNext) return options.onNext(snapshot)
+    },
+    options.onError,
+    options.onCompletion,
+  )
 }
 
 export function erase<T extends DocumentData>(path: string, data: T | T[] | string | string[]): Promise<void>
