@@ -18,7 +18,8 @@ const baseConfig = defineConfig({
     ...Object.keys(pkg.dependencies),
     ...Object.keys(pkg.optionalDependencies),
     /lodash\/.*/,
-    /firebase\/.*/
+    /firebase\/.*/,
+    /@iconify\/.*/,
   ],
 })
 
