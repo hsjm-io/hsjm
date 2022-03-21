@@ -73,7 +73,7 @@ const fetchIcon = (iconName: string, options = {} as IconifyIconCustomisations) 
 export const useIconify = (icon: MaybeRef<string>, options = {} as IconifyIconCustomisations) => {
 
   // --- State.
-  const svg = ref<string>('')
+  const svg = ref<string>('<svg></svg>')
 
   // --- Ready promise.
   let readyResolve: Function
@@ -89,7 +89,7 @@ export const useIconify = (icon: MaybeRef<string>, options = {} as IconifyIconCu
   watch(() => [icon, options], update)
 
   // @ts-ignore --- Update on init if not SSR.
-  if(import.meta?.env.SSR && !isClient || import.meta?.env.DEV)
+  if(!isClient || import.meta.env.DEV)
     update()
 
   // --- Return SVG.
