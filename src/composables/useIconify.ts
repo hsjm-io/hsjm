@@ -1,6 +1,6 @@
-import { ref, unref, watch, Ref } from 'vue-demi'
+import { ref, unref, watch } from 'vue-demi'
 import { MaybeRef, isClient, extendRef } from '@vueuse/shared'
-import type { IconifyIconCustomisations, IconifyJSON } from '@iconify/iconify'
+import { IconifyIconCustomisations, IconifyJSON } from '@iconify/iconify'
 import { iconToSVG, expandIconSet, fullIconData, replaceIDs } from '@iconify/utils'
 import { defaults } from '@iconify/utils/lib/customisations'
 import axios from 'axios'
