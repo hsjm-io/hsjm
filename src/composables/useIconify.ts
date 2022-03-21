@@ -89,7 +89,7 @@ export const useIconify = (icon: MaybeRef<string>, options = {} as IconifyIconCu
   watch(() => [icon, options], update)
 
   // @ts-ignore --- Update on init if not SSR.
-  if(import.meta.env.SSR && !isClient || import.meta.env.DEV)
+  if(import.meta?.env.SSR && !isClient || import.meta?.env.DEV)
     update()
 
   // --- Return SVG.
