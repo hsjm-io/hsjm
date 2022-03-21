@@ -1,6 +1,6 @@
 import { asyncComputed } from '@vueuse/core'
 import { ref, watch, Ref, unref, readonly, WatchStopHandle } from 'vue-demi'
-import { tryOnScopeDispose, MaybeRef, extendRef } from '@vueuse/shared'
+import { tryOnScopeDispose, MaybeRef, extendRef, isClient } from '@vueuse/shared'
 import { DocumentData, FirestoreError, Unsubscribe } from 'firebase/firestore'
 import { get, sync, erase, save, QueryFilter } from './utils'
 import { defaults, partial } from 'lodash'
@@ -65,7 +65,7 @@ const defaultOptions: UseFirestoreOptions = {
     const cacheId = 'sync:' + JSON.stringify(filter)
     if(cacheId in cache) cache[cacheId]
 
-    // --- Handle promise.
+    // --- Promise.
     let readyResolve: (value?: unknown) => void
     let ready = new Promise(resolve => readyResolve = resolve)
 
@@ -101,7 +101,7 @@ const defaultOptions: UseFirestoreOptions = {
   //--- Return data and methods.
   return {
     get: _get,
-    sync: _sync,
+    sync: isClient ? _sync : _get,
     save: partial(save, path),
     erase: partial(erase, path),
   }
