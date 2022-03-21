@@ -1,5 +1,5 @@
 import { defineConfig } from "rollup"
-import pkg from './package.json'
+import { dependencies } from './package.json'
 
 //--- Import Rollup plugins.
 import analyze from 'rollup-plugin-analyzer'
@@ -15,11 +15,10 @@ import { terser } from 'rollup-plugin-terser'
 const baseConfig = defineConfig({
   input: './src/index.ts',
   external: [
-    ...Object.keys(pkg.dependencies),
-    ...Object.keys(pkg.optionalDependencies),
+    ...Object.keys(dependencies),
+    /@iconify\/.*/,
     /lodash\/.*/,
     /firebase\/.*/,
-    /@iconify\/.*/,
   ],
 })
 

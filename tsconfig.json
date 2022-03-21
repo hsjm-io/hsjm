@@ -7,14 +7,13 @@
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "strict": true,
-    "rootDir": ".",
-    "paths": { "~/*": ["./src/*"] },
-    "typeRoots": ["@types"],
     "types": [
       "@types/node",
-      "@types/lodash",
-      "@types/tinycolor2"
-    ]
+      "@types/lodash"
+    ],
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/*"]
 }
