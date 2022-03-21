@@ -1,7 +1,6 @@
 export * from './colorToPalette'
 export * from './convertToUnit'
 export * from './hash'
-export * from './compose'
 export * from './loadify'
 export * from './pompauteResolver'
 export * from './toBuffer'
