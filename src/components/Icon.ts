@@ -1,4 +1,4 @@
-import { IconifyIconCustomisations } from '@purge-icons/generated'
+import type { IconifyIconCustomisations } from '@iconify/iconify'
 import { defineComponent, h, PropType } from 'vue-demi'
 import { useIconify } from '~/composables'
 
@@ -11,7 +11,7 @@ export const Icon = defineComponent({
     options: { type: Object as PropType<IconifyIconCustomisations>, default: {} }
   },
 
-  setup: async (props) => {
+  setup: async (props, { attrs }) => {
     
     // --- Generate the icon.
     const svg = useIconify(props.icon, props.options)
@@ -22,7 +22,8 @@ export const Icon = defineComponent({
       role: 'img',
       'aria-labelledby': props.icon,
       'aria-hidden': 'true',
-      innerHTML: svg.value
+      innerHTML: svg.value,
+      ...attrs
     })
   },
 })
