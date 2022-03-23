@@ -31,7 +31,7 @@ interface ColorPalette {
 
 /**
  * Generate a TailwindCSS / WindiCSS color palette from a single hex color.
- * @param color Input color, can be any format. For example : `#ff9` or `#rgb(200,30, 40)`
+ * @param color Input color in hex6.
  */
 export const colorToPalette = (color: string): ColorPalette => ({
   default: color,
