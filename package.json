@@ -67,23 +67,25 @@
   },
   "tsup": [
     {
-      "entry": [
-        "src/*/index.(ts|js)"
-      ],
+      "entry": ["src/*/index.ts"],
       "loader": {
         ".css": "default",
         ".jpg": "dataurl",
         ".png": "dataurl"
       },
-      "format": [
-        "esm",
-        "cjs",
-        "iife"
-      ],
+      "format": ["esm", "cjs"],
       "splitting": false,
       "sourcemap": true,
+      "metafile": true,
       "clean": true,
       "dts": true
+    },
+    {
+      "entry": ["src/eslint-config/*.js"],
+      "outDir": "dist/eslint-config",
+      "format": ["esm", "cjs"],
+      "splitting": false,
+      "shims": false
     }
   ],
   "pnpm": {
