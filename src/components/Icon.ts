@@ -1,5 +1,6 @@
 import { defineComponent, h, PropType } from 'vue-demi'
-import { useIconify, UseIconifyOptions } from '@hsjm/iconify'
+import { useIconify } from '@hsjm/iconify'
+import { IconifyIconCustomisations } from '@iconify/iconify'
 
 export const Icon = defineComponent({
   name: 'Icon',
@@ -7,7 +8,7 @@ export const Icon = defineComponent({
   props: {
     icon: { type: String, required: true },
     as: { type: String as PropType<keyof HTMLElementTagNameMap>, default: 'span' },
-    options: { type: Object as PropType<UseIconifyOptions>, default: {} }
+    options: { type: Object as PropType<IconifyIconCustomisations>, default: {} }
   },
 
   setup: async (props, { attrs }) => {

@@ -4,16 +4,12 @@ import { IconifyIconCustomisations } from '@iconify/iconify'
 import { resolvable } from '@hsjm/core'
 import { fetchIcon } from './fetchIcons'
 
-export interface UseIconifyOptions extends IconifyIconCustomisations {
-  
-}
-
 /**
  * Resolve the SVG for a given icon with `@iconify`.
  * @param icon Name of the icon. (Example: `mdi:user` )
  * @param options Customisation options.
  */
-export const useIconify = (icon: MaybeRef<string>, options = {} as UseIconifyOptions) => {
+export const useIconify = (icon: MaybeRef<string>, options = {} as IconifyIconCustomisations) => {
 
   // --- State.
   const svg = ref<string>('<svg></svg>')

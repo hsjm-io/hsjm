@@ -1,5 +1,5 @@
 {
-  "name": "@hsjm/monorepo",
+  "name": "pompaute",
   "version": "1.0.0",
   "private": true,
   "description": "Opinionated collection of common components, composables and utils for Vue projects.",
@@ -10,21 +10,26 @@
     "dev": "tsup --watch",
     "lint:package.json": "sort-package-json ./package.json ./packages/*/package.json"
   },
+  "files": ["dist", "LICENCE", "README.md"],
   "tsup": {
     "entry": [
-      "packages/core/index.ts",
-      "packages/components/index.ts",
-      "packages/firebase/index.ts",
-      "packages/iconify/index.ts",
-      "packages/leaflet/index.ts",
-      "packages/mapbox/index.ts",
-      "packages/nato/index.ts"
+      "src/core/index.ts",
+      "src/components/index.ts",
+      "src/firebase/index.ts",
+      "src/iconify/index.ts",
+      "src/leaflet/index.ts",
+      "src/mapbox/index.ts",
+      "src/nato/index.ts"
     ],
+    "loader": {
+      ".jpg": "dataurl",
+      ".d.ts": "ts",
+      ".png": "dataurl"
+    },
     "globalName": "Hsjm",
-    "format": ["esm", "cjs"],
+    "format": ["esm", "cjs", "iife"],
     "splitting": false,
     "sourcemap": true,
-    "metafile": true,
     "clean": true,
     "dts": true
   },
