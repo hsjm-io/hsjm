@@ -81,9 +81,9 @@
       "dts": true
     },
     {
-      "entry": ["src/eslint-config/*.js"],
+      "entry": ["src/eslint-config/*.ts"],
       "outDir": "dist/eslint-config",
-      "format": ["esm", "cjs"],
+      "format": ["cjs"],
       "splitting": false,
       "shims": false
     }
@@ -97,8 +97,8 @@
   "eslintConfig": {
     "ignorePatterns": ["dist/", "node_modules/"],
     "extends": [
-      "./src/eslint-config/basic.js",
-      "./src/eslint-config/typescript.js"
+      "./dist/eslint-config/basic.js",
+      "./dist/eslint-config/typescript.js"
     ]
   }
 }
