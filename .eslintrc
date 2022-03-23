@@ -1,0 +1,6 @@
+{
+  "extends": [
+    "./src/eslint-config/basic.js",
+    "./src/eslint-config/typescript.js"
+  ]
+}

@@ -3,19 +3,19 @@
  * @param color Color to adjust.
  * @param amount Relative brightness.
  */
- const colorBrightness = (color: string, amount: number) => {
-  var hex = parseInt(color.replace(/^#/, ''), 16)
-  var r = Math.min(Math.max((hex >> 16) + amount, 0), 255)
-  var b = Math.min(Math.max(((hex >> 8) & 0x00FF) + amount, 0), 255)
-  var g = Math.min(Math.max((hex & 0x0000FF) + amount, 0), 255)
-  var newColor = g | (b << 8) | (r << 16)
-  return '#' + newColor.toString(16)
+const colorBrightness = (color: string, amount: number) => {
+  const hex = Number.parseInt(color.replace(/^#/, ''), 16)
+  const r = Math.min(Math.max((hex >> 16) + amount, 0), 255)
+  const b = Math.min(Math.max(((hex >> 8) & 0x00FF) + amount, 0), 255)
+  const g = Math.min(Math.max((hex & 0x0000FF) + amount, 0), 255)
+  const newColor = g | (b << 8) | (r << 16)
+  return `#${newColor.toString(16)}`
 }
 
 /**
  * TailwindCSS / WindiCSS color palette.
  */
- interface ColorPalette {
+interface ColorPalette {
   default: string
   50: string
   100: string
@@ -33,7 +33,7 @@
  * Generate a TailwindCSS / WindiCSS color palette from a single hex color.
  * @param color Input color, can be any format. For example : `#ff9` or `#rgb(200,30, 40)`
  */
- export const colorToPalette = (color: string): ColorPalette => ({
+export const colorToPalette = (color: string): ColorPalette => ({
   default: color,
   50: colorBrightness(color, 130),
   100: colorBrightness(color, 120),

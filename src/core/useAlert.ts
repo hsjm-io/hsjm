@@ -1,5 +1,4 @@
 import { createSharedComposable } from '@vueuse/shared'
-import { delay, uniqueId } from 'lodash'
 import { ref } from 'vue-demi'
 
 /** Configurable alert object. */
@@ -24,21 +23,22 @@ let index = 0
  * Return globally scoped registered functions to allow for UI alert managment.
  */
 export const useAlert = createSharedComposable(() => {
-
   // --- Initialize global alert pool.
   const alerts = ref([] as Alert[])
+
+  // --- Dismiss method.
+  const dismiss = (alert: Alert) => { alerts.value = alerts.value.filter(x => x.id !== alert.id) }
 
   // --- Alert lifecycle.
   const alert = (alert: Alert): Dismiss => {
     alert.id = alert.id ?? (index++).toString()
-    alerts.value = alerts.value.concat(alert)
+    alerts.value = [...alerts.value, alert]
     const dismissThisAlert = () => dismiss(alert)
     setTimeout(dismissThisAlert, alert.duration ?? 5000)
     return dismissThisAlert
   }
 
   // --- Shortcut methods.
-  const dismiss = (alert: Alert) => { alerts.value = alerts.value.filter(x => x.id !== alert.id) }
   const alertError = (text: string) => alert({ text, type: 'error' })
   const alertSuccess = (text: string) => alert({ text, type: 'success' })
   const alertWarning = (text: string) => alert({ text, type: 'warning' })
@@ -50,6 +50,6 @@ export const useAlert = createSharedComposable(() => {
     alertError,
     alertSuccess,
     alertWarning,
-    dismiss
+    dismiss,
   }
 })

@@ -1,14 +1,13 @@
-import { ref } from "vue-demi"
+import { ref } from 'vue-demi'
 
 /**
  * Create a promise and provide it's `resolve` callback and `resolved` state.
  */
 export const resolvable = <T1 extends void>() => {
-
   // --- Initialize variables.
   let _resolve: (value?: T1) => void
   let _reject: (reason?: any) => void
-  let promise = new Promise<T1>((r, e) => { _resolve = r as any; _reject = e })
+  let promise = new Promise<T1>((resolve, reject) => { _resolve = resolve as any; _reject = reject })
   const resolved = ref(false)
   const pending = ref(true)
 
@@ -30,7 +29,7 @@ export const resolvable = <T1 extends void>() => {
   const reset = () => {
     resolved.value = false
     pending.value = true
-    promise = new Promise<T1>((r, e) => { _resolve = r as any; _reject = e })
+    promise = new Promise<T1>((resolve, reject) => { _resolve = resolve as any; _reject = reject })
   }
   reset()
 

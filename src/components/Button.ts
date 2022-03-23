@@ -1,26 +1,27 @@
-import { defineComponent, h, PropType } from 'vue-demi'
+import { PropType, defineComponent, h } from 'vue-demi'
 import { RouteLocationRaw } from 'vue-router'
-import { useHtmlAttrs } from '~/core'
+import { useHtmlAttributes } from '~/core'
 
 export const Button = defineComponent({
   name: 'Button',
+
   props: {
     as: {
       type: String as PropType<keyof HTMLElementTagNameMap>,
-      default: 'button'
+      default: 'button',
     },
     disabled: Boolean,
     readonly: Boolean,
     loading: Boolean,
-    to: [String, Object] as PropType<string | RouteLocationRaw>,
+    to: [String, Object] as PropType<RouteLocationRaw | string>,
     classActive: { type: String, default: '' },
     classActiveExact: { type: String, default: '' },
     replace: Boolean,
     newtab: Boolean,
   },
 
-  setup: (props, { slots }) => {
-    const { attributes, type } = useHtmlAttrs(props)
+  setup: (properties, { slots }) => {
+    const { attributes, type } = useHtmlAttributes(properties)
     return () => h(type as any, attributes, slots)
-  }
+  },
 })

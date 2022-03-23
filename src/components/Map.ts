@@ -1,6 +1,6 @@
 import L from 'leaflet'
-import { computed, defineComponent, render, PropType, watch, h } from 'vue-demi'
-import { TileLayerOptions, useLeaflet, UseLeafletOptions } from '~/leaflet'
+import { PropType, computed, defineComponent, h, render, watch } from 'vue-demi'
+import { TileLayerOptions, UseLeafletOptions, useLeaflet } from '~/leaflet'
 
 export const Map = defineComponent({
   name: 'Map',
@@ -10,7 +10,7 @@ export const Map = defineComponent({
     lng: { type: Number, default: 0 },
     zoom: { type: Number, default: 8 },
     layers: { type: [Array, Object] as PropType<TileLayerOptions | TileLayerOptions[]>, default: [] },
-    options: { type: Object as PropType<UseLeafletOptions>, default: {} }
+    options: { type: Object as PropType<UseLeafletOptions>, default: {} },
   },
 
   emits: [
@@ -20,37 +20,33 @@ export const Map = defineComponent({
   ],
 
   setup: (props, { slots, emit }) => {
-    
-    const markers = computed(() => {
-    const slot = slots.default
+    // --- Compute markers from slots.
+    const markers = computed(() => (!slots.default
+      ? []
+      : slots.default()
+        .flatMap(x => [x, ...x.children as any[]])
+        .filter(x => Number.isFinite(+x.props?.lat) && Number.isFinite(+x.props?.lng))
+        .map((vnode) => {
+          const div = document.createElement('div')
+          render(vnode, div)
+          const { lat, lng } = vnode.props
+          const icon = L.divIcon({
+            html: div.children?.[0] as HTMLElement,
+            className: 'w-0 h-0',
+          })
+          const marker = L.marker([lat, lng], { icon })
+          return marker
+        })),
+    )
 
-    if(slot && slot()) return slot()
-      .flatMap(x => [x, ...x.children as any[]])
-      .filter(x => isFinite(+x.props?.lat) && isFinite(+x.props?.lng))
-      .map(vnode => {
-
-        const div = document.createElement('div')
-        render(vnode, div)
-
-        // @ts-ignore
-        const { lat, lng } = vnode.props
-        const icon = L.divIcon({
-          html: div.children?.[0] as HTMLElement,
-          className: 'w-0 h-0'
-        })
-        const marker = L.marker([lat, lng], { icon })
-        return marker
-      })
-    else return []
-  })
-
+    // --- Initialize Leaflet.
     const { lat, lng, zoom } = useLeaflet('map', {
       initialLat: props.lat,
       initialLng: props.lng,
       tileLayers: props.layers,
-
     }, markers)
-    
+
+    // --- Watch view.
     watch([lat, lng, zoom], ([lat, lng, zoom]) => {
       emit('update:lat', lat)
       emit('update:lng', lng)

@@ -1,29 +1,28 @@
-import { defineComponent, ref, watch } from "vue-demi"
-import { useWindowScroll, useElementSize } from '@vueuse/core'
+import { defineComponent, ref, watch } from 'vue-demi'
+import { useElementSize, useWindowScroll } from '@vueuse/core'
 
 export const Layout = defineComponent({
-    
+
   props: {
     width: Number,
     height: Number,
     scroll: Number,
   },
 
-  setup(props, {attrs, emit}){
+  setup(properties, { emit }) {
+    // --- Get root element ref.
+    const root = ref()
 
-    //--- Get root element ref.
-    const root = ref(null)
-
-    //--- Watch for user scrolling.
+    // --- Watch for user scrolling.
     const { y: scroll } = useWindowScroll()
-    if(props.scroll) watch(scroll, scroll => emit('update:scroll', scroll), {immediate: true})
+    if (properties.scroll) watch(scroll, scroll => emit('update:scroll', scroll), { immediate: true })
 
-    //--- Watch for nav height & width.
+    // --- Watch for nav height & width.
     const { height, width } = useElementSize(root)
-    if(props.height) watch(height, height => emit('update:height', height), {immediate: true})
-    if(props.width) watch(width, width => emit('update:width', width), {immediate: true})
-    
-    //--- Return reactive properties.
+    if (properties.height) watch(height, height => emit('update:height', height), { immediate: true })
+    if (properties.width) watch(width, width => emit('update:width', width), { immediate: true })
+
+    // --- Return reactive properties.
     return { root, scroll, height, width }
-  }
+  },
 })

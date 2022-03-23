@@ -7,6 +7,7 @@
     "moduleResolution": "Node",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "esModuleInterop": true,
+    "allowJs": true,
     "strict": true,
     "types": [
       "@types/node",
@@ -18,6 +19,6 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": [ "src" ],
+  "include": [ "src/**/*.ts" ],
   "exclude": [ "node_modules", "dist" ]
 }

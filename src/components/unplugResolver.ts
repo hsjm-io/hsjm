@@ -14,5 +14,5 @@ export const unplugResolver = (options = {} as UnplugResolverOptions): Component
       [`${prefix}Nato`]: { path: 'pompaute', importName: 'Nato' },
       [`${prefix}Layout`]: { path: 'pompaute', importName: 'Layout' },
     }[name]
-  }
+  },
 })

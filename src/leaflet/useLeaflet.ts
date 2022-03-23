@@ -2,11 +2,11 @@
 import { Ref, ref, unref, watch } from 'vue-demi'
 import { tryOnMounted } from '@vueuse/core'
 import 'leaflet/dist/leaflet.css'
-import { 
-  map as createMap,
-  tileLayer as createTileLayer
+import {
+  Map,
+  MapOptions,
+  Marker, map as createMap, tileLayer as createTileLayer,
 } from 'leaflet'
-import type { Map, MapOptions, Marker } from 'leaflet'
 
 export type TileLayerOptions = L.TileLayerOptions & { urlTemplate: string }
 
@@ -20,16 +20,15 @@ export interface UseLeafletOptions extends MapOptions {
 export const useLeaflet = (
   element: string | HTMLElement,
   options: UseLeafletOptions,
-  markers = [] as Ref<Marker[]> | Marker[]
+  markers = [] as Ref<Marker[]> | Marker[],
 ) => {
-
   // --- Initialize variables.
   const lat = ref(options.initialLat ?? 0)
   const lng = ref(options.initialLng ?? 0)
   const zoom = ref(options.initialZoom ?? 8)
   const map = ref({} as Map)
   let _markers = [] as Marker[]
-  
+
   tryOnMounted(() => {
     // --- Initialize map.
     const _map = createMap(element, options)
@@ -45,13 +44,13 @@ export const useLeaflet = (
 
     // --- Sync map markers.
     watch(
-      markers, 
-      markers => {
-        for(const _marker of _markers) _marker.removeFrom(_map)
+      markers,
+      (markers) => {
+        for (const _marker of _markers) _marker.removeFrom(_map)
         _markers = []
-        for(const marker of unref(markers)) _markers.push(marker.addTo(_map))
+        for (const marker of unref(markers)) _markers.push(marker.addTo(_map))
       },
-      { immediate: true, deep: true }
+      { immediate: true, deep: true },
     )
 
     // --- Sync map view with ref values.
@@ -63,7 +62,7 @@ export const useLeaflet = (
     })
 
     // --- Sync ref values with map view.
-    watch([lat, lng, zoom], ([lat, lng, zoom]) => 
+    watch([lat, lng, zoom], ([lat, lng, zoom]) =>
       _map.setView([lat, lng], zoom))
 
     // --- Set map.

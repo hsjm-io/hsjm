@@ -1,8 +1,8 @@
-import { initializeApp, FirebaseOptions } from 'firebase/app'
-import { initializeAppCheck, ReCaptchaV3Provider, AppCheckOptions } from 'firebase/app-check'
+import { FirebaseOptions, initializeApp } from 'firebase/app'
+import { AppCheckOptions, ReCaptchaV3Provider, initializeAppCheck } from 'firebase/app-check'
 import { createSharedComposable } from '@vueuse/core'
 
-interface UseFirebaseOptions extends 
+interface UseFirebaseOptions extends
   FirebaseOptions,
   AppCheckOptions {
   /** Key used to create a ReCaptchaV3Provider instance. */
@@ -21,8 +21,9 @@ export const useFirebase = createSharedComposable((
 ) => {
   const app = initializeApp(options, name)
 
-  if(options.reCaptchaV3ProviderKey) {
+  if (options.reCaptchaV3ProviderKey) {
     const provider = new ReCaptchaV3Provider(options.reCaptchaV3ProviderKey)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const appCheck = initializeAppCheck(app, { ...options, provider })
   }
 

@@ -1,16 +1,16 @@
-import { ref, unref, watch } from 'vue-demi'
-import { MaybeRef, isClient, extendRef } from '@vueuse/shared'
+import { ref, watch } from 'vue-demi'
+import { MaybeRef, extendRef, isClient } from '@vueuse/shared'
 import { IconifyIconCustomisations } from '@iconify/iconify'
-import { resolvable } from '~/core'
+import { createUnrefFn } from '@vueuse/core'
 import { fetchIcon } from './fetchIcons'
+import { resolvable } from '~/core'
 
 /**
  * Resolve the SVG for a given icon with `@iconify`.
  * @param icon Name of the icon. (Example: `mdi:user` )
  * @param options Customisation options.
  */
-export const useIconify = (icon: MaybeRef<string>, options = {} as IconifyIconCustomisations) => {
-
+export const useIconify = (icon: MaybeRef<string>, options = {} as MaybeRef<IconifyIconCustomisations>) => {
   // --- State.
   const svg = ref<string>('<svg></svg>')
 
@@ -18,16 +18,16 @@ export const useIconify = (icon: MaybeRef<string>, options = {} as IconifyIconCu
   const { promise, resolve } = resolvable()
 
   // --- Generate the icon's SVG.
-  const update = async () => {
-    svg.value = await fetchIcon(unref(icon), options)
+  const update = async() => {
+    svg.value = await createUnrefFn(fetchIcon)(icon, options)
     resolve()
   }
 
   // --- Update on server init & prop changes.
   watch(() => [icon, options], update)
 
-  // @ts-ignore --- Update on init if not SSR.
-  if(!isClient || import.meta.env.DEV) update()
+  // @ts-expect-error --- Update on init if not SSR.
+  if (!isClient || import.meta.env.DEV) update()
 
   // --- Return SVG.
   return extendRef(svg, { ready: promise })

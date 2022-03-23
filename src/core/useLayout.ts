@@ -1,14 +1,13 @@
-import { Ref, ref } from 'vue-demi'
-import { useWindowScroll, useElementSize, templateRef, createSharedComposable } from '@vueuse/core'
+import { Ref } from 'vue-demi'
+import { createSharedComposable, templateRef, useElementSize, useWindowScroll } from '@vueuse/core'
 
 interface UseLayoutOptions {
-  rootEl?: Ref<HTMLElement | SVGElement>,
-  headerEl?: Ref<HTMLElement | SVGElement>,
-  footerEl?: Ref<HTMLElement | SVGElement>,
+  rootEl?: Ref<HTMLElement | SVGElement>
+  headerEl?: Ref<HTMLElement | SVGElement>
+  footerEl?: Ref<HTMLElement | SVGElement>
 }
 
 export const useLayout = createSharedComposable((options?: UseLayoutOptions) => {
-
   const { y: scroll } = useWindowScroll()
 
   const root = options?.rootEl ?? templateRef('root')
@@ -18,7 +17,7 @@ export const useLayout = createSharedComposable((options?: UseLayoutOptions) => 
   const { height, width } = useElementSize(root)
   const { height: headerHeight, width: widthHeight } = useElementSize(header)
   const { height: footerHeight, width: footerWidth } = useElementSize(footer)
-  
+
   return {
     scroll,
     height,
@@ -26,6 +25,6 @@ export const useLayout = createSharedComposable((options?: UseLayoutOptions) => 
     headerHeight,
     widthHeight,
     footerHeight,
-    footerWidth
+    footerWidth,
   }
 })

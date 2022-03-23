@@ -1,6 +1,6 @@
-import { defineComponent, h, PropType } from 'vue-demi'
-import { useIconify } from '~/iconify'
+import { PropType, defineComponent, h, toRefs } from 'vue-demi'
 import { IconifyIconCustomisations } from '@iconify/iconify'
+import { useIconify } from '~/iconify'
 
 export const Icon = defineComponent({
   name: 'Icon',
@@ -8,22 +8,24 @@ export const Icon = defineComponent({
   props: {
     icon: { type: String, required: true },
     as: { type: String as PropType<keyof HTMLElementTagNameMap>, default: 'span' },
-    options: { type: Object as PropType<IconifyIconCustomisations>, default: {} }
+    options: { type: Object as PropType<IconifyIconCustomisations>, default: {} },
   },
 
-  setup: async (props, { attrs }) => {
-    
+  setup: async(properties, { attrs }) => {
+    // --- Destructure props.
+    const { as, icon, options } = toRefs(properties)
+
     // --- Generate the icon.
-    const svg = useIconify(props.icon, props.options)
+    const svg = useIconify(icon, options)
     await svg.ready
 
     // --- Render the VNode.
-    return () => h(props.as, {
-      role: 'img',
-      'aria-labelledby': props.icon,
+    return () => h(as, {
+      'role': 'img',
+      'aria-labelledby': icon,
       'aria-hidden': 'true',
-      innerHTML: svg.value,
-      ...attrs
+      'innerHTML': svg.value,
+      ...attrs,
     })
   },
 })
