@@ -1,5 +1,5 @@
 import { defineComponent, h, PropType } from 'vue-demi'
-import { useIconify } from '@hsjm/iconify'
+import { useIconify } from '~/iconify'
 import { IconifyIconCustomisations } from '@iconify/iconify'
 
 export const Icon = defineComponent({

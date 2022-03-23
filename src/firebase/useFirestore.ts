@@ -1,4 +1,4 @@
-import { resolvable } from '@hsjm/core'
+import { resolvable } from '~/core'
 import { ref, watch, Ref, unref, isRef } from 'vue-demi'
 import { tryOnScopeDispose, MaybeRef, extendRef, isClient, reactify } from '@vueuse/shared'
 import { defaults, forEach, isArray, isObjectLike, isString, partial } from 'lodash'

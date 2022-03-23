@@ -2,7 +2,10 @@
 import { Ref, ref, unref, watch } from 'vue-demi'
 import { tryOnMounted } from '@vueuse/core'
 import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
+import { 
+  map as createMap,
+  tileLayer as createTileLayer
+} from 'leaflet'
 import type { Map, MapOptions, Marker } from 'leaflet'
 
 export type TileLayerOptions = L.TileLayerOptions & { urlTemplate: string }
@@ -29,7 +32,7 @@ export const useLeaflet = (
   
   tryOnMounted(() => {
     // --- Initialize map.
-    const _map = L.map(element, options)
+    const _map = createMap(element, options)
       .setView([lat.value, lng.value], zoom.value)
 
     // --- Make sure var is an array.
@@ -38,7 +41,7 @@ export const useLeaflet = (
 
     // --- Add layers.
     for (const tileLayer of options.tileLayers)
-      L.tileLayer(tileLayer.urlTemplate, tileLayer).addTo(_map)
+      createTileLayer(tileLayer.urlTemplate, tileLayer).addTo(_map)
 
     // --- Sync map markers.
     watch(

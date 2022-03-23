@@ -5,33 +5,15 @@
   "description": "Opinionated collection of common components, composables and utils for Vue projects.",
   "license": "MIT",
   "author": "Stanley Horwood <stanley@hsjm.io>",
+  "files": [
+    "dist",
+    "LICENCE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup --minify",
     "dev": "tsup --watch",
     "lint:package.json": "sort-package-json ./package.json ./packages/*/package.json"
-  },
-  "files": ["dist", "LICENCE", "README.md"],
-  "tsup": {
-    "entry": [
-      "src/core/index.ts",
-      "src/components/index.ts",
-      "src/firebase/index.ts",
-      "src/iconify/index.ts",
-      "src/leaflet/index.ts",
-      "src/mapbox/index.ts",
-      "src/nato/index.ts"
-    ],
-    "loader": {
-      ".jpg": "dataurl",
-      ".d.ts": "ts",
-      ".png": "dataurl"
-    },
-    "globalName": "Hsjm",
-    "format": ["esm", "cjs", "iife"],
-    "splitting": false,
-    "sourcemap": true,
-    "clean": true,
-    "dts": true
   },
   "dependencies": {
     "@iconify/iconify": "^2.2.0",
@@ -90,5 +72,27 @@
     "overrides": {
       "object-keys": "1.1.1"
     }
-  }
+  },
+  "tsup": [
+    {
+      "entry": [
+        "src/*/index.ts"
+      ],
+      "loader": {
+        ".css": "default",
+        ".jpg": "dataurl",
+        ".d.ts": "ts",
+        ".png": "dataurl"
+      },
+      "format": [
+        "esm",
+        "cjs",
+        "iife"
+      ],
+      "splitting": false,
+      "sourcemap": true,
+      "clean": true,
+      "dts": true
+    }
+  ]
 }

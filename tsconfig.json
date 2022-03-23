@@ -15,19 +15,9 @@
       "@types/eslint"
     ],
     "paths": {
-      "@hsjm/core": ["./packages/core/index.ts"],
-      "@hsjm/components": ["./packages/components/index.ts"],
-      "@hsjm/firebase": ["./packages/firebase/index.ts"],
-      "@hsjm/iconify": ["./packages/iconify/index.ts"],
-      "@hsjm/leaflet": ["./packages/leaflet/index.ts"],
-      "@hsjm/mapbox": ["./packages/mapbox/index.ts"],
-      "@hsjm/nato": ["./packages/nato/index.ts"]
+      "~/*": ["./src/*"]
     }
   },
-  "include": [
-    "./packages/**/*"
-  ],
-  "exclude": [
-    "dist"
-  ]
+  "include": [ "src" ],
+  "exclude": [ "node_modules", "dist" ]
 }

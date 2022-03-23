@@ -1,7 +1,7 @@
 import { ref, unref, watch } from 'vue-demi'
 import { MaybeRef, isClient, extendRef } from '@vueuse/shared'
 import { IconifyIconCustomisations } from '@iconify/iconify'
-import { resolvable } from '@hsjm/core'
+import { resolvable } from '~/core'
 import { fetchIcon } from './fetchIcons'
 
 /**
