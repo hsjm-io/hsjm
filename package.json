@@ -1,5 +1,5 @@
 {
-  "name": "@hsjm",
+  "name": "hsjm",
   "version": "2.0.0",
   "private": true,
   "description": "Opinionated collection of common components, composables and utils for Vue projects.",
@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsup --minify",
     "dev": "tsup --watch",
-    "lint": "eslint --fix"
+    "lint": "eslint --fix ."
   },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-rc.1",
@@ -93,5 +93,12 @@
       "object-keys": "1.1.1",
       "node-ipc": "9.1.1"
     }
+  },
+  "eslintConfig": {
+    "ignorePatterns": ["dist/", "node_modules/"],
+    "extends": [
+      "./src/eslint-config/basic.js",
+      "./src/eslint-config/typescript.js"
+    ]
   }
 }
