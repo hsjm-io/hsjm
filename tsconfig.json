@@ -19,6 +19,6 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": [ "src/**/*.(ts|js)" ],
+  "include": [ "src" ],
   "exclude": [ "node_modules", "dist" ]
 }
