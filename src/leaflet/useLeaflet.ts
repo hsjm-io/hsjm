@@ -1,12 +1,8 @@
 
 import { Ref, ref, unref, watch } from 'vue-demi'
-import { tryOnMounted } from '@vueuse/core'
+import { refDefault, tryOnMounted } from '@vueuse/core'
 import 'leaflet/dist/leaflet.css'
-import {
-  Map,
-  MapOptions,
-  Marker, map as createMap, tileLayer as createTileLayer,
-} from 'leaflet'
+import { Map, MapOptions, Marker, map as createMap, tileLayer as createTileLayer } from 'leaflet'
 
 export type TileLayerOptions = L.TileLayerOptions & { urlTemplate: string }
 
@@ -23,14 +19,14 @@ export const useLeaflet = (
   markers = [] as Ref<Marker[]> | Marker[],
 ) => {
   // --- Initialize variables.
-  const lat = ref(options.initialLat ?? 0)
-  const lng = ref(options.initialLng ?? 0)
-  const zoom = ref(options.initialZoom ?? 8)
-  const map = ref({} as Map)
-  let _markers = [] as Marker[]
+  const lat = refDefault(ref(options.initialLat), 0)
+  const lng = refDefault(ref(options.initialLng), 0)
+  const zoom = refDefault(ref(options.initialZoom), 8)
+  const map = refDefault(ref<Map>(), {} as Map)
+  let _markers: Marker[] = []
 
+  // --- Initialize map.
   tryOnMounted(() => {
-    // --- Initialize map.
     const _map = createMap(element, options)
       .setView([lat.value, lng.value], zoom.value)
 
