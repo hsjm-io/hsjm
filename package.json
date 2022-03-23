@@ -1,36 +1,42 @@
 {
-  "name": "pompaute",
-  "version": "1.1.3",
-  "description": "Collection of common components, composables and utils for Vue projects.",
+  "name": "@hsjm/monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Opinionated collection of common components, composables and utils for Vue projects.",
+  "license": "MIT",
   "author": "Stanley Horwood <stanley@hsjm.io>",
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "unpkg": "dist/index.min.js",
-  "jsdelivr": "dist/index.min.js",
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
-    },
-    "./*": "./src/*",
-    "./components/*": "./src/components/*",
-    "./composables/*": "./src/composables/*",
-    "./utils/*": "./src/utils/*"
-  },
   "scripts": {
-    "build": "rollup --config",
-    "dev": "rollup --config -w"
+    "build": "tsup --minify",
+    "dev": "tsup --watch",
+    "lint:package.json": "sort-package-json ./package.json ./packages/*/package.json"
+  },
+  "tsup": {
+    "entry": [
+      "packages/core/index.ts",
+      "packages/components/index.ts",
+      "packages/firebase/index.ts",
+      "packages/iconify/index.ts",
+      "packages/leaflet/index.ts",
+      "packages/mapbox/index.ts",
+      "packages/nato/index.ts"
+    ],
+    "globalName": "Hsjm",
+    "format": ["esm", "cjs"],
+    "splitting": false,
+    "sourcemap": true,
+    "metafile": true,
+    "clean": true,
+    "dts": true
   },
   "dependencies": {
     "@iconify/iconify": "^2.2.0",
-    "@iconify/utils": "^1.0.28",
+    "@iconify/utils": "^1.0.30",
     "@vueuse/components": "^8.1.2",
     "@vueuse/core": "^8.1.2",
     "@vueuse/shared": "^8.1.2",
     "axios": "^0.26.1",
     "firebase": "^9.6.9",
+    "leaflet": "^1.7.1",
     "lodash": "^4.17.21",
     "milsymbol": "^2.0.0",
     "vue-demi": "^0.12.4",
@@ -43,14 +49,25 @@
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
+    "@types/eslint": "^8.4.1",
+    "@types/leaflet": "^1.7.9",
     "@types/lodash": "^4.14.180",
     "@types/node": "^17.0.22",
+    "consola": "^2.15.3",
+    "esbuild": "^0.14.27",
+    "esbuild-register": "^3.3.2",
+    "eslint": "^8.11.0",
+    "esno": "^0.14.1",
+    "fast-glob": "^3.2.11",
     "rollup": "^2.70.1",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-dts": "^4.2.0",
+    "rollup-plugin-esbuild": "^4.8.2",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-terser": "^7.0.2",
+    "sort-package-json": "^1.55.0",
     "tslib": "^2.3.1",
+    "tsup": "^5.12.1",
     "typescript": "^4.6.2",
     "unplugin-vue-components": "^0.18.3",
     "vue": "^3.2.31"
@@ -64,17 +81,9 @@
       "optional": true
     }
   },
-  "keywords": [
-    "utils",
-    "vue",
-    "vue-use",
-    "vue-components",
-    "firebase",
-    "firestore"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/shorwood/pompaute.git"
-  },
-  "license": "MIT"
+  "pnpm": {
+    "overrides": {
+      "object-keys": "1.1.1"
+    }
+  }
 }

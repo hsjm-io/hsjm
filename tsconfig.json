@@ -1,19 +1,33 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Node 14",
+  "display": "Node 16",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Node",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "esModuleInterop": true,
     "strict": true,
     "types": [
       "@types/node",
-      "@types/lodash"
+      "@types/lodash",
+      "@types/leaflet",
+      "@types/eslint"
     ],
     "paths": {
-      "~/*": ["./src/*"]
+      "@hsjm/core": ["./packages/core/index.ts"],
+      "@hsjm/components": ["./packages/components/index.ts"],
+      "@hsjm/firebase": ["./packages/firebase/index.ts"],
+      "@hsjm/iconify": ["./packages/iconify/index.ts"],
+      "@hsjm/leaflet": ["./packages/leaflet/index.ts"],
+      "@hsjm/mapbox": ["./packages/mapbox/index.ts"],
+      "@hsjm/nato": ["./packages/nato/index.ts"]
     }
   },
-  "include": ["./src/*"]
+  "include": [
+    "./packages/**/*"
+  ],
+  "exclude": [
+    "dist"
+  ]
 }

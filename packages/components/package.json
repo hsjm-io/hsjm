@@ -1,0 +1,30 @@
+{
+  "name": "@hsjm/components",
+  "version": "1.0.0",
+  "description": "Renderless components for Vue",
+  "license": "MIT",
+  "author": "Stanley Horwood <stanley@hsjm.io>",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.cjs",
+      "types": "./index.d.ts"
+    },
+    "./*": "./*"
+  },
+  "main": "./index.cjs",
+  "jsdelivr": "./index.iife.min.js",
+  "unpkg": "./index.iife.min.js",
+  "module": "./index.mjs",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "@hsjm/core": "workspace:*",
+    "@hsjm/iconify": "workspace:*",
+    "@hsjm/leaflet": "workspace:*",
+    "@hsjm/mapbox": "workspace:*",
+    "@vueuse/core": "*",
+    "@vueuse/shared": "*",
+    "vue-demi": "*"
+  }
+}
