@@ -1,6 +1,6 @@
 import { PropType, defineComponent, h } from 'vue-demi'
 import { RouteLocationRaw } from 'vue-router'
-import { useHtmlAttributes } from '~/core'
+import { useButton } from '~/core'
 
 export const Button = defineComponent({
   name: 'Button',
@@ -21,7 +21,7 @@ export const Button = defineComponent({
   },
 
   setup: (properties, { slots }) => {
-    const { attributes, type } = useHtmlAttributes(properties)
+    const { attributes, type } = useButton(properties)
     return () => h(type as any, attributes, slots)
   },
 })

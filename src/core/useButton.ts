@@ -1,7 +1,7 @@
 import { useVModel } from '@vueuse/core'
 import { computed, reactive, resolveComponent, toRefs } from 'vue-demi'
 
-export interface UseHtmlAttributesOptions {
+export interface UseButtonOptions {
   as: keyof HTMLElementTagNameMap
   disabled?: boolean
   classDisabled?: string
@@ -14,7 +14,7 @@ export interface UseHtmlAttributesOptions {
   newtab?: boolean
 }
 
-export const useHtmlAttributes = (options = {} as UseHtmlAttributesOptions) => {
+export const useButton = (options = {} as UseButtonOptions) => {
   const { as = 'div' } = toRefs(options)
 
   // --- Compute states variables.
