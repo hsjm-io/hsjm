@@ -10,7 +10,7 @@ import { computed } from 'vue-demi'
  * ```
  * <script setup>
  * import { useCssModule } from 'vue'
- * import { usePropClasses } from 'pompaute'
+ * import { usePropClasses } from '@hsjm/core-vue'
  *
  * const props = defineProps<{
  *  size?: 'small' | 'large'
@@ -22,7 +22,7 @@ import { computed } from 'vue-demi'
  * </script>
  *
  * <template>
- * <div :class="classes"> ... </div>
+ *   <div :class="classes"> ... </div>
  * </template>
  *
  * <style module>
