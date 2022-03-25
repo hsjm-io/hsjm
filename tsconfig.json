@@ -16,9 +16,9 @@
       "@types/eslint"
     ],
     "paths": {
-      "~/*": ["./src/*"]
+      "@hsjm/*": ["./packages/*"]
     }
   },
-  "include": [ "src" ],
+  "include": [ "packages", "script" ],
   "exclude": [ "node_modules", "dist" ]
 }

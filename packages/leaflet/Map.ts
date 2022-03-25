@@ -1,6 +1,6 @@
 import L from 'leaflet'
 import { PropType, computed, defineComponent, h, render, watch } from 'vue-demi'
-import { TileLayerOptions, UseLeafletOptions, useLeaflet } from '~/leaflet'
+import { TileLayerOptions, UseLeafletOptions, useLeaflet } from './useLeaflet'
 
 export const Map = defineComponent({
   name: 'Map',

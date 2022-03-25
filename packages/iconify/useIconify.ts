@@ -2,8 +2,8 @@ import { ref, watch } from 'vue-demi'
 import { MaybeRef, extendRef, isClient } from '@vueuse/shared'
 import { IconifyIconCustomisations } from '@iconify/iconify'
 import { createUnrefFn } from '@vueuse/core'
+import { resolvable } from '@hsjm/core'
 import { fetchIcon } from './fetchIcons'
-import { resolvable } from '~/core'
 
 /**
  * Resolve the SVG for a given icon with `@iconify`.

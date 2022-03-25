@@ -1,0 +1,5 @@
+{
+  "name": "@hsjm/firebase",
+  "description": "Vue integration with Firebase.",
+  "sideEffects": false
+}

@@ -7,7 +7,7 @@ import {
   endBefore, getDoc, getDocs, getFirestore, limit, onSnapshot, orderBy,
   query, setDoc, startAfter, startAt, where, writeBatch,
 } from 'firebase/firestore'
-import { resolvable } from '~/core'
+import { resolvable } from '@hsjm/core'
 
 interface QueryFilter {
   $limit?: number

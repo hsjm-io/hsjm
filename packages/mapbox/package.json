@@ -1,0 +1,5 @@
+{
+  "name": "@hsjm/mapbox",
+  "description": "Vue integration with Mapbox.",
+  "sideEffects": false
+}

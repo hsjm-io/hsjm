@@ -1,0 +1,5 @@
+{
+  "name": "@hsjm/milsymbol",
+  "description": "Vue integration with Milsymbol.",
+  "sideEffects": false
+}

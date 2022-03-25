@@ -1,0 +1,5 @@
+{
+  "name": "@hsjm/components",
+  "description": "Renderless components for HSJM projects.",
+  "sideEffects": false
+}

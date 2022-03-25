@@ -1,0 +1,5 @@
+{
+  "name": "@hsjm/iconify",
+  "description": "Vue integration with Iconify.",
+  "sideEffects": false
+}

@@ -2,7 +2,7 @@ import { PropType, defineAsyncComponent, defineComponent, h, nextTick, onMounted
 import { SymbolOptions } from 'milsymbol'
 import { templateRef } from '@vueuse/core'
 
-export const Nato = defineAsyncComponent(async() => {
+export const MilSymbol = defineAsyncComponent(async() => {
   const MilSymbol = await import('milsymbol')
 
   return defineComponent({

@@ -1,6 +1,6 @@
 import { PropType, defineComponent, h } from 'vue-demi'
 import { RouteLocationRaw } from 'vue-router'
-import { useButton } from '~/core'
+import { useButton } from '@hsjm/core'
 
 export const Button = defineComponent({
   name: 'Button',

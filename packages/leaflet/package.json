@@ -1,0 +1,5 @@
+{
+  "name": "@hsjm/leaflet",
+  "description": "Vue integration with Leaflet.",
+  "sideEffects": false
+}
