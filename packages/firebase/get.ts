@@ -10,6 +10,8 @@ export interface GetOptions {
   onError?: (error: FirestoreError) => void
   /** Sync the data using `onSnapshot` method. */
   onSnapshot?: boolean
+  /** Prevent `onSnapshot` unsubscription and cache deletion on scope dispose. */
+  keepAlive?: boolean
 }
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
@@ -67,10 +69,12 @@ export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | Query
     }
 
     // --- Unsubscribe and clear cache on scope dispose.
-    tryOnScopeDispose(() => {
-      if (unsubscribe) unsubscribe()
-      if (_cache[cacheId]) delete _cache[cacheId]
-    })
+    if (options.keepAlive) {
+      tryOnScopeDispose(() => {
+        if (unsubscribe) unsubscribe()
+        if (_cache[cacheId]) delete _cache[cacheId]
+      })
+    }
   }
 
   // --- Update wraps `getDoc(s)`.
