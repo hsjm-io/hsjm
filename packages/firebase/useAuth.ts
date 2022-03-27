@@ -1,40 +1,39 @@
 import {
-  ActionCodeSettings, AuthError, ConfirmationResult, UserCredential, createUserWithEmailAndPassword,
-  getAuth, onAuthStateChanged, sendEmailVerification, signInAnonymously, signInWithEmailAndPassword,
-  signInWithPhoneNumber, signOut,
+  ActionCodeSettings, AuthError, ConfirmationResult, User, UserCredential,
+  createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, signInAnonymously,
+  signInWithEmailAndPassword, signInWithPhoneNumber, signOut,
 } from 'firebase/auth'
-import { createGlobalState, createSharedComposable, createUnrefFn, useStorage } from '@vueuse/core'
-import { computed, reactive, ref } from 'vue-demi'
+import { createSharedComposable, createUnrefFn, useStorage } from '@vueuse/core'
+import { computed, ref } from 'vue-demi'
+import { DocumentData } from 'firebase/firestore'
 import { useFirebase } from './useFirebase'
 
-export const useUser = createSharedComposable(() => {
-  const user = useStorage('user', getAuth().currentUser)
-  onAuthStateChanged(getAuth(), _user => user.value = _user)
-  return reactive(user)
-})
-
-interface UseAuthOptions extends ActionCodeSettings {
+export interface UseAuthOptions extends ActionCodeSettings {
   onSuccess: (userCredential: UserCredential) => void
   onError: (error: Error) => void
   sendEmailVerification: boolean
-  useLocalStorage: boolean
+  useStorage: boolean
 }
 
-export const useAuth = createGlobalState((options = {} as UseAuthOptions) => {
+export const useAuth = createSharedComposable(<T extends DocumentData>(options = {} as UseAuthOptions) => {
+  // --- Initialize variables.
   const error = ref<AuthError>()
   const confirmationResult = ref<ConfirmationResult>()
   const appVerifier = useFirebase().recaptchaVerifier
 
-  const currentUser = getAuth().currentUser
-  const user = options.useLocalStorage ? useStorage('user', currentUser) : ref(currentUser)
-  onAuthStateChanged(getAuth(), _user => user.value = _user)
-  const isLoggedIn = computed(() => user.value?.uid)
-  const isEmailVerified = computed(() => user.value?.emailVerified)
-
+  // --- Extend `onError` hook.
   const _onError = (_error: AuthError) => {
     error.value = _error
     options.onError(_error)
   }
+
+  // --- Restore user.
+  const userRestored = getAuth().currentUser ?? {} as User
+  const user = options.useStorage ? useStorage('user', userRestored) : ref(userRestored)
+  const userId = computed(() => user.value?.uid)
+
+  // --- Handles user data lifecycle.
+  onAuthStateChanged(getAuth(), async _user => user.value = _user)
 
   const loginAnonymously = async() => await signInAnonymously(getAuth())
     .then(options.onSuccess)
@@ -69,9 +68,8 @@ export const useAuth = createGlobalState((options = {} as UseAuthOptions) => {
 
   return {
     error,
-    user: reactive(user),
-    isLoggedIn,
-    isEmailVerified,
+    user,
+    userId,
     loginAnonymously,
     loginWithEmail: createUnrefFn(loginWithEmail),
     loginWithPhone: createUnrefFn(loginWithPhone),
