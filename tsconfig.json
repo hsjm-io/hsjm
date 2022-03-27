@@ -7,17 +7,26 @@
     "moduleResolution": "Node",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "esModuleInterop": true,
-    "allowJs": true,
     "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "declaration": true,
+    "declarationDir": "./types",
+    "resolveJsonModule": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "paths": {
+      "@hsjm/*": ["./packages/*"]
+    },
     "types": [
       "@types/node",
       "@types/lodash",
       "@types/leaflet",
       "@types/eslint"
-    ],
-    "paths": {
-      "@hsjm/*": ["./packages/*"]
-    }
+    ]
   },
   "include": [ "packages", "script" ],
   "exclude": [ "node_modules", "dist" ]
