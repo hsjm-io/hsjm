@@ -6,6 +6,7 @@ import { GetOptions, RefFirebase, get } from './get'
 import { erase } from './erase'
 import { save } from './save'
 import { QueryFilter } from './createQuery'
+
 /**
  * Create an instance of methods to manipulate data from Firestore.
  * @param path Path to collection.
@@ -18,8 +19,8 @@ export const useFirestore = <T extends DocumentData>(path: MaybeRef<string>) => 
    * @param options Custom parameters of the method.
    */
   get: partial(get, path) as {
-    <_T extends T>(filter: MaybeRef<string>, initialValue?: MaybeRef<_T>, options?: GetOptions): RefFirebase<_T>
-    <_T extends T>(filter: MaybeRef<QueryFilter>, initialValue?: MaybeRef<_T[]>, options?: GetOptions): RefFirebase<_T[]>
+    (filter: MaybeRef<string>, initialValue?: MaybeRef<T>, options?: GetOptions): RefFirebase<T>
+    (filter: MaybeRef<QueryFilter>, initialValue?: MaybeRef<T[]>, options?: GetOptions): RefFirebase<T[]>
   },
   /**
    * Save document(s) to collection.
