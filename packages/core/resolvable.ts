@@ -5,34 +5,32 @@ import { ref } from 'vue-demi'
  */
 export const resolvable = <T1 extends void>() => {
   // --- Initialize variables.
-  let _resolve: (value?: T1) => void
-  let _reject: (reason?: any) => void
-  let promise = new Promise<T1>((resolve, reject) => { _resolve = resolve as any; _reject = reject })
+  let resolve: (value: T1 | PromiseLike<T1>) => void
+  let reject: (reason?: any) => void
+  let promise = new Promise<T1>((_resolve, _reject) => { resolve = _resolve; reject = _reject })
   const resolved = ref(false)
   const pending = ref(true)
 
   // --- Extend `resolve` callback.
-  const resolve = (value: T1) => {
-    _resolve(value)
+  promise.then(() => {
     resolved.value = true
     pending.value = false
-  }
+  })
 
   // --- Extend `reject` callback.
-  const reject = (reason?: any) => {
-    _reject(reason)
+  promise.catch(() => {
     resolved.value = false
     pending.value = false
-  }
+  })
 
   // --- Init promise.
   const reset = () => {
     resolved.value = false
     pending.value = true
-    promise = new Promise<T1>((resolve, reject) => { _resolve = resolve as any; _reject = reject })
+    promise = new Promise<T1>((_resolve, _reject) => { resolve = _resolve; reject = _reject })
   }
-  reset()
 
   // --- Return variable.
+  // @ts-expect-error: `resolve` and `reject` are defined almost instantly.
   return { resolve, reject, promise, resolved, pending, reset }
 }
