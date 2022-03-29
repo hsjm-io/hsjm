@@ -9,8 +9,8 @@ import { computed } from 'vue-demi'
  * @example
  * ```
  * <script setup>
- * import { useCssModule } from 'vue'
- * import { usePropClasses } from '@hsjm/core-vue'
+ * import { useCssModule } from 'vue-demi'
+ * import { usePropertiesClasses } from '@hsjm/core'
  *
  * const props = defineProps<{
  *  size?: 'small' | 'large'
@@ -18,7 +18,7 @@ import { computed } from 'vue-demi'
  * }>()
  *
  * const $style = useCssModule()
- * const classes = usePropClasses(props, $style)
+ * const classes = usePropertiesClasses(props, $style)
  * </script>
  *
  * <template>
