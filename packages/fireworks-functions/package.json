@@ -1,0 +1,9 @@
+{
+  "name": "@hsjm/fireworks-functions",
+  "description": "Set of extended utilities for Firebase Functions.",
+  "sideEffects": false,
+  "dependencies": {
+    "@firebase/app-compat": "^0.1.21",
+    "@firebase/app-types": "^0.7.0"
+  }
+}
