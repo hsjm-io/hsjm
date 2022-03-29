@@ -1,10 +1,10 @@
+/* eslint-disable unicorn/no-null */
 import { useVModel } from '@vueuse/core'
-import { computed, reactive, resolveComponent, toRefs } from 'vue-demi'
+import { computed, reactive, resolveComponent } from 'vue-demi'
 
 export interface UseButtonOptions {
   as: keyof HTMLElementTagNameMap
   disabled?: boolean
-  classDisabled?: string
   readonly?: boolean
   loading?: boolean
   to?: string | Record<string, any>
@@ -15,8 +15,6 @@ export interface UseButtonOptions {
 }
 
 export const useButton = (options = {} as UseButtonOptions) => {
-  const { as = 'div' } = toRefs(options)
-
   // --- Compute states variables.
   const disabledState = useVModel(options, 'disabled', undefined, { passive: true })
   const readonlyState = useVModel(options, 'readonly', undefined, { passive: true })
@@ -30,19 +28,19 @@ export const useButton = (options = {} as UseButtonOptions) => {
   // --- Compute component type.
   const type = computed(() => {
     if (isLink.value) return isInternalLink.value ? resolveComponent('RouterLink') : 'a'
-    return as
+    return options.as
   })
 
   // --- Compute element attributes.
   const attributes = reactive({
 
     // --- State.
-    'disabled': computed(() => disabledState.value),
-    'readonly': computed(() => readonlyState.value),
-    'loading': computed(() => loadingState.value),
-    'aria-disabled': computed(() => disabledState.value),
-    'aria-readonly': computed(() => readonlyState.value),
-    'aria-busy': computed(() => loadingState.value),
+    'disabled': computed(() => disabledState.value || null),
+    'readonly': computed(() => readonlyState.value || null),
+    'loading': computed(() => loadingState.value || null),
+    'aria-disabled': computed(() => disabledState.value || null),
+    'aria-readonly': computed(() => readonlyState.value || null),
+    'aria-busy': computed(() => loadingState.value || null),
 
     // --- Routing.
     ...(isLink.value
