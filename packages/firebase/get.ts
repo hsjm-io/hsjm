@@ -15,7 +15,7 @@ export interface GetOptions {
 }
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
-export interface RefFirebase<T extends DocumentData | DocumentData[]> extends Ref<T> {
+export interface RefFirestore<T extends DocumentData | DocumentData[]> extends Ref<T> {
   ready: Promise<void>
   loading: boolean
   update: () => void
@@ -26,9 +26,9 @@ export const _cache: Record<string, any> = {}
 
 // --- Overloads.
 interface Get {
-  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string>, initialValue?: MaybeRef<T>, optidons?: GetOptions): RefFirebase<T>
-  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<QueryFilter>, initialValue?: MaybeRef<T[]>, options?: GetOptions): RefFirebase<T[]>
-  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string | QueryFilter>, initialValue?: MaybeRef<T | T[]>, options?: GetOptions): RefFirebase<T | T[]>
+  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string>, initialValue?: MaybeRef<T>, optidons?: GetOptions): RefFirestore<T>
+  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<QueryFilter>, initialValue?: MaybeRef<T[]>, options?: GetOptions): RefFirestore<T[]>
+  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string | QueryFilter>, initialValue?: MaybeRef<T | T[]>, options?: GetOptions): RefFirestore<T | T[]>
 }
 
 /**
