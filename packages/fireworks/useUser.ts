@@ -1,26 +1,25 @@
-import { createSharedFirestore, useAuth } from '@hsjm/firebase'
-import { createSharedComposable } from '@vueuse/shared'
+import { GetOptions, createSharedFirestore, useAuth } from '@hsjm/firebase'
 
 export interface User {
-  id: string
+  id?: string
   /** Username */
-  username: string
+  username?: string
   /** Contact email. */
-  contactEmail: string
+  contactEmail?: string
   /** Contact phone. */
-  contactPhone: string
+  contactPhone?: string
   /** Array of social links. */
-  contactSocials: string[]
+  contactSocials?: string[]
   /** Avatar URL. */
-  avatar: string
+  avatar?: string
   /** Full name. */
-  fullName: string
+  fullName?: string
   /** First name. */
-  firstName: string
+  firstName?: string
   /** Last name. */
-  lastName: string
+  lastName?: string
   /** Last name */
-  permissions: string[]
+  permissions?: string[]
 }
 
 export interface Permissions {
@@ -31,4 +30,8 @@ export const useUsers = createSharedFirestore<User>('users')
 export const usePermissions = createSharedFirestore<Permissions>('permissions')
 
 /** Current user `Ref`. */
-export const useUser = createSharedComposable(() => useUsers().get(useAuth().userId, {} as User, { keepAlive: true, onSnapshot: true }))
+export const useUser = (options?: GetOptions) => {
+  const { userId } = useAuth()
+  const { get } = useUsers()
+  return get(userId, { id: userId.value }, options)
+}

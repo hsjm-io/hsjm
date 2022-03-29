@@ -34,7 +34,7 @@ export const useAuth = createSharedComposable((options?: UseAuthOptions) => {
 
   // --- Restore user.
   const user = ref(getAuth().currentUser)
-  const userId = computed(() => user.value?.uid)
+  const userId = computed(() => user.value?.uid ?? '')
 
   // --- Handles user data lifecycle.
   onAuthStateChanged(getAuth(), async _user => user.value = _user)
