@@ -1,9 +1,9 @@
 import {
-  ActionCodeSettings, AuthError, ConfirmationResult, User, UserCredential,
+  ActionCodeSettings, AuthError, ConfirmationResult, UserCredential,
   createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, signInAnonymously,
   signInWithEmailAndPassword, signInWithPhoneNumber, signOut,
 } from 'firebase/auth'
-import { createSharedComposable, createUnrefFn, useStorage } from '@vueuse/core'
+import { createSharedComposable, createUnrefFn } from '@vueuse/core'
 import { computed, ref } from 'vue-demi'
 import { useRecaptcha } from './useRecaptcha'
 
@@ -24,7 +24,6 @@ export const useAuth = createSharedComposable((options?: UseAuthOptions) => {
     onError,
     onSuccess,
     useEmailVerification,
-    useLocalStorage,
   } = options ?? {}
 
   // --- Extend `onError` hook.
@@ -34,8 +33,7 @@ export const useAuth = createSharedComposable((options?: UseAuthOptions) => {
   }
 
   // --- Restore user.
-  const userRestored = getAuth().currentUser ?? {} as User
-  const user = useLocalStorage ? useStorage('user', userRestored) : ref(userRestored)
+  const user = ref(getAuth().currentUser)
   const userId = computed(() => user.value?.uid)
 
   // --- Handles user data lifecycle.
