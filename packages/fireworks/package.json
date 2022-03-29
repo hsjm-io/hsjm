@@ -1,0 +1,5 @@
+{
+  "name": "@hsjm/fireworks",
+  "description": "Extended & opinionated Vue integration with Firebase.",
+  "sideEffects": false
+}
