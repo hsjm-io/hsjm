@@ -8,24 +8,13 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "esModuleInterop": true,
     "strict": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "declaration": true,
-    "declarationDir": "./types",
     "resolveJsonModule": true,
-    "rootDir": ".",
-    "baseUrl": ".",
-    "jsx": "preserve",
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
     "paths": {
       "@hsjm/*": ["./packages/*"]
     },
     "types": [
       "@types/node",
-      "@types/lodash",
-      "@types/leaflet",
-      "@types/eslint"
+      "@types/leaflet"
     ]
   },
   "include": [ "packages", "script" ],
