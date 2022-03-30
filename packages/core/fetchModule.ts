@@ -77,7 +77,7 @@ export const fetchModuleDeepManifest = async(url: string, options?: FetchOptions
     .filter(x => x.code !== '404: Not Found')
 }
 
-export const fetchModule = async<T>(url: string, options?: FetchOptions & TransformOptions & ImportCallOptions) => {
+export const fetchModule = async<T>(url: string, options?: FetchOptions & TransformOptions) => {
   // --- Generated ID from hash.
   const id = hash(url, 'cybr53')
   const pathRoot = join(tmpdir(), id)
@@ -106,7 +106,7 @@ export const fetchModule = async<T>(url: string, options?: FetchOptions & Transf
     writeFileSync(pathIndex, code)
   }
 
-  module = await import(pathIndex, { assert: options?.assert })
+  module = await import(pathIndex)
     .catch(console.error)
     .finally(() => rmSync(pathRoot, { recursive: true }))
 
