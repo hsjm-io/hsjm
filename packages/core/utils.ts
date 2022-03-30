@@ -11,7 +11,8 @@ export const isNotNil = <T>(value: T): value is Exclude<T, undefined | null> =>
   value !== null && value !== undefined
 
 export const compact = <T>(array: T[]) =>
-  array.filter(isNotNil)
+  uniq(array.filter(isNotNil))
 
-export const compactUniq = <T>(array: T[]) =>
-  uniq(compact(array))
+export const noop = () => {}
+
+export const noopAsync = async() => {}
