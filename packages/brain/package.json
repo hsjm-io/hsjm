@@ -3,8 +3,10 @@
   "description": "Set of models ready to be executed with brain.js.",
   "sideEffects": false,
   "scripts": {
-    "test:colorPalette": "esno ./test/testColorPalette.ts",
     "build:models": "pnpm build:models:colorPalette",
-    "build:models:colorPalette": "esno ./scripts/trainColorPalette.ts"
+    "build:models:colorPalette": "esno ./colorPalette/train.ts"
+  },
+  "devDependencies": {
+    "esbuild": "^0.14.29"
   }
 }

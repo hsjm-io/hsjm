@@ -32,7 +32,7 @@ const { error } = neuralNetwork.train(data, {
 // --- Save model to `.json` file.
 const model = JSON.stringify(neuralNetwork.toJSON(), undefined, 2)
 const root = resolve(__dirname, '../../..')
-const outPath = resolve(__dirname, '../models/colorPalette.json')
+const outPath = resolve(__dirname, 'model.json')
 const outPathRelative = relative(root, outPath)
 writeFileSync(outPath, model)
 consola.success(`Trained and saved NN model to "${outPathRelative}" (error: ${error.toFixed(4)})`)
