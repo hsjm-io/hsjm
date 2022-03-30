@@ -106,7 +106,7 @@ export const fetchModule = async<T>(url: string, options?: FetchOptions & Transf
     writeFileSync(pathIndex, code)
   }
 
-  module = await import(pathIndex, options)
+  module = await import(pathIndex, { assert: options?.assert })
     .catch(console.error)
     .finally(() => rmSync(pathRoot, { recursive: true }))
 
