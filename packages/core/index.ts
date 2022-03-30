@@ -1,5 +1,7 @@
 export * from './color'
 export * from './convertToUnit'
+export * from './fetch'
+export * from './fetchModule'
 export * from './hash'
 export * from './loadify'
 export * from './resolvable'
