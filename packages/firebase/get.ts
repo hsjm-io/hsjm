@@ -1,9 +1,11 @@
 import { Ref, isRef, ref, unref, watch } from 'vue-demi'
 import { MaybeRef, extendRef, isClient, reactify, tryOnScopeDispose } from '@vueuse/core'
 import { DocumentData, FirestoreError, Unsubscribe, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
-import { resolvable } from '@hsjm/core'
+import { noop, resolvable } from '@hsjm/core'
 import { QueryFilter, createQuery } from './createQuery'
 import { isDocumentReference, unpeelSnapshot } from './utils'
+import { save } from './save'
+import { erase } from './erase'
 
 export interface GetOptions {
   /** Error handler. */
@@ -12,13 +14,17 @@ export interface GetOptions {
   onSnapshot?: boolean
   /** Prevent `onSnapshot` unsubscription and cache deletion on scope dispose. */
   keepAlive?: boolean
+  /** Debug. */
+  debug?: boolean
 }
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
 export interface RefFirestore<T extends DocumentData | DocumentData[]> extends Ref<T> {
   ready: Promise<void>
   loading: boolean
-  update: () => void
+  refresh: () => void
+  save: () => Promise<void>
+  erase: () => Promise<void>
 }
 
 // --- Cache register.
@@ -26,7 +32,7 @@ export const _cache: Record<string, any> = {}
 
 // --- Overloads.
 interface Get {
-  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string>, initialValue?: MaybeRef<T>, optidons?: GetOptions): RefFirestore<T>
+  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string>, initialValue?: MaybeRef<T>, options?: GetOptions): RefFirestore<T>
   <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<QueryFilter>, initialValue?: MaybeRef<T[]>, options?: GetOptions): RefFirestore<T[]>
   <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string | QueryFilter>, initialValue?: MaybeRef<T | T[]>, options?: GetOptions): RefFirestore<T | T[]>
 }
@@ -40,8 +46,12 @@ interface Get {
  */
 export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | QueryFilter>, initialValue?: MaybeRef<DocumentData | DocumentData[]>, options = {} as GetOptions) => {
   // --- Caching.
-  const cacheId = `${!!options.onSnapshot}:${path}:${JSON.stringify(filter)}`
-  if (cacheId in _cache) return _cache[cacheId]
+  const cacheId = `${!!options.onSnapshot}:${path}:${JSON.stringify(unref(filter))}`
+  if (cacheId in _cache) {
+    // eslint-disable-next-line no-console
+    if (options.debug) console.log(`deleted cache entry ${cacheId}`)
+    return _cache[cacheId]
+  }
 
   // --- Init local variables.
   let update: () => void
@@ -73,6 +83,8 @@ export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | Query
       tryOnScopeDispose(() => {
         if (unsubscribe) unsubscribe()
         if (_cache[cacheId]) delete _cache[cacheId]
+        // eslint-disable-next-line no-console
+        if (options.debug) console.log(`deleted cache entry ${cacheId}`)
       })
     }
   }
@@ -97,6 +109,11 @@ export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | Query
   watch(query, update, { immediate: true })
 
   // --- Return readonly data ref.
-  extendRef(data, { ready: promise, loading: pending, update })
-  return (_cache[cacheId] = data)
+  return (_cache[cacheId] = extendRef(data, {
+    ready: promise,
+    loading: pending,
+    refresh: update,
+    save: typeof unref(filter) === 'string' ? () => save(unref(path), data) : noop,
+    erase: typeof unref(filter) === 'string' ? () => erase(unref(path), data) : noop,
+  }))
 }
