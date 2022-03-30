@@ -33,7 +33,11 @@ export const createQuery: CreateQuery = (path: string, filter: string | QueryFil
   const colReference = collection(getFirestore(), path)
 
   // --- Return a single document's reference.
-  if (typeof filter === 'string') return doc(colReference, filter)
+  if (typeof filter === 'string') {
+    return filter
+      ? doc(colReference, filter)
+      : doc(colReference)
+  }
 
   // --- Generate constraints from object.
   Object.entries(filter).forEach(([key, value]) => {
