@@ -2,7 +2,7 @@ import { ref, watch } from 'vue-demi'
 import { MaybeRef, extendRef, isClient } from '@vueuse/shared'
 import { IconifyIconCustomisations } from '@iconify/iconify'
 import { createUnrefFn } from '@vueuse/core'
-import { resolvable } from '@hsjm/shared'
+import { isDevelopment, resolvable } from '@hsjm/shared'
 import { fetchIcon } from './fetchIcons'
 
 /**
@@ -26,8 +26,8 @@ export const useIconify = (icon: MaybeRef<string>, options = {} as MaybeRef<Icon
   // --- Update on server init & prop changes.
   watch(() => [icon, options], update)
 
-  // @ts-expect-error --- Update on init if not SSR.
-  if (!isClient || import.meta.env.DEV) update()
+  // --- Update on init if not SSR.
+  if (!isClient || isDevelopment) update()
 
   // --- Return SVG.
   return extendRef(svg, { ready: promise })

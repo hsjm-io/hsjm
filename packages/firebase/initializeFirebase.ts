@@ -7,6 +7,7 @@ import { connectDatabaseEmulator, getDatabase } from 'firebase/database'
 import { connectStorageEmulator, getStorage } from 'firebase/storage'
 import { connectAuthEmulator, getAuth } from 'firebase/auth'
 import { createSharedComposable } from '@vueuse/shared'
+import { isDevelopment } from '@hsjm/shared'
 
 interface UseFirebaseOptions extends FirebaseOptions {
   /** Key used to create a `ReCaptchaV3Provider` instance. */
@@ -40,8 +41,7 @@ export const initializeFirebase = createSharedComposable((options?: UseFirebaseO
   const app = initializeApp(options)
 
   // --- If available and in devmode, connect to emulator instances.
-  // @ts-expect-error: Types not available.
-  if (import.meta.env.DEV) {
+  if (isDevelopment) {
     const { emulatorAuthPort, emulatorFunctionsPort, emulatorFirestorePort, emulatorStoragePort, emulatorDatabasePort } = options
     if (emulatorAuthPort) connectAuthEmulator(getAuth(app), `http://localhost:${emulatorAuthPort}`)
     if (emulatorStoragePort) connectStorageEmulator(getStorage(app), 'localhost', emulatorStoragePort)
