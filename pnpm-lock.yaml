@@ -1,8 +1,5 @@
 lockfileVersion: 5.3
 
-overrides:
-  object-keys: 1.1.1
-
 importers:
 
   .:
@@ -31,12 +28,12 @@ importers:
       tsup: 5.12.4_typescript@4.6.3
       typescript: 4.6.3
 
-  dist/brain:
+  packages/brain:
     specifiers:
-      '@hsjm/shared': 1.0.0
-      brain.js: 2.0.0-beta.11
+      '@hsjm/shared': workspace:*
+      brain.js: ^2.0.0-beta.11
       consola: ^2.15.3
-      gpu.js: 2.15.2
+      gpu.js: ^2.15.2
     dependencies:
       '@hsjm/shared': link:../shared
       brain.js: 2.0.0-beta.11_gpu.js@2.15.2
@@ -44,9 +41,9 @@ importers:
     devDependencies:
       consola: 2.15.3
 
-  dist/components:
+  packages/components:
     specifiers:
-      '@hsjm/core': 1.0.0
+      '@hsjm/core': workspace:*
       vue: ^3.2.31
       vue-demi: '*'
       vue-router: ^4.0.14
@@ -57,54 +54,54 @@ importers:
       vue: 3.2.31
       vue-router: 4.0.14_vue@3.2.31
 
-  dist/core:
+  packages/core:
     specifiers:
-      '@vueuse/core': 8.2.3
-      '@vueuse/shared': 8.2.3
+      '@vueuse/core': ^8.2.3
+      '@vueuse/shared': ^8.2.3
       vue: ^3.2.31
       vue-demi: '*'
     dependencies:
-      '@vueuse/core': 8.2.3_vue@3.2.31
-      '@vueuse/shared': 8.2.3_vue@3.2.31
+      '@vueuse/core': 8.2.4_vue@3.2.31
+      '@vueuse/shared': 8.2.4_vue@3.2.31
       vue-demi: 0.12.5_vue@3.2.31
     devDependencies:
       vue: 3.2.31
 
-  dist/firebase:
+  packages/firebase:
     specifiers:
-      '@hsjm/shared': 1.0.0
-      '@vueuse/core': 8.2.3
-      '@vueuse/shared': 8.2.3
-      firebase: 9.6.10
+      '@hsjm/shared': workspace:*
+      '@vueuse/core': ^8.2.3
+      '@vueuse/shared': ^8.2.3
+      firebase: ^9.6.10
       vue: ^3.2.31
       vue-demi: '*'
     dependencies:
       '@hsjm/shared': link:../shared
-      '@vueuse/core': 8.2.3_vue@3.2.31
-      '@vueuse/shared': 8.2.3_vue@3.2.31
+      '@vueuse/core': 8.2.4_vue@3.2.31
+      '@vueuse/shared': 8.2.4_vue@3.2.31
       firebase: 9.6.10
       vue-demi: 0.12.5_vue@3.2.31
     devDependencies:
       vue: 3.2.31
 
-  dist/fireworks:
+  packages/fireworks:
     specifiers:
-      '@hsjm/firebase': 1.0.0
-      '@vueuse/shared': 8.2.1
+      '@hsjm/firebase': workspace:*
+      '@vueuse/shared': ^8.2.1
       vue: ^3.2.31
       vue-demi: '*'
     dependencies:
       '@hsjm/firebase': link:../firebase
-      '@vueuse/shared': 8.2.1_vue@3.2.31
+      '@vueuse/shared': 8.2.4_vue@3.2.31
       vue-demi: 0.12.5_vue@3.2.31
     devDependencies:
       vue: 3.2.31
 
-  dist/fireworks-functions:
+  packages/fireworks-functions:
     specifiers:
       '@firebase/app-compat': ^0.1.21
       '@firebase/app-types': ^0.7.0
-      '@hsjm/shared': 1.0.0
+      '@hsjm/shared': workspace:*
       firebase-admin: ^10.0.2
       firebase-functions: ^3.19.0
     dependencies:
@@ -115,73 +112,73 @@ importers:
       firebase-admin: 10.0.2_b2c59dabb74e592c496f4266c968bb15
       firebase-functions: 3.19.0_firebase-admin@10.0.2
 
-  dist/iconify:
+  packages/iconify:
     specifiers:
-      '@hsjm/shared': 1.0.0
-      '@iconify/iconify': 2.2.1
-      '@iconify/utils': 1.0.32
-      '@vueuse/core': 8.2.3
-      '@vueuse/shared': 8.2.3
+      '@hsjm/shared': workspace:*
+      '@iconify/iconify': ^2.2.1
+      '@iconify/utils': ^1.0.32
+      '@vueuse/core': ^8.2.3
+      '@vueuse/shared': ^8.2.3
       vue: ^3.2.31
       vue-demi: '*'
     dependencies:
       '@hsjm/shared': link:../shared
       '@iconify/iconify': 2.2.1
       '@iconify/utils': 1.0.32
-      '@vueuse/core': 8.2.3_vue@3.2.31
-      '@vueuse/shared': 8.2.3_vue@3.2.31
+      '@vueuse/core': 8.2.4_vue@3.2.31
+      '@vueuse/shared': 8.2.4_vue@3.2.31
       vue-demi: 0.12.5_vue@3.2.31
     devDependencies:
       vue: 3.2.31
 
-  dist/leaflet:
+  packages/leaflet:
     specifiers:
       '@types/leaflet': ^1.7.9
-      '@vueuse/shared': 8.2.1
-      leaflet: 1.7.1
+      '@vueuse/shared': ^8.2.1
+      leaflet: ^1.7.1
       vue: ^3.2.31
       vue-demi: '*'
     dependencies:
-      '@vueuse/shared': 8.2.1_vue@3.2.31
+      '@vueuse/shared': 8.2.4_vue@3.2.31
       leaflet: 1.7.1
       vue-demi: 0.12.5_vue@3.2.31
     devDependencies:
       '@types/leaflet': 1.7.9
       vue: 3.2.31
 
-  dist/mapbox:
+  packages/mapbox:
     specifiers:
-      '@mapbox/mapbox-sdk': 0.13.3
-      '@types/mapbox__mapbox-sdk': 0.13.2
-      '@vueuse/core': 8.2.3
-      '@vueuse/shared': 8.2.3
+      '@mapbox/mapbox-sdk': ^0.13.3
+      '@types/mapbox__mapbox-sdk': ^0.13.2
+      '@vueuse/core': ^8.2.3
+      '@vueuse/shared': ^8.2.3
       vue: ^3.2.31
       vue-demi: '*'
     dependencies:
       '@mapbox/mapbox-sdk': 0.13.3
       '@types/mapbox__mapbox-sdk': 0.13.2
-      '@vueuse/core': 8.2.3_vue@3.2.31
-      '@vueuse/shared': 8.2.3_vue@3.2.31
+      '@vueuse/core': 8.2.4_vue@3.2.31
+      '@vueuse/shared': 8.2.4_vue@3.2.31
       vue-demi: 0.12.5_vue@3.2.31
     devDependencies:
       vue: 3.2.31
 
-  dist/milsymbol:
+  packages/milsymbol:
     specifiers:
-      '@vueuse/core': 8.2.3
-      '@vueuse/shared': 8.2.1
-      milsymbol: 2.0.0
+      '@vueuse/core': ^8.2.3
+      '@vueuse/shared': ^8.2.1
+      milsymbol: ^2.0.0
       vue: ^3.2.31
       vue-demi: '*'
     dependencies:
-      '@vueuse/core': 8.2.3_vue@3.2.31
-      '@vueuse/shared': 8.2.1_vue@3.2.31
+      '@vueuse/core': 8.2.4_vue@3.2.31
+      '@vueuse/shared': 8.2.4_vue@3.2.31
       milsymbol: 2.0.0
       vue-demi: 0.12.5_vue@3.2.31
     devDependencies:
       vue: 3.2.31
 
-  dist/shared:
+  packages/shared:
     specifiers: {}
 
 packages:
@@ -1333,8 +1330,8 @@ packages:
     resolution: {integrity: sha512-ymN2pj6zEjiKJZbrf98UM2pfDd6F2H7ksKw7NDt/ZZ1fh5Ei39X5tABugtT03ZRlWd9imccoK0hE8hpjpU7irQ==}
     dev: true
 
-  /@vueuse/core/8.2.3_vue@3.2.31:
-    resolution: {integrity: sha512-bz6XroFRFOIGzhAHcnTfjtAQNkNcSELKPoSSUGROwYfOgTnaVyq7iKhgwdeRNom3y9q+a60RlhD35oJaGsXDHA==}
+  /@vueuse/core/8.2.4_vue@3.2.31:
+    resolution: {integrity: sha512-K8DbVLErlHMnEOqy67BrRbDmWCd4Z9X0a1dL6fQdhABLXBydy69Tm7uF5ZUotAqib9sskItYFsAnLhvGSue6bg==}
     peerDependencies:
       '@vue/composition-api': ^1.1.0
       vue: ^2.6.0 || ^3.2.0
@@ -1344,33 +1341,18 @@ packages:
       vue:
         optional: true
     dependencies:
-      '@vueuse/metadata': 8.2.3
-      '@vueuse/shared': 8.2.3_vue@3.2.31
+      '@vueuse/metadata': 8.2.4
+      '@vueuse/shared': 8.2.4_vue@3.2.31
       vue: 3.2.31
       vue-demi: 0.12.5_vue@3.2.31
     dev: false
 
-  /@vueuse/metadata/8.2.3:
-    resolution: {integrity: sha512-xH5256Bn6hBYvQWoaCBagpeCrzJmeEeWnyDDkwVFhx7+pLOe4I6gsMHie3yJoowK9AN/D7JLTtEBbWvvBi5TOA==}
+  /@vueuse/metadata/8.2.4:
+    resolution: {integrity: sha512-mn4FLULZAHd6r6vo5hLz+99xzwlVDP9qeVtZGV2Ik40m0zETe2okUr3O1Yoz6FReUoc7KAPrf0/GFpWEXVDAnQ==}
     dev: false
 
-  /@vueuse/shared/8.2.1_vue@3.2.31:
-    resolution: {integrity: sha512-esnLayEO/H0t6NG35tJDNJYZq+dFEdlBA7uTDv3NoIK+rqQIuegP95cNRDolAiUc7fA48OqVOA1RF+KnK/JORA==}
-    peerDependencies:
-      '@vue/composition-api': ^1.1.0
-      vue: ^2.6.0 || ^3.2.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-      vue:
-        optional: true
-    dependencies:
-      vue: 3.2.31
-      vue-demi: 0.12.5_vue@3.2.31
-    dev: false
-
-  /@vueuse/shared/8.2.3_vue@3.2.31:
-    resolution: {integrity: sha512-4Cd3s+x8ZwzzAf7o8jS7mEj9pQ1Zsf9aiNBAFg4rHcWeDY0S3XMgvN4ae2hBul7jmi+Ab4REAqiqYWyYqU86qg==}
+  /@vueuse/shared/8.2.4_vue@3.2.31:
+    resolution: {integrity: sha512-sLkuZMEumsmEDYie3m6/nrk7SrLGlyUgtVn/0EJZ8Chaj1YfSmBQuLxNE0ruQ/6VZlqkx44jEZxcgbU7qPyAiw==}
     peerDependencies:
       '@vue/composition-api': ^1.1.0
       vue: ^2.6.0 || ^3.2.0
@@ -1638,9 +1620,6 @@ packages:
     engines: {node: '>=8.6.x'}
     peerDependencies:
       gpu.js: ^2.15.2
-    peerDependenciesMeta:
-      gpu.js:
-        optional: true
     dependencies:
       gpu.js: 2.15.2
       thaw.js: 2.1.4
@@ -1693,7 +1672,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       '@types/keyv': 3.1.4
-      keyv: 4.2.0
+      keyv: 4.2.1
     dev: false
 
   /cacheable-request/7.0.2:
@@ -1703,7 +1682,7 @@ packages:
       clone-response: 1.0.2
       get-stream: 5.2.0
       http-cache-semantics: 4.1.0
-      keyv: 4.2.0
+      keyv: 4.2.1
       lowercase-keys: 2.0.0
       normalize-url: 6.1.0
       responselike: 2.0.0
@@ -3321,9 +3300,6 @@ packages:
     resolution: {integrity: sha512-+lbp8rQ0p1nTa6Gk6HoLiw4yM6JTpql82U+nCF3sZbX4FJWP9PzzF1018dW8K+pbmqRmhLHbn6Bjc6i6tgUpbA==}
     peerDependencies:
       gpu.js: ^2.10.3
-    peerDependenciesMeta:
-      gpu.js:
-        optional: true
     dependencies:
       gpu.js: 2.15.2
     dev: false
@@ -3881,8 +3857,8 @@ packages:
     dev: true
     optional: true
 
-  /keyv/4.2.0:
-    resolution: {integrity: sha512-mcRm0yqY2Z2FdE3Tkb7hNEUN7J7VdedNZ8F6vS5jX04gNo2pyOWqfyW+chW9amiS3gbULPucyRzVq0gjPUmhTA==}
+  /keyv/4.2.1:
+    resolution: {integrity: sha512-cAJq5cTfxQdq1DHZEVNpnk4mEvhP+8UP8UQftLtTtJ98beKkRHf+62M0mIDM2u/IWXyP8bmGB375/6uGdSX2MA==}
     dependencies:
       compress-brotli: 1.3.6
       json-buffer: 3.0.1
