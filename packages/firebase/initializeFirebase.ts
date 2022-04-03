@@ -6,7 +6,7 @@ import { connectFunctionsEmulator, getFunctions } from 'firebase/functions'
 import { connectDatabaseEmulator, getDatabase } from 'firebase/database'
 import { connectStorageEmulator, getStorage } from 'firebase/storage'
 import { connectAuthEmulator, getAuth } from 'firebase/auth'
-import { createSharedComposable } from '@vueuse/core'
+import { createSharedComposable } from '@vueuse/shared'
 
 interface UseFirebaseOptions extends FirebaseOptions {
   /** Key used to create a `ReCaptchaV3Provider` instance. */
@@ -34,7 +34,7 @@ interface UseFirebaseOptions extends FirebaseOptions {
  * Get the default one if it already exists.
  * @param options Options to configure the app's services.
  */
-export const useFirebase = createSharedComposable((options?: UseFirebaseOptions) => {
+export const initializeFirebase = createSharedComposable((options?: UseFirebaseOptions) => {
   // --- Get or instantiate app.
   if (!options) return getApp()
   const app = initializeApp(options)
