@@ -1,5 +1,6 @@
 import { Ref } from 'vue-demi'
-import { createSharedComposable, templateRef, useElementSize, useWindowScroll } from '@vueuse/core'
+import { createSharedComposable } from '@vueuse/shared'
+import { templateRef, useElementSize, useWindowScroll } from '@vueuse/core'
 
 interface UseLayoutOptions {
   rootEl?: Ref<HTMLElement | SVGElement>

@@ -1,5 +1,5 @@
-import { createSharedFirestore } from '@hsjm/firebase'
 import { createGlobalState } from '@vueuse/shared'
+import { createSharedFirestore } from '@hsjm/firebase'
 
 interface Metadata {
   id: string

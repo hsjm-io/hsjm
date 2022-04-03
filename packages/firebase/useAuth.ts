@@ -3,7 +3,8 @@ import {
   createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, signInAnonymously,
   signInWithEmailAndPassword, signInWithPhoneNumber, signOut,
 } from 'firebase/auth'
-import { createSharedComposable, createUnrefFn } from '@vueuse/core'
+import { createSharedComposable } from '@vueuse/shared'
+import { createUnrefFn } from '@vueuse/core'
 import { computed, ref } from 'vue-demi'
 import { useRecaptcha } from './useRecaptcha'
 

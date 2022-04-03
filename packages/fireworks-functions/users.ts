@@ -1,7 +1,7 @@
 import functions from 'firebase-functions'
 import admin from 'firebase-admin'
 import { UserRecord } from 'firebase-functions/v1/auth'
-import { compact } from '@hsjm/core'
+import { compact } from '@hsjm/shared'
 
 type UserCreateBindFirestoreFunction<T> = (...parameters: Parameters<functions.CloudFunction<UserRecord>>) => T
 

@@ -1,5 +1,23 @@
 {
   "name": "@hsjm/leaflet",
   "description": "Vue integration with Leaflet.",
-  "sideEffects": false
+  "sideEffects": false,
+  "peerDependencies": {
+    "@vue/composition-api": "^1.0.0-rc.1",
+    "vue": "^2.0.0 || >=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@vue/composition-api": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@vueuse/shared": "^8.2.1",
+    "leaflet": "^1.7.1",
+    "vue-demi": "*"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.7.9",
+    "vue": "^3.2.31"
+  }
 }

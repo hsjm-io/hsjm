@@ -1,6 +1,5 @@
 import { IconifyJSON } from '@iconify/iconify'
 import { expandIconSet } from '@iconify/utils'
-import axios from 'axios'
 
 // --- Cached data.
 const cachedCollections: Record<string, Promise<IconifyJSON>> = {}
@@ -15,9 +14,12 @@ export const fetchCollection = (collectionName: string) => {
     return cachedCollections[collectionName]
 
   // --- Fetch collection data from remote.
-  const collection = axios
-    .get<IconifyJSON>(`https://raw.githubusercontent.com/iconify/icon-sets/master/json/${collectionName}.json`)
-    .then(({ data }) => { expandIconSet(data); return data })
+  const collection = fetch(`https://raw.githubusercontent.com/iconify/icon-sets/master/json/${collectionName}.json`)
+    .then(async(response) => {
+      const data = await response.json()
+      expandIconSet(data)
+      return data
+    })
 
   // --- Cache and return collection data.
   return (cachedCollections[collectionName] = collection)

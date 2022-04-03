@@ -2,8 +2,27 @@
   "name": "@hsjm/fireworks-functions",
   "description": "Set of extended utilities for Firebase Functions.",
   "sideEffects": false,
-  "dependencies": {
+  "peerDependencies": {
     "@firebase/app-compat": "^0.1.21",
-    "@firebase/app-types": "^0.7.0"
+    "@firebase/app-types": "^0.7.0",
+    "firebase-admin": "^10.0.2",
+    "firebase-functions": "^3.19.0"
+  },
+  "peerDependenciesMeta": {
+    "@firebase/app-compat": {
+      "optional": true
+    },
+    "@firebase/app-types": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@hsjm/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@firebase/app-compat": "^0.1.21",
+    "@firebase/app-types": "^0.7.0",
+    "firebase-admin": "^10.0.2",
+    "firebase-functions": "^3.19.0"
   }
 }

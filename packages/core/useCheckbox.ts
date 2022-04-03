@@ -1,6 +1,6 @@
 
 import { Ref, computed, unref } from 'vue-demi'
-import { MaybeRef } from '@vueuse/core'
+import { MaybeRef } from '@vueuse/shared'
 
 export const useCheckbox = (value: Ref<any[]>, key: MaybeRef<string | number>) => {
   // --- Compute reactive `active` state.

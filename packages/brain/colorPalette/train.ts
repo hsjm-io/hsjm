@@ -1,9 +1,9 @@
 import { writeFileSync } from 'node:fs'
 import { relative, resolve } from 'node:path'
 import { NeuralNetwork } from 'brain.js'
-import { hexToRgbArray } from '@hsjm/core'
-import colors from 'windicss/colors'
+import { hexToRgbArray } from '@hsjm/shared'
 import consola from 'consola'
+import data from './data.json'
 
 // --- Initialize NN.
 const neuralNetwork = new NeuralNetwork({
@@ -12,7 +12,7 @@ const neuralNetwork = new NeuralNetwork({
 })
 
 // --- Prepare dataset.
-const data = Object.entries(colors)
+const dataset = Object.entries(data)
   .map(palette => palette[1])
   .filter(x => typeof x !== 'string')
   .map(palette => palette as Record<number, string>)
@@ -23,7 +23,7 @@ const data = Object.entries(colors)
     })))
 
 // --- Train NN with dataset.
-const { error } = neuralNetwork.train(data, {
+const { error } = neuralNetwork.train(dataset, {
   iterations: 100000,
   errorThresh: 0.003,
   learningRate: 0.001,

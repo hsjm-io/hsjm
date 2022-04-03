@@ -1,6 +1,6 @@
 
 import { Ref, ref, unref, watch } from 'vue-demi'
-import { refDefault, tryOnMounted } from '@vueuse/core'
+import { refDefault, tryOnMounted } from '@vueuse/shared'
 import 'leaflet/dist/leaflet.css'
 import { Map, MapOptions, Marker, map as createMap, tileLayer as createTileLayer } from 'leaflet'
 

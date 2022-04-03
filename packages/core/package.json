@@ -1,5 +1,22 @@
 {
   "name": "@hsjm/core",
   "description": "Opinionated collection of common components, composables and utils for Vue projects.",
-  "sideEffects": false
+  "sideEffects": false,
+  "peerDependencies": {
+    "@vue/composition-api": "^1.0.0-rc.1",
+    "vue": "^2.0.0 || >=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@vue/composition-api": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@vueuse/core": "^8.2.3",
+    "@vueuse/shared": "^8.2.3",
+    "vue-demi": "*"
+  },
+  "devDependencies": {
+    "vue": "^3.2.31"
+  }
 }

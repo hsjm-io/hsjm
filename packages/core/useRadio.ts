@@ -1,6 +1,6 @@
 
 import { Ref, computed } from 'vue-demi'
-import { MaybeRef } from '@vueuse/core'
+import { MaybeRef } from '@vueuse/shared'
 
 export const useRadio = (
   value: Ref<any[]>,

@@ -1,5 +1,5 @@
 import { DocumentData, collection, doc, getFirestore, setDoc, writeBatch } from 'firebase/firestore'
-import { chunk } from 'lodash'
+import { chunk } from '@hsjm/shared'
 
 /**
  * Update or create document(s) to Firestore.

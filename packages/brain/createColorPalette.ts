@@ -1,11 +1,10 @@
 import { NeuralNetwork } from 'brain.js'
-import { hexToRgbArray, rgbToHex } from '@hsjm/core'
+import { hexToRgbArray, rgbToHex } from '@hsjm/shared'
 import model from './colorPalette/model.json'
 
 // --- Initialize NN and apply model.
 const neuralNetwork = new NeuralNetwork()
-// @ts-expect-error: `model` is not infered as const.
-neuralNetwork.fromJSON(model)
+neuralNetwork.fromJSON(<any>model)
 
 /** TailwindCSS / WindiCSS color palette. */
 export interface ColorPalette {
