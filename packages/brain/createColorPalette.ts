@@ -1,9 +1,13 @@
-import { NeuralNetwork } from 'brain.js'
+
 import { hexToRgbArray, rgbToHex } from '@hsjm/shared'
 import model from './colorPalette/model.json'
+import mock from 'mock-require'
+
+// --- Mock `gpu.js` import.
+mock('gpu.js', {})
 
 // --- Initialize NN and apply model.
-const neuralNetwork = new NeuralNetwork()
+const neuralNetwork = new (require('brain.js').NeuralNetwork)()
 neuralNetwork.fromJSON(<any>model)
 
 /** TailwindCSS / WindiCSS color palette. */
