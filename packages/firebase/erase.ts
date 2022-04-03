@@ -1,5 +1,5 @@
 import { DocumentData, collection, deleteDoc, doc, getFirestore, writeBatch } from 'firebase/firestore'
-import { chunk } from 'lodash'
+import { chunk } from '@hsjm/shared'
 
 /**
  * Erase document(s) from Firestore.
