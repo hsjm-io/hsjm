@@ -1,5 +1,24 @@
 {
   "name": "@hsjm/mapbox",
   "description": "Vue integration with Mapbox.",
-  "sideEffects": false
+  "sideEffects": false,
+  "peerDependencies": {
+    "@vue/composition-api": "^1.0.0-rc.1",
+    "vue": "^2.0.0 || >=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@vue/composition-api": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@mapbox/mapbox-sdk": "^0.13.3",
+    "@types/mapbox__mapbox-sdk": "^0.13.2",
+    "@vueuse/core": "^8.2.3",
+    "@vueuse/shared": "^8.2.3",
+    "vue-demi": "*"
+  },
+  "devDependencies": {
+    "vue": "^3.2.31"
+  }
 }
