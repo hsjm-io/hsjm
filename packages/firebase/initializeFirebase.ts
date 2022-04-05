@@ -18,6 +18,8 @@ interface UseFirebaseOptions extends FirebaseOptions {
   isTokenAutoRefreshEnabled?: AppCheckOptions['isTokenAutoRefreshEnabled']
   /** A reCAPTCHA V3 provider, reCAPTCHA Enterprise provider, or custom provider. */
   attestationProvider?: AppCheckOptions['provider']
+  /** Emulator port. */
+  emulatorHost?: string
   /** Auth emulator port. */
   emulatorAuthPort?: number
   /** Storage emulator port. */
@@ -42,12 +44,19 @@ export const initializeFirebase = createSharedComposable((options?: UseFirebaseO
 
   // --- If available and in devmode, connect to emulator instances.
   if (isDevelopment) {
-    const { emulatorAuthPort, emulatorFunctionsPort, emulatorFirestorePort, emulatorStoragePort, emulatorDatabasePort } = options
-    if (emulatorAuthPort) connectAuthEmulator(getAuth(app), `http://localhost:${emulatorAuthPort}`)
-    if (emulatorStoragePort) connectStorageEmulator(getStorage(app), 'localhost', emulatorStoragePort)
-    if (emulatorFirestorePort) connectFirestoreEmulator(getFirestore(app), 'localhost', emulatorFirestorePort)
-    if (emulatorFunctionsPort) connectFunctionsEmulator(getFunctions(app), 'localhost', emulatorFunctionsPort)
-    if (emulatorDatabasePort) connectDatabaseEmulator(getDatabase(app), 'localhost', emulatorDatabasePort)
+    const {
+      emulatorHost = 'localhost',
+      emulatorAuthPort,
+      emulatorFunctionsPort,
+      emulatorFirestorePort,
+      emulatorStoragePort,
+      emulatorDatabasePort
+    } = options
+    if (emulatorAuthPort) connectAuthEmulator(getAuth(app), `http://${emulatorHost}:${emulatorAuthPort}`)
+    if (emulatorStoragePort) connectStorageEmulator(getStorage(app), emulatorHost, emulatorStoragePort)
+    if (emulatorFirestorePort) connectFirestoreEmulator(getFirestore(app), emulatorHost, emulatorFirestorePort)
+    if (emulatorFunctionsPort) connectFunctionsEmulator(getFunctions(app), emulatorHost, emulatorFunctionsPort)
+    if (emulatorDatabasePort) connectDatabaseEmulator(getDatabase(app), emulatorHost, emulatorDatabasePort)
   }
 
   // --- Register App Checker.
