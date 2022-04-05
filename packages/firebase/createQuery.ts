@@ -18,8 +18,8 @@ export interface QueryFilter {
 export interface CreateQuery {
   <T extends DocumentData>(path: string, filter: {}): CollectionReference<T>
   <T extends DocumentData>(path: string, filter: QueryFilter): Query<T> | CollectionReference<T>
-  <T extends DocumentData>(path: string, filter: string): DocumentReference<T>
-  <T extends DocumentData>(path: string, filter: string | QueryFilter): DocumentReference<T> | Query<T> | CollectionReference<T>
+  <T extends DocumentData>(path: string, filter: string | null): DocumentReference<T>
+  <T extends DocumentData>(path: string, filter: string | null | QueryFilter): DocumentReference<T> | Query<T> | CollectionReference<T>
 }
 
 /**
@@ -27,17 +27,14 @@ export interface CreateQuery {
  * @param path Collection path.
  * @param filter ID string or `QueryFilter`
  */
-export const createQuery: CreateQuery = (path: string, filter: string | QueryFilter): any => {
+export const createQuery: CreateQuery = (path: string, filter: string | null | QueryFilter): any => {
   // --- Initialize variables.
   const constraints: QueryConstraint[] = []
   const colReference = collection(getFirestore(), path)
 
   // --- Return a single document's reference.
-  if (typeof filter === 'string') {
-    return filter
-      ? doc(colReference, filter)
-      : doc(colReference)
-  }
+  if (typeof filter === 'string') return doc(colReference, filter)
+  if (filter === null) return doc(colReference)
 
   // --- Generate constraints from object.
   Object.entries(filter).forEach(([key, value]) => {
