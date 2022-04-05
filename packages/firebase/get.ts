@@ -1,7 +1,8 @@
 import { Ref, isRef, ref, unref, watch } from 'vue-demi'
+import { createUnrefFn } from '@vueuse/core'
 import { MaybeRef, extendRef, isClient, reactify, tryOnScopeDispose } from '@vueuse/shared'
 import { DocumentData, FirestoreError, Unsubscribe, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
-import { noop, resolvable } from '@hsjm/shared'
+import { resolvable } from '@hsjm/shared'
 import { QueryFilter, createQuery } from './createQuery'
 import { isDocumentReference, unpeelSnapshot } from './utils'
 import { save } from './save'
@@ -32,9 +33,9 @@ export const _cache: Record<string, any> = {}
 
 // --- Overloads.
 interface Get {
-  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string>, initialValue?: MaybeRef<T>, options?: GetOptions): RefFirestore<T>
   <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<QueryFilter>, initialValue?: MaybeRef<T[]>, options?: GetOptions): RefFirestore<T[]>
-  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string | QueryFilter>, initialValue?: MaybeRef<T | T[]>, options?: GetOptions): RefFirestore<T | T[]>
+  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string | null>, initialValue?: MaybeRef<T>, options?: GetOptions): RefFirestore<T>
+  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<T | T[]>, options?: GetOptions): RefFirestore<T | T[]>
 }
 
 /**
@@ -44,7 +45,7 @@ interface Get {
  * @param initialValue Initial value of the returned `Ref`.
  * @param options Custom parameters of the method.
  */
-export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | QueryFilter>, initialValue?: MaybeRef<DocumentData | DocumentData[]>, options = {} as GetOptions) => {
+export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<DocumentData | DocumentData[]>, options = {} as GetOptions) => {
   // --- Caching.
   const cacheId = `${!!options.onSnapshot}:${path}:${JSON.stringify(unref(filter))}`
   if (cacheId in _cache) {
@@ -60,7 +61,7 @@ export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | Query
 
   // --- Init `data` ref.
   if (!initialValue) initialValue = typeof unref(filter) === 'string' ? {} : []
-  const data: any = isRef(initialValue) ? initialValue : ref(initialValue)
+  const data: Ref<any> = isRef(initialValue) ? initialValue : ref(initialValue)
 
   // --- Update wraps `onSnapshot`.
   if (options.onSnapshot && isClient) {
@@ -113,7 +114,7 @@ export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | Query
     ready: promise,
     loading: pending,
     refresh: update,
-    save: typeof unref(filter) === 'string' ? () => save(unref(path), data) : noop,
-    erase: typeof unref(filter) === 'string' ? () => erase(unref(path), data) : noop,
+    save: () => {if (!Array.isArray(data.value)) createUnrefFn(save)(path, data)},
+    erase: () => {if (!Array.isArray(data.value)) createUnrefFn(erase)(path, data)},
   }))
 }
