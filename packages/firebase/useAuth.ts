@@ -35,10 +35,13 @@ export const useAuth = createSharedComposable((options?: UseAuthOptions) => {
 
   // --- Restore user.
   const user = ref(getAuth().currentUser)
-  const userId = computed(() => user.value?.uid ?? '')
+  const userId = ref(getAuth().currentUser?.uid ?? null)
 
   // --- Handles user data lifecycle.
-  onAuthStateChanged(getAuth(), async _user => user.value = _user)
+  onAuthStateChanged(getAuth(), _user => {
+    user.value = _user
+    userId.value = _user?.uid ?? null
+  })
 
   const loginAnonymously = async() => await signInAnonymously(getAuth())
     .then(onSuccess)
