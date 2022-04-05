@@ -2,7 +2,7 @@ import { createSharedComposable } from '@vueuse/shared'
 import { GetOptions, createSharedFirestore, useAuth } from '@hsjm/firebase'
 
 export interface User {
-  id?: string
+  readonly id?: string
   /** Username */
   username?: string
   /** Contact email. */
@@ -36,5 +36,5 @@ export const usePermissions = createSharedFirestore<Permissions>('permissions')
 export const useUser = createSharedComposable((options?: GetOptions) => {
   const { userId } = useAuth()
   const { get } = useUsers()
-  return get(userId, { id: userId.value }, options)
+  return get(userId, undefined, options)
 })
