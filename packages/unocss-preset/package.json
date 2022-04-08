@@ -1,0 +1,9 @@
+{
+  "name": "@hsjm/unocss-preset",
+  "description": "UnoCSS presets for HSJM projects.",
+  "sideEffects": false,
+  "devDependencies": {
+    "@unocss/preset-mini": "^0.30.12",
+    "unocss": "^0.30.12"
+  }
+}
