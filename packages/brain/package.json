@@ -12,13 +12,16 @@
   },
   "devDependencies": {
     "@types/mock-require": "^2.0.1",
+    "chalk": "^5.0.1",
     "consola": "^2.15.3",
     "gpu.js": "^2.15.2",
     "mock-require": "^3.0.3"
   },
   "pnpm": {
     "peerDependencyRules": {
-      "ignoreMissing": ["gpu.js"]
+      "ignoreMissing": [
+        "gpu.js"
+      ]
     }
   }
 }
