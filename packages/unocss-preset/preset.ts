@@ -1,4 +1,4 @@
-import { Preset, Rule, Variant, Shortcut } from 'unocss'
+import { Preset, Rule, Shortcut, Variant } from 'unocss'
 import { Theme } from '@unocss/preset-mini'
 import rules from './rules'
 import variants from './variants'
