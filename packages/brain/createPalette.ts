@@ -1,12 +1,12 @@
-
-import { hexToRgbArray, rgbToHex } from '@hsjm/shared'
-import model from './colorPalette/model.json'
 import mock from 'mock-require'
+import model from './shadeColor/model.json'
+import { colorToLayer, layerToColor } from './shadeColor/utils'
 
 // --- Mock `gpu.js` import.
 mock('gpu.js', {})
 
 // --- Initialize NN and apply model.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const neuralNetwork = new (require('brain.js').NeuralNetwork)()
 neuralNetwork.fromJSON(<any>model)
 
@@ -30,16 +30,16 @@ export interface ColorPalette {
  * @param shade Shade value.
  */
 export const shadeColor = (color: string, shade: string | number) => {
-  const input = [...hexToRgbArray(color).map(x => x / 255), +shade / 1000]
-  const [r, g, b]: any = neuralNetwork.run(input)
-  return rgbToHex({ r: r * 255, g: g * 255, b: b * 255 })
+  const input = colorToLayer(color, shade.toString())
+  const output = neuralNetwork.run(input)
+  return layerToColor(output)
 }
 
 /**
  * Generate a TailwindCSS / WindiCSS color palette from a single hex color.
  * @param color Input color.
  */
-export const createColorPalette = (color: string): ColorPalette => ({
+export const createPalette = (color: string): ColorPalette => ({
   50: shadeColor(color, 50),
   100: shadeColor(color, 100),
   200: shadeColor(color, 200),
