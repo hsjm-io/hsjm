@@ -9,14 +9,7 @@
     "esModuleInterop": true,
     "strict": true,
     "resolveJsonModule": true,
-    "paths": {
-      "@hsjm/*": ["./packages/*"]
-    },
-    "types": [
-      "@types/node",
-      "@types/leaflet",
-      "@types/mapbox__mapbox-sdk"
-    ]
+    "typeRoots": ["./node_modules/@types"]
   },
   "include": [ "packages", "script" ],
   "exclude": [ "node_modules", "dist" ]
