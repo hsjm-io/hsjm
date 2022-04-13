@@ -1,12 +1,19 @@
-import { Preset, Rule, Shortcut, Variant } from 'unocss'
+import { Preset } from 'unocss'
 import { Theme } from '@unocss/preset-mini'
-import rules from './rules'
-import variants from './variants'
-import shortcuts from './shortcuts'
+import { rules } from './rules'
+import { theme } from './theme'
+import { variants } from './variants'
+import { shortcuts } from './shortcuts'
 
-export const presetHsjm = (): Preset<Theme> => ({
-  name: 'hsjm',
-  rules: rules as Rule[],
-  variants: variants as Variant[],
-  shortcuts: shortcuts as Shortcut[],
+export interface PresetHsjmOptions {
+
+}
+
+export const presetHsjm = (options = {} as PresetHsjmOptions): Preset<Theme> => ({
+  name: '@hsjm/unocss-preset',
+  theme,
+  rules,
+  variants,
+  shortcuts,
+  options,
 })

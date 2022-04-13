@@ -1,7 +1,7 @@
 import { Theme, parseColor } from '@unocss/preset-mini'
 import { Shortcut } from 'unocss'
 
-export const shortcutBtn = [
+export const shortcutButton: Shortcut[] = [
   // --- Base + Size
   [/^btn(-\w{2,3})?$/, ([,fontSize]: string[], { theme }: { theme: Theme }) => {
     // --- Resolve font size.
@@ -25,7 +25,7 @@ export const shortcutBtn = [
     if (!themeColor?.color) return
 
     // --- Compute dynamic colors.
-    const textColor = Number.parseInt(themeColor.no) > 600 ? 'white' : 'black'
+    const textColor = Number.parseInt(themeColor.no) >= 500 ? 'white' : 'black'
 
     // --- Color variants.
     return outlined
@@ -34,7 +34,7 @@ export const shortcutBtn = [
   }],
 ]
 
-export const shortcutNavItem = [
+export const shortcutNavItem: Shortcut[] = [
   // --- Navigation bar item.
   ['nav-item', 'relative transition-all duration-50 ease-out'
     + ' select-none text-lg font-bold px-3 py-4 overflow-visible no-underline'
@@ -55,24 +55,39 @@ export const shortcutNavItem = [
   }],
 ]
 
-export default [
+export const shortcutLink: Shortcut[] = [
+  [/^link(?:-(.+))?$/,
+    ([,color]) => (color
+      ? `text-inherit text-lg hover:text-${color} no-underline disabled:(opacity-50 pointer-events-none)`
+      : 'text-inherit text-lg no-underline disabled:(opacity-50 pointer-events-none)'
+    )],
+]
+
+export const shortcutInput: Shortcut[] = [
+  ['label', 'text-base block mb-1'],
+  [/^input(?:-(.+))?$/, ([,color]) => (color
+    ? 'rounded-2xl text-lg rounded-xl h-12 px-3 py-1.5'
+      + ' w-full transition-all outline-none'
+      + ' ring-1 ring-primary-500 !font-sans'
+      + ' hover:(bg-primary-100 ring-primary-700)'
+      + ' focus:(ring-primary-700)'
+    : 'rounded-2xl text-lg rounded-xl h-12 px-3 py-1.5'
+      + ' w-full transition-all outline-none'
+      + ' ring-1 ring-primary-500 !font-sans'
+      + ' hover:(bg-primary-100 ring-primary-700)'
+      + ' focus:(ring-primary-700)'
+  )],
+]
+
+export const shortcuts: Shortcut[] = [
   // --- Layouts
   ['layout', 'flex flex-col min-h-screen subpixel-antialiased'],
   ['page', 'flex flex-col space-y-24 pb-24'],
   ['contain', 'md:container mx-auto px-8'],
-  ['overlay', 'absolute top-0 left-0 bottom-0 right-0 content'],
+  ['overlay', 'absolute top-0 left-0 bottom-0 right-0 inner-content'],
 
-  ...shortcutBtn,
+  ...shortcutButton,
   ...shortcutNavItem,
-
-  // --- InputspresetMini
-  ['label', 'text-base block mb-1'],
-  ['input', 'rounded-2xl text-lg rounded-xl h-12 px-3 py-1.5'
-      + ' w-full transition-all outline-none'
-      + ' ring-1 ring-primary-500 !font-sans'
-      + ' hover:(bg-primary-100 ring-primary-700)'
-      + ' focus:(ring-primary-700)',
-  ],
-
-  ['link', 'text-inherit text-lg hover:text-primary-800 no-underline disabled:(opacity-50 pointer-events-none)'],
+  ...shortcutLink,
+  ...shortcutInput,
 ]

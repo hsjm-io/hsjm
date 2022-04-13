@@ -1,5 +1,7 @@
+import { Variant } from 'unocss'
+
 /** Variant for selector `&[aria-current="page"]`. */
-export const variantCurrentPage = {
+export const variantCurrentPage: Variant = {
   match: (input: string) => {
     const match = input.match(/^current[:-]/)
     if (match) {
@@ -12,6 +14,6 @@ export const variantCurrentPage = {
   autocomplete: '(current):',
 }
 
-export default [
-  variantCurrentPage
+export const variants: Variant[] = [
+  variantCurrentPage,
 ]

@@ -3,9 +3,7 @@
   "description": "UnoCSS presets for HSJM projects.",
   "sideEffects": false,
   "dependencies": {
-    "@hsjm/shared": "workspace:*"
-  },
-  "devDependencies": {
+    "@hsjm/shared": "workspace:*",
     "@unocss/preset-mini": "^0.30.12",
     "unocss": "^0.30.12"
   }
