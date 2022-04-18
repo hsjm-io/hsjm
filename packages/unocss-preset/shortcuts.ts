@@ -12,10 +12,10 @@ export const shortcutButton: Shortcut[] = [
     // --- Return classes.
     return 'inline-flex flex-nowrap items-center justify-center cursor-pointer'
     + ' select-none outline-none transition-all no-underline whitespace-nowrap'
-    + ' rounded hover:rounded-sm font-bold'
+    + ' rounded-md font-bold'
     + ' duration-500 ease-bounce children:not-last:mr-2'
     + ` px-4 py-3 text-${fontSize}`
-    + ' ring-2 hover:ring-6'
+    + ' ring-0 hover:ring-6'
   }],
 
   // --- Colors
@@ -32,6 +32,16 @@ export const shortcutButton: Shortcut[] = [
       ? `bg-white ring-${color} text-${color} mix-tint-10:hover:(ring-${color} text-${color})`
       : `bg-${color} ring-${color} text-${textColor} mix-tint-10:hover:(bg-${color} ring-${color})`
   }],
+]
+
+export const shortcutBadge: Shortcut[] = [
+  [
+    /badge-(.+)/,
+    ([,color]) => 'inline-flex flex-nowrap items-center justify-center'
+    + ' outline-none transition-all no-underline whitespace-nowrap'
+    + ` bg-${color} text-white px-1.5 py-0.5 rounded`
+    + ` mix-tint-10:hover:(bg-${color} ring-${color})`,
+  ],
 ]
 
 export const shortcutNavItem: Shortcut[] = [
@@ -87,6 +97,7 @@ export const shortcuts: Shortcut[] = [
   ['overlay', 'absolute top-0 left-0 bottom-0 right-0 inner-content'],
 
   ...shortcutButton,
+  ...shortcutBadge,
   ...shortcutNavItem,
   ...shortcutLink,
   ...shortcutInput,
