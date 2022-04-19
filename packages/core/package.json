@@ -12,6 +12,7 @@
     }
   },
   "dependencies": {
+    "@hsjm/shared": "workspace:*",
     "@vueuse/core": "^8.2.3",
     "@vueuse/shared": "^8.2.3",
     "vue-demi": "*"
