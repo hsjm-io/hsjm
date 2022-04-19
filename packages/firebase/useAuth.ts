@@ -1,11 +1,23 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import {
-  ActionCodeSettings, AuthError, ConfirmationResult, UserCredential,
-  createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, signInAnonymously,
-  signInWithEmailAndPassword, signInWithPhoneNumber, signOut,
+  ActionCodeSettings,
+  AuthError,
+  AuthProvider,
+  ConfirmationResult,
+  UserCredential,
+  createUserWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
+  sendEmailVerification,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  signInWithPhoneNumber,
+  signInWithPopup,
+  signOut,
 } from 'firebase/auth'
 import { createSharedComposable } from '@vueuse/shared'
 import { createUnrefFn } from '@vueuse/core'
-import { computed, ref } from 'vue-demi'
+import { ref } from 'vue-demi'
 import { useRecaptcha } from './useRecaptcha'
 
 export interface UseAuthOptions extends Partial<ActionCodeSettings> {
@@ -35,17 +47,28 @@ export const useAuth = createSharedComposable((options?: UseAuthOptions) => {
 
   // --- Restore user.
   const user = ref(getAuth().currentUser)
-  const userId = ref(getAuth().currentUser?.uid ?? null)
+  const userId = ref(getAuth().currentUser?.uid)
 
   // --- Handles user data lifecycle.
-  onAuthStateChanged(getAuth(), _user => {
+  onAuthStateChanged(getAuth(), (_user) => {
     user.value = _user
-    userId.value = _user?.uid ?? null
+    userId.value = _user?.uid
   })
 
-  const loginAnonymously = async() => await signInAnonymously(getAuth())
+  const loginAnonymously = () => signInAnonymously(getAuth())
     .then(onSuccess)
     .catch(_onError)
+
+  const loginWithProvider = async(provider: AuthProvider) => {
+    // --- Get auth instance.
+    const auth = getAuth()
+    auth.useDeviceLanguage()
+
+    // --- Sign in.
+    return signInWithPopup(auth, provider)
+      .then(onSuccess)
+      .catch(_onError)
+  }
 
   const loginWithEmail = (email: string, password: string) =>
     signInWithEmailAndPassword(getAuth(), email, password)
@@ -79,6 +102,7 @@ export const useAuth = createSharedComposable((options?: UseAuthOptions) => {
     user,
     userId,
     loginAnonymously,
+    loginWithProvider,
     loginWithEmail: createUnrefFn(loginWithEmail),
     loginWithPhone: createUnrefFn(loginWithPhone),
     confirmCode: createUnrefFn(confirmCode),
