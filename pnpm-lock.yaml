@@ -58,11 +58,15 @@ importers:
   packages/components:
     specifiers:
       '@hsjm/core': workspace:*
+      '@hsjm/shared': workspace:*
+      '@vueuse/core': ^8.2.3
       vue: ^3.2.31
       vue-demi: '*'
       vue-router: ^4.0.14
     dependencies:
       '@hsjm/core': link:../core
+      '@hsjm/shared': link:../shared
+      '@vueuse/core': 8.2.4_vue@3.2.31
       vue-demi: 0.12.5_vue@3.2.31
     devDependencies:
       vue: 3.2.31
@@ -70,11 +74,13 @@ importers:
 
   packages/core:
     specifiers:
+      '@hsjm/shared': workspace:*
       '@vueuse/core': ^8.2.3
       '@vueuse/shared': ^8.2.3
       vue: ^3.2.31
       vue-demi: '*'
     dependencies:
+      '@hsjm/shared': link:../shared
       '@vueuse/core': 8.2.4_vue@3.2.31
       '@vueuse/shared': 8.2.4_vue@3.2.31
       vue-demi: 0.12.5_vue@3.2.31
