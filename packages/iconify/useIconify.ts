@@ -24,7 +24,7 @@ export const useIconify = (icon: MaybeRef<string>, options = {} as MaybeRef<Icon
   }
 
   // --- Update on server init & prop changes.
-  watch(() => [icon, options], update)
+  watch([icon, options], update)
 
   // --- Update on init if not SSR.
   if (!isClient || isDevelopment) update()
