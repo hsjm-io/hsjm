@@ -8,10 +8,14 @@
     "vue-router": "^3.0.0 || >=4.0.0"
   },
   "peerDependenciesMeta": {
-    "@vue/composition-api": { "optional": true }
+    "@vue/composition-api": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@hsjm/core": "workspace:*",
+    "@hsjm/shared": "workspace:*",
+    "@vueuse/core": "^8.2.3",
     "vue-demi": "*"
   },
   "devDependencies": {
