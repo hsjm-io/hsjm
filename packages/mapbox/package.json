@@ -13,12 +13,12 @@
   },
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.13.3",
-    "@types/mapbox__mapbox-sdk": "^0.13.2",
-    "@vueuse/core": "^8.2.3",
-    "@vueuse/shared": "^8.2.3",
+    "@types/mapbox__mapbox-sdk": "^0.13.4",
+    "@vueuse/core": "^8.3.0",
+    "@vueuse/shared": "^8.3.0",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "vue": "^3.2.31"
+    "vue": "^3.2.33"
   }
 }

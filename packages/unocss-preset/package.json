@@ -4,7 +4,7 @@
   "sideEffects": false,
   "dependencies": {
     "@hsjm/shared": "workspace:*",
-    "@unocss/preset-mini": "^0.30.12",
-    "unocss": "^0.30.12"
+    "@unocss/preset-mini": "^0.30.13",
+    "unocss": "^0.30.13"
   }
 }

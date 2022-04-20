@@ -15,11 +15,11 @@
   "dependencies": {
     "@hsjm/core": "workspace:*",
     "@hsjm/shared": "workspace:*",
-    "@vueuse/core": "^8.2.3",
+    "@vueuse/core": "^8.3.0",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "vue": "^3.2.31",
+    "vue": "^3.2.33",
     "vue-demi": "^0.12.5",
     "vue-router": "^4.0.14"
   }

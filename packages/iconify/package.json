@@ -15,11 +15,11 @@
     "@hsjm/shared": "workspace:*",
     "@iconify/iconify": "^2.2.1",
     "@iconify/utils": "^1.0.32",
-    "@vueuse/core": "^8.2.3",
-    "@vueuse/shared": "^8.2.3",
+    "@vueuse/core": "^8.3.0",
+    "@vueuse/shared": "^8.3.0",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "vue": "^3.2.31"
+    "vue": "^3.2.33"
   }
 }
