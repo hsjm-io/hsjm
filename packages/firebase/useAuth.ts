@@ -1,9 +1,12 @@
+import { createSharedComposable, isClient, tryOnMounted } from '@vueuse/shared'
 /* eslint-disable @typescript-eslint/no-var-requires */
 import {
   ActionCodeSettings,
+  Auth,
   AuthError,
   AuthProvider,
   ConfirmationResult,
+  User,
   UserCredential,
   createUserWithEmailAndPassword,
   getAuth,
@@ -15,7 +18,6 @@ import {
   signInWithPopup,
   signOut,
 } from 'firebase/auth'
-import { createSharedComposable } from '@vueuse/shared'
 import { createUnrefFn } from '@vueuse/core'
 import { ref } from 'vue-demi'
 import { useRecaptcha } from './useRecaptcha'
@@ -31,7 +33,7 @@ export const useAuth = createSharedComposable((options?: UseAuthOptions) => {
   // --- Initialize variables.
   const error = ref<AuthError>()
   const confirmationResult = ref<ConfirmationResult>()
-  const appVerifier = useRecaptcha()
+  let auth: Auth | undefined
 
   const {
     onError,
@@ -39,44 +41,45 @@ export const useAuth = createSharedComposable((options?: UseAuthOptions) => {
     useEmailVerification,
   } = options ?? {}
 
+  // --- Restore user.
+  const user = ref<User | null>()
+  const userId = ref<string>()
+
   // --- Extend `onError` hook.
   const _onError = (_error: AuthError) => {
     error.value = _error
     onError && onError(_error)
   }
 
-  // --- Restore user.
-  const user = ref(getAuth().currentUser)
-  const userId = ref(getAuth().currentUser?.uid)
+  // --- Store auth instance.
+  if (isClient) {
+    tryOnMounted(() => {
+      auth = getAuth()
+      auth.useDeviceLanguage()
+      onAuthStateChanged(auth, (_user) => {
+        user.value = _user
+        userId.value = _user?.uid
+      })
+    })
+  }
 
-  // --- Handles user data lifecycle.
-  onAuthStateChanged(getAuth(), (_user) => {
-    user.value = _user
-    userId.value = _user?.uid
-  })
-
-  const loginAnonymously = () => signInAnonymously(getAuth())
+  // @ts-expect-error: `auth` will be defined on `mounted` hook.
+  const loginAnonymously = () => signInAnonymously(auth)
     .then(onSuccess)
     .catch(_onError)
 
-  const loginWithProvider = async(provider: AuthProvider) => {
-    // --- Get auth instance.
-    const auth = getAuth()
-    auth.useDeviceLanguage()
+  // @ts-expect-error: `auth` will be defined on `mounted` hook.
+  const loginWithProvider = async(provider: AuthProvider) => signInWithPopup(auth, provider)
+    .then(onSuccess)
+    .catch(_onError)
 
-    // --- Sign in.
-    return signInWithPopup(auth, provider)
-      .then(onSuccess)
-      .catch(_onError)
-  }
+  // @ts-expect-error: `auth` will be defined on `mounted` hook.
+  const loginWithEmail = (email: string, password: string) => signInWithEmailAndPassword(auth, email, password)
+    .then(onSuccess)
+    .catch(_onError)
 
-  const loginWithEmail = (email: string, password: string) =>
-    signInWithEmailAndPassword(getAuth(), email, password)
-      .then(onSuccess)
-      .catch(_onError)
-
-  // @ts-expect-error: `appVerifier` will be defined on `mounted` hook.
-  const loginWithPhone = (phoneNumber: string) => signInWithPhoneNumber(getAuth(), phoneNumber, appVerifier)
+  // @ts-expect-error: `auth` && `appVerifier` will be defined on `mounted` hook.
+  const loginWithPhone = (phoneNumber: string) => signInWithPhoneNumber(auth, phoneNumber, useRecaptcha())
     .then((data) => { confirmationResult.value = data })
     .catch(_onError)
 
@@ -84,16 +87,17 @@ export const useAuth = createSharedComposable((options?: UseAuthOptions) => {
     .then(onSuccess)
     .catch(_onError)
 
-  const registerWithEmail = async(email: string, password: string) =>
-    await createUserWithEmailAndPassword(getAuth(), email, password)
-      .then(async(data) => {
-        if (useEmailVerification) await sendEmailVerification(data.user, options as any)
-        return data
-      })
-      .then(onSuccess)
-      .catch(_onError)
+  // @ts-expect-error: `auth` will be defined on `mounted` hook.
+  const registerWithEmail = (email: string, password: string) => createUserWithEmailAndPassword(auth, email, password)
+    .then(async(data) => {
+      if (useEmailVerification) await sendEmailVerification(data.user, options as any)
+      return data
+    })
+    .then(onSuccess)
+    .catch(_onError)
 
-  const logout = async() => await signOut(getAuth())
+  // @ts-expect-error: `auth` will be defined on `mounted` hook.
+  const logout = () => signOut(auth)
     .then(onSuccess as any)
     .catch(_onError)
 
