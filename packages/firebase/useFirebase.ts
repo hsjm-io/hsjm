@@ -18,6 +18,8 @@ interface UseFirebaseOptions extends FirebaseOptions {
   isTokenAutoRefreshEnabled?: AppCheckOptions['isTokenAutoRefreshEnabled']
   /** A reCAPTCHA V3 provider, reCAPTCHA Enterprise provider, or custom provider. */
   attestationProvider?: AppCheckOptions['provider']
+  /** A reCAPTCHA V3 provider, reCAPTCHA Enterprise provider, or custom provider. */
+  appCheckDebugToken?: string | boolean
   /** Emulator port. */
   emulatorHost?: string
   /** Auth emulator port. */
@@ -37,7 +39,7 @@ interface UseFirebaseOptions extends FirebaseOptions {
  * Get the default one if it already exists.
  * @param options Options to configure the app's services.
  */
-export const initializeFirebase = createSharedComposable((options?: UseFirebaseOptions) => {
+export const useFirebase = createSharedComposable((options?: UseFirebaseOptions) => {
   // --- Get or instantiate app.
   if (!options) return getApp()
   const app = initializeApp(options)
@@ -50,8 +52,11 @@ export const initializeFirebase = createSharedComposable((options?: UseFirebaseO
       emulatorFunctionsPort,
       emulatorFirestorePort,
       emulatorStoragePort,
-      emulatorDatabasePort
+      emulatorDatabasePort,
+      appCheckDebugToken,
     } = options
+    // @ts-expect-error: Missing `self` definition.
+    if (appCheckDebugToken) self.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken
     if (emulatorAuthPort) connectAuthEmulator(getAuth(app), `http://${emulatorHost}:${emulatorAuthPort}`)
     if (emulatorStoragePort) connectStorageEmulator(getStorage(app), emulatorHost, emulatorStoragePort)
     if (emulatorFirestorePort) connectFirestoreEmulator(getFirestore(app), emulatorHost, emulatorFirestorePort)
@@ -66,6 +71,11 @@ export const initializeFirebase = createSharedComposable((options?: UseFirebaseO
   if (!attestationProvider && reCaptchaEnterpriseProviderKey) attestationProvider = new ReCaptchaEnterpriseProvider(reCaptchaEnterpriseProviderKey)
   if (attestationProvider) initializeAppCheck(app, { isTokenAutoRefreshEnabled, provider: attestationProvider })
 
-  // --- Return `FirebaseApp` instance.
-  return app
+  // --- Return instances.
+  return {
+    app,
+    auth: getAuth(app),
+    firestore: getFirestore(app),
+    functions: getFunctions(app),
+  }
 })
