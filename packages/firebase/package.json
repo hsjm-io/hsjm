@@ -4,6 +4,7 @@
   "sideEffects": false,
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-rc.1",
+    "firebase": ">9.0.0",
     "vue": "^2.0.0 || >=3.0.0"
   },
   "peerDependenciesMeta": {
@@ -15,11 +16,10 @@
     "@hsjm/shared": "workspace:*",
     "@vueuse/core": "^8.3.0",
     "@vueuse/shared": "^8.3.0",
-    "firebase": "^9.6.11",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "firebase": "^9.6.10",
+    "firebase": "^9.6.11",
     "vue": "^3.2.33"
   }
 }
