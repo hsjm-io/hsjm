@@ -45,7 +45,7 @@ interface Get {
  * @param initialValue Initial value of the returned `Ref`.
  * @param options Custom parameters of the method.
  */
-export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<DocumentData | DocumentData[]>, options = {} as GetOptions) => {
+export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | null | undefined | QueryFilter>, initialValue?: MaybeRef<DocumentData | DocumentData[]>, options = {} as GetOptions) => {
   // --- Caching.
   const cacheId = `${!!options.onSnapshot}:${path}:${JSON.stringify(unref(filter))}`
   if (cacheId in _cache) {
@@ -114,7 +114,7 @@ export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | null 
     ready: promise,
     loading: pending,
     refresh: update,
-    save: () => {if (!Array.isArray(data.value)) createUnrefFn(save)(path, data)},
-    erase: () => {if (!Array.isArray(data.value)) createUnrefFn(erase)(path, data)},
+    save: () => { if (!Array.isArray(data.value)) createUnrefFn(save)(path, data) },
+    erase: () => { if (!Array.isArray(data.value)) createUnrefFn(erase)(path, data) },
   }))
 }

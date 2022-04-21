@@ -19,7 +19,7 @@ export const useFirestore = <T extends DocumentData>(path: MaybeRef<string>) => 
    * @param options Custom parameters of the method.
    */
   get: get.bind(undefined, path) as {
-    (filter: MaybeRef<string | null>, initialValue?: MaybeRef<T>, options?: GetOptions): RefFirestore<T>
+    (filter: MaybeRef<string | null | undefined>, initialValue?: MaybeRef<T>, options?: GetOptions): RefFirestore<T>
     (filter: MaybeRef<QueryFilter>, initialValue?: MaybeRef<T[]>, options?: GetOptions): RefFirestore<T[]>
   },
   /**
