@@ -1,15 +1,18 @@
 
 import { FirebaseOptions, getApp, initializeApp } from 'firebase/app'
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
+import { FirestoreSettings, connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore'
 import { AppCheckOptions, ReCaptchaEnterpriseProvider, ReCaptchaV3Provider, initializeAppCheck } from 'firebase/app-check'
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions'
 import { connectDatabaseEmulator, getDatabase } from 'firebase/database'
 import { connectStorageEmulator, getStorage } from 'firebase/storage'
-import { connectAuthEmulator, getAuth } from 'firebase/auth'
+import { Dependencies, connectAuthEmulator, initializeAuth } from 'firebase/auth'
 import { createSharedComposable } from '@vueuse/shared'
 import { isDevelopment } from '@hsjm/shared'
 
-interface UseFirebaseOptions extends FirebaseOptions {
+interface UseFirebaseOptions extends
+  FirebaseOptions,
+  FirestoreSettings,
+  Dependencies {
   /** Key used to create a `ReCaptchaV3Provider` instance. */
   reCaptchaV3ProviderKey?: string
   /** Key used to create a `ReCaptchaEnterpriseProvider` instance. */
@@ -40,9 +43,13 @@ interface UseFirebaseOptions extends FirebaseOptions {
  * @param options Options to configure the app's services.
  */
 export const useFirebase = createSharedComposable((options?: UseFirebaseOptions) => {
-  // --- Get or instantiate app.
+  // --- Get app if already initialized.
   if (!options) return getApp()
+
+  // --- Initialize app.
   const app = initializeApp(options)
+  const auth = initializeAuth(app, options)
+  const firestore = initializeFirestore(app, options)
 
   // --- If available and in devmode, connect to emulator instances.
   if (isDevelopment) {
@@ -57,9 +64,9 @@ export const useFirebase = createSharedComposable((options?: UseFirebaseOptions)
     } = options
     // @ts-expect-error: Missing `self` definition.
     if (appCheckDebugToken) self.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken
-    if (emulatorAuthPort) connectAuthEmulator(getAuth(app), `http://${emulatorHost}:${emulatorAuthPort}`)
+    if (emulatorAuthPort) connectAuthEmulator(auth, `http://${emulatorHost}:${emulatorAuthPort}`)
     if (emulatorStoragePort) connectStorageEmulator(getStorage(app), emulatorHost, emulatorStoragePort)
-    if (emulatorFirestorePort) connectFirestoreEmulator(getFirestore(app), emulatorHost, emulatorFirestorePort)
+    if (emulatorFirestorePort) connectFirestoreEmulator(firestore, emulatorHost, emulatorFirestorePort)
     if (emulatorFunctionsPort) connectFunctionsEmulator(getFunctions(app), emulatorHost, emulatorFunctionsPort)
     if (emulatorDatabasePort) connectDatabaseEmulator(getDatabase(app), emulatorHost, emulatorDatabasePort)
   }
@@ -72,10 +79,5 @@ export const useFirebase = createSharedComposable((options?: UseFirebaseOptions)
   if (attestationProvider) initializeAppCheck(app, { isTokenAutoRefreshEnabled, provider: attestationProvider })
 
   // --- Return instances.
-  return {
-    app,
-    auth: getAuth(app),
-    firestore: getFirestore(app),
-    functions: getFunctions(app),
-  }
+  return app
 })
