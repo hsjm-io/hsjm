@@ -74,13 +74,15 @@ export const shortcutLink: Shortcut[] = [
 ]
 
 export const shortcutInput: Shortcut[] = [
-  ['label', 'text-base block mb-1'],
+  ['label', 'text-base font-bold block mb-1'],
   [/^input(?:-(.+))?$/, ([,color]) =>
-    'rounded-2xl text-lg rounded-xl h-12 px-3 py-1.5'
-      + ' w-full transition-all outline-none'
-      + ` ring-1 ring-${color} !font-sans`
-      + ` hover:(bg-${color} ring-${color})`
-      + ` focus:ring-${color}`],
+    'rounded-2xl text-lg rounded-xl p-3 py-3'
+      + ' w-full transition-all outline-none !font-sans'
+      + ` ring-1 ring-transparent bg-${color}/5`
+      + ` focus:(ring-${color} bg-${color}/10)`
+      + ` hover:(ring-${color}/50 bg-${color}/10)`
+      + ` hover:focus:(ring-${color} bg-${color}/10)`,
+  ],
 ]
 
 export const shortcuts: Shortcut[] = [
