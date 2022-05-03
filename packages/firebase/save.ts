@@ -1,28 +1,30 @@
-import { DocumentData, collection, doc, getFirestore, setDoc, writeBatch } from 'firebase/firestore'
+import { DocumentData, collection, doc, setDoc, writeBatch } from 'firebase/firestore'
 import { chunk } from '@hsjm/shared'
+import { useFirebase } from './useFirebase'
+
+// --- Overloads.
+export interface Save<_T = DocumentData> {
+  <T extends _T>(path: string, data: T | T[]): Promise<void>
+}
 
 /**
  * Update or create document(s) to Firestore.
  * @param path Collection path.
  * @param data Document(s) to save.
  */
-export const save = async(path: string, data: DocumentData | DocumentData[]) => {
+export const save: Save = async(path, data) => {
   // --- Get collection reference.
-  const colReference = collection(getFirestore(), path)
+  const { firestore } = useFirebase()
+  const colReference = collection(firestore, path)
 
-  // --- Save in bulk.
+  // --- Save batches in bulk.
   if (Array.isArray(data)) {
-    // --- Chunk batches.
     const chunks = chunk(data, 500)
-
-    // --- Save in batches.
     const promises = chunks.map((chunk) => {
-      const batch = writeBatch(getFirestore())
+      const batch = writeBatch(firestore)
       for (const x of chunk) batch.set(doc(colReference, x.id), x)
       return batch.commit()
     })
-
-    // --- Wait for all batches to finish.
     await Promise.all(promises)
     return
   }

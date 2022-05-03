@@ -2,36 +2,32 @@
 import { DocumentData } from 'firebase/firestore'
 import { MaybeRef, createSharedComposable } from '@vueuse/shared'
 import { createUnrefFn } from '@vueuse/core'
-import { GetOptions, RefFirestore, get } from './get'
-import { erase } from './erase'
-import { save } from './save'
-import { QueryFilter } from './createQuery'
+import { Get, get } from './get'
+import { Erase, erase } from './erase'
+import { Save, save } from './save'
 
 /**
  * Create an instance of methods to manipulate data from Firestore.
  * @param path Path to collection.
  */
-export const useFirestore = <T extends DocumentData>(path: MaybeRef<string>) => ({
+export const useFirestore = <T>(path: MaybeRef<string>) => ({
   /**
    * Fetch data from collection and bind it to a `Ref`
    * @param filter ID or filter parameters.
    * @param initialValue Initial value of the returned `Ref`.
    * @param options Custom parameters of the method.
    */
-  get: get.bind(undefined, path) as {
-    (filter: MaybeRef<string | null | undefined>, initialValue?: MaybeRef<T>, options?: GetOptions): RefFirestore<T>
-    (filter: MaybeRef<QueryFilter>, initialValue?: MaybeRef<T[]>, options?: GetOptions): RefFirestore<T[]>
-  },
+  get: (get as Get<T>).bind(undefined, path),
   /**
    * Save document(s) to collection.
    * @param data Document(s) and/or ID(s) to save.
    */
-  save: createUnrefFn(save).bind(undefined, path) as (data: MaybeRef<T | T[]>) => Promise<void>,
+  save: createUnrefFn(save as Save<T>).bind(undefined, path),
   /**
    * Erase document(s) from collection.
    * @param data Document(s) and/or ID(s) to erase.
    */
-  erase: createUnrefFn(erase).bind(undefined, path) as (data: MaybeRef<string | T | (string | T)[]>) => Promise<void>,
+  erase: createUnrefFn(erase as Erase<T>).bind(undefined, path),
 })
 
 /**

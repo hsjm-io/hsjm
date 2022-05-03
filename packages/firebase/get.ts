@@ -20,7 +20,7 @@ export interface GetOptions {
 }
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
-export interface RefFirestore<T extends DocumentData | DocumentData[]> extends Ref<T> {
+export interface RefFirestore<T = DocumentData | DocumentData[]> extends Ref<T> {
   ready: Promise<void>
   loading: boolean
   refresh: () => void
@@ -29,13 +29,13 @@ export interface RefFirestore<T extends DocumentData | DocumentData[]> extends R
 }
 
 // --- Cache register.
-export const _cache: Record<string, any> = {}
+const cache: Record<string, any> = {}
 
 // --- Overloads.
-interface Get {
-  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<QueryFilter>, initialValue?: MaybeRef<T[]>, options?: GetOptions): RefFirestore<T[]>
-  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string | null>, initialValue?: MaybeRef<T>, options?: GetOptions): RefFirestore<T>
-  <T extends DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<T | T[]>, options?: GetOptions): RefFirestore<T | T[]>
+export interface Get<_T = DocumentData> {
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<QueryFilter>, initialValue?: MaybeRef<Partial<T>[]>, options?: GetOptions): RefFirestore<T[]>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null>, initialValue?: MaybeRef<Partial<T>>, options?: GetOptions): RefFirestore<T>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<Partial<T> | Partial<T>[]>, options?: GetOptions): RefFirestore<T | T[]>
 }
 
 /**
@@ -45,21 +45,19 @@ interface Get {
  * @param initialValue Initial value of the returned `Ref`.
  * @param options Custom parameters of the method.
  */
-export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | null | undefined | QueryFilter>, initialValue?: MaybeRef<DocumentData | DocumentData[]>, options = {} as GetOptions) => {
+export const get: Get = (path, filter, initialValue, options = {}) => {
   // --- Caching.
   const cacheId = `${!!options.onSnapshot}:${path}:${JSON.stringify(unref(filter))}`
-  if (cacheId in _cache) {
+  if (cacheId in cache) {
     // eslint-disable-next-line no-console
     if (options.debug) console.log(`deleted cache entry ${cacheId}`)
-    return _cache[cacheId]
+    return cache[cacheId]
   }
 
   // --- Init local variables.
   let update: () => void
   const { promise, resolve, pending, reset } = resolvable<void>()
   const query = reactify(createQuery)(path, filter)
-
-  // --- Init `data` ref.
   if (!initialValue) initialValue = typeof unref(filter) === 'string' ? {} : []
   const data: Ref<any> = isRef(initialValue) ? initialValue : ref(initialValue)
 
@@ -83,7 +81,7 @@ export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | null 
     if (options.keepAlive) {
       tryOnScopeDispose(() => {
         if (unsubscribe) unsubscribe()
-        if (_cache[cacheId]) delete _cache[cacheId]
+        if (cache[cacheId]) delete cache[cacheId]
         // eslint-disable-next-line no-console
         if (options.debug) console.log(`deleted cache entry ${cacheId}`)
       })
@@ -110,7 +108,7 @@ export const get: Get = (path: MaybeRef<string>, filter: MaybeRef<string | null 
   watch(query, update, { immediate: true })
 
   // --- Return readonly data ref.
-  return (_cache[cacheId] = extendRef(data, {
+  return (cache[cacheId] = extendRef(data, {
     ready: promise,
     loading: pending,
     refresh: update,

@@ -21,12 +21,12 @@ export const isDocumentSnapshot = (value: any): value is DocumentSnapshot => val
  * @param snapshot Snapshot to extract from.
  */
 export interface UnpeelSnapshot {
-  <T extends DocumentData>(snapshot: QuerySnapshot<T>): T[]
-  <T extends DocumentData>(snapshot: DocumentSnapshot<T>): T
-  <T extends DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>): T | T[]
+  <T = DocumentData>(snapshot: QuerySnapshot<T>): T[]
+  <T = DocumentData>(snapshot: DocumentSnapshot<T>): T
+  <T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>): T | T[]
 }
 
-export const unpeelSnapshot: UnpeelSnapshot = (snapshot: DocumentSnapshot | QuerySnapshot): any => (
+export const unpeelSnapshot: UnpeelSnapshot = (snapshot): any => (
   isDocumentSnapshot(snapshot)
     ? { id: snapshot.id, ...snapshot.data() }
     : snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
