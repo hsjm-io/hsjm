@@ -18,7 +18,7 @@ const getThumbnail = (item: File | string): string =>
     ? URL.createObjectURL(item)
     : item)
 
-export const useFileInput = (
+export const useInputFile = (
   initialValue: MaybeRef<UseFileInputValue>,
   options = {} as MaybeRef<UseFileInputOptions>,
 ) => {
