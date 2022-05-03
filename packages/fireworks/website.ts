@@ -1,6 +1,6 @@
 import { createGlobalState } from '@vueuse/shared'
 import { createSharedFirestore } from '@hsjm/firebase'
-import { Data, Hierarchy, History } from './types'
+import { Data, Hierarchy, History } from './base'
 
 export interface Content extends Data, History<Content>, Hierarchy<Content> {
   type?: 'service' | 'testimonial' | 'legal' | 'privacy' | 'about'

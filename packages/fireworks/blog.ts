@@ -1,5 +1,5 @@
 import { createSharedFirestore } from '@hsjm/firebase'
-import { Data, History } from './types'
+import { Data, History } from './base'
 
 export interface BlogPost extends Data, History<BlogPost> {
   image?: string

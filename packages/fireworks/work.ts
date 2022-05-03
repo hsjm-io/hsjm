@@ -1,6 +1,6 @@
 import { createSharedFirestore } from '@hsjm/firebase'
-import { Organization } from './moduleCrm'
-import { Data, History, Person } from './types'
+import { Organization } from './crm'
+import { Data, History, Identity } from './base'
 
 export type ContractType = 'freelance' | 'temporary' | 'indefinite' | 'interim'
 export type RateType = 'hourly' | 'daily' | 'weekly' | 'monthly'
@@ -22,7 +22,7 @@ export interface WorkSkill extends Data {
   readonly roles?: WorkRole[]
 }
 
-export interface WorkResource extends Data, Person {
+export interface WorkResource extends Data, Identity {
   workRoleIds?: string[]
   workSkillIds?: string[]
   workSkillFavoriteIds?: string[]

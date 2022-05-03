@@ -1,7 +1,7 @@
 import { createSharedFirestore } from '@hsjm/firebase'
-import { Data, Person } from './types'
+import { Data, Identity } from './base'
 
-export interface Contact extends Data, Person {
+export interface Contact extends Data, Identity {
   organizationIds?: string[]
   readonly organizations?: Organization[]
 }
@@ -56,6 +56,18 @@ export interface Activity extends Data {
   meetingUrl?: string
   briefing?: string
   debriefing?: string
+}
+
+export interface Invoice {
+  accountId?: string
+
+  items: {
+    name: string
+    price: number
+    count: number
+  }[]
+
+  readonly price: number
 }
 
 export const useOrganizations = createSharedFirestore<Organization>('organizations')
