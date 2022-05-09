@@ -13,8 +13,9 @@
   },
   "dependencies": {
     "@hsjm/shared": "workspace:*",
-    "@vueuse/core": "^8.3.0",
-    "@vueuse/shared": "^8.3.0",
+    "@vueuse/core": "^8.4.2",
+    "@vueuse/shared": "^8.4.2",
+    "vee-validate": "^4.5.11",
     "vue-demi": "*"
   },
   "devDependencies": {

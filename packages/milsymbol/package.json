@@ -12,8 +12,8 @@
     }
   },
   "dependencies": {
-    "@vueuse/core": "^8.3.0",
-    "@vueuse/shared": "^8.3.0",
+    "@vueuse/core": "^8.4.2",
+    "@vueuse/shared": "^8.4.2",
     "milsymbol": "^2.0.0",
     "vue-demi": "*"
   },

@@ -14,8 +14,8 @@
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.13.3",
     "@types/mapbox__mapbox-sdk": "^0.13.4",
-    "@vueuse/core": "^8.3.0",
-    "@vueuse/shared": "^8.3.0",
+    "@vueuse/core": "^8.4.2",
+    "@vueuse/shared": "^8.4.2",
     "vue-demi": "*"
   },
   "devDependencies": {
