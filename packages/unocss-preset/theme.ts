@@ -1,5 +1,5 @@
 import { Theme } from '@unocss/preset-mini'
-import { brands } from './constants'
+import { brands } from './constants/brands'
 
 export const colorsBrand = Object.fromEntries(Object.entries(brands)
   .map(([key, brand]) => [key, `#${brand.colors[0]}`]),

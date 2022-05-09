@@ -1,6 +1,7 @@
 import { Theme, parseColor } from '@unocss/preset-mini'
 import { Rule } from 'unocss'
-import { patterns, separators } from './constants'
+import { patterns } from './constants/patterns'
+import { separators } from './constants/separators'
 
 /**
  * Generate classes for unsplash backgrounds.
