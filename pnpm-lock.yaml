@@ -28,7 +28,6 @@ importers:
     specifiers:
       '@hsjm/shared': workspace:*
       '@types/asciichart': ^1.5.6
-      '@types/chalk': ^2.2.0
       '@types/lodash': ^4.14.182
       '@types/mock-require': ^2.0.1
       asciichart: ^1.5.25
@@ -46,7 +45,6 @@ importers:
       mock-require: 3.0.3
     devDependencies:
       '@types/asciichart': 1.5.6
-      '@types/chalk': 2.2.0
       '@types/lodash': 4.14.182
       '@types/mock-require': 2.0.1
       asciichart: 1.5.25
@@ -1082,13 +1080,6 @@ packages:
       '@types/node': 17.0.31
       '@types/responselike': 1.0.0
     dev: false
-
-  /@types/chalk/2.2.0:
-    resolution: {integrity: sha512-1zzPV9FDe1I/WHhRkf9SNgqtRJWZqrBWgu7JGveuHmmyR9CnAPCie2N/x+iHrgnpYBIcCJWHBoMRv2TRWktsvw==}
-    deprecated: This is a stub types definition for chalk (https://github.com/chalk/chalk). chalk provides its own type definitions, so you don't need @types/chalk installed!
-    dependencies:
-      chalk: 5.0.1
-    dev: true
 
   /@types/connect/3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}

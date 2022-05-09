@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "@types/asciichart": "^1.5.6",
-    "@types/chalk": "^2.2.0",
     "@types/lodash": "^4.14.182",
     "@types/mock-require": "^2.0.1",
     "asciichart": "^1.5.25",
