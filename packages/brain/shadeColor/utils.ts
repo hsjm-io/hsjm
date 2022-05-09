@@ -1,12 +1,12 @@
-/* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/no-var-requires */
+import chalk from 'chalk'
+import consola from 'consola'
 import { hexToHsl, hslToHex } from '@hsjm/shared'
 
 export const logPalette = (palette: Record<string, string>) => {
   const string = Object.values(palette)
-    .map(c => require('chalk').bgHex(c).black(c.toUpperCase()))
+    .map(c => chalk.bgHex(c).black(c.toUpperCase()))
     .join('')
-  console.log(string)
+  consola.log(string)
 }
 
 export const colorToLayer = (color: string, shade: string) => {
