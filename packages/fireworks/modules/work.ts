@@ -1,6 +1,8 @@
-import { createSharedFirestore } from '@hsjm/firebase'
-import { Organization } from './crm'
-import { Data, History, Identity } from './base'
+import { Case } from './case'
+import { Organization } from './organization'
+import { Data } from './data'
+import { Identity } from './identity'
+import { History } from './history'
 
 export type ContractType = 'freelance' | 'temporary' | 'indefinite' | 'interim'
 export type RateType = 'hourly' | 'daily' | 'weekly' | 'monthly'
@@ -106,6 +108,9 @@ export interface WorkReport extends Data {
   proofUrls?: string[]
 }
 
-export const useWorks = createSharedFirestore<WorkPosition>('workPositions')
-export const useWorkSkills = createSharedFirestore<WorkSkill>('workSkills')
-export const useWorkResources = createSharedFirestore<WorkResource>('persons')
+export interface WorkProject extends Data, Case {
+  budgetMin?: number
+  budgetMax?: number
+  stateTender?: undefined | 'answered' | 'awaiting' | 'won' | 'lost'
+  stateNeed?: undefined | 'expressed' | 'harmonized' | 'defined' | 'locked'
+}

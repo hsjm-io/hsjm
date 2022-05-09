@@ -1,7 +1,9 @@
 import { createSharedFirestore } from '@hsjm/firebase'
-import { Data, History } from './base'
+import { FirestoreReference } from '../utils'
+import { BlogCategory } from './blogCategory'
+import { Data } from './data'
 
-export interface BlogPost extends Data, History<BlogPost> {
+export interface BlogPost extends Data {
   image?: string
   content?: string
   description?: string
@@ -14,15 +16,7 @@ export interface BlogPost extends Data, History<BlogPost> {
 
   // --- Category
   categoryId?: string
-  readonly category?: BlogCategory
-}
-
-export interface BlogCategory extends Data {
-  image?: string
-  description?: string
-  postIds?: string[]
-  readonly posts?: BlogPost[]
+  readonly category?: FirestoreReference<BlogCategory>
 }
 
 export const useBlogPosts = createSharedFirestore<BlogPost>('blogPosts')
-export const useBlogCategories = createSharedFirestore<BlogCategory>('blogCategories')
