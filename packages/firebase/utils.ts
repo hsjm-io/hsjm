@@ -36,6 +36,6 @@ export const unpeelSnapshot: UnpeelSnapshot = (snapshot, options = {}): any => {
     ? { id: snapshot.id, ...snapshot.data() }
     : snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
   return Array.isArray(result) && options.pickFirst
-    ? result.unshift()
+    ? result?.[0] ?? {}
     : result
 }

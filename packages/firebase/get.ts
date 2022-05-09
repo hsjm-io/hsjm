@@ -1,22 +1,26 @@
-import { Ref, isRef, ref, unref, watch } from 'vue-demi'
+import { Ref, isRef, ref } from 'vue-demi'
 import { createUnrefFn } from '@vueuse/core'
-import { MaybeRef, extendRef, isClient, reactify, tryOnScopeDispose } from '@vueuse/shared'
+import { MaybeRef, extendRef, isClient, reactify, tryOnScopeDispose, whenever } from '@vueuse/shared'
 import { DocumentData, FirestoreError, Unsubscribe, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { resolvable } from '@hsjm/shared'
 import { QueryFilter, createQuery } from './createQuery'
-import { UnpeelSnapshotOptions, isDocumentReference, unpeelSnapshot } from './utils'
+import { isDocumentReference, unpeelSnapshot } from './utils'
 import { save } from './save'
 import { erase } from './erase'
 
-export interface GetOptions extends UnpeelSnapshotOptions {
+export interface GetOptions {
   /** Error handler. */
   onError?: (error: FirestoreError) => void
   /** Sync the data using `onSnapshot` method. */
-  onSnapshot?: boolean
+  sync?: boolean
   /** Prevent `onSnapshot` unsubscription and cache deletion on scope dispose. */
   keepAlive?: boolean
   /** Debug. */
   debug?: boolean
+  /** Take the first document of a returned array. */
+  pickFirst: true
+  /** Initial value. */
+  initialValue?: any
 }
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
@@ -30,11 +34,11 @@ export interface RefFirestore<T = DocumentData | DocumentData[]> extends Ref<T> 
 
 // --- Overloads.
 export interface Get<_T = DocumentData> {
-  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<QueryFilter>, initialValue?: MaybeRef<Partial<T>[]>, options?: GetOptions & { pickFirst: true }): RefFirestore<T>
-  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<QueryFilter>, initialValue?: MaybeRef<Partial<T>[]>, options?: GetOptions & { pickFirst: false | undefined }): RefFirestore<T[]>
-  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null>, initialValue?: MaybeRef<Partial<T>>, options?: GetOptions): RefFirestore<T>
-  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<Partial<T> | Partial<T>[]>, options?: GetOptions & { pickFirst: true }): RefFirestore<T>
-  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<Partial<T> | Partial<T>[]>, options?: GetOptions & { pickFirst: false | undefined }): RefFirestore<T | T[]>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<QueryFilter>, options?: GetOptions & { pickFirst: true }): RefFirestore<T>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<QueryFilter>, options?: GetOptions & { pickFirst: false | undefined }): RefFirestore<T[]>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null>, options?: GetOptions): RefFirestore<T>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null | QueryFilter>, options?: GetOptions & { pickFirst: true }): RefFirestore<T>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null | QueryFilter>, options?: GetOptions & { pickFirst: false | undefined }): RefFirestore<T | T[]>
 }
 
 /**
@@ -44,35 +48,41 @@ export interface Get<_T = DocumentData> {
  * @param initialValue Initial value of the returned `Ref`.
  * @param options Custom parameters of the method.
  */
-export const get: Get = (path, filter, initialValue, options = {}) => {
+export const get: Get = (path, filter, options = {} as GetOptions) => {
+  // --- Destructure options.
+  const { initialValue, onError, sync, keepAlive, pickFirst } = options
+
   // --- Init local variables.
   let update: () => void
   const { promise, resolve, pending, reset } = resolvable<void>()
   const query = reactify(createQuery)(path, filter)
-  if (!initialValue) initialValue = typeof unref(filter) === 'string' ? {} : []
   const data: Ref<any> = isRef(initialValue) ? initialValue : ref(initialValue)
 
-  // --- Update wraps `onSnapshot`.
-  if (options.onSnapshot && isClient) {
+  // --- Get on snapshot.
+  if (sync && isClient) {
     let unsubscribe: Unsubscribe
     update = () => {
       // --- Reset promise & unsubscribe if possible.
       reset()
-      if (unsubscribe) unsubscribe()
+      unsubscribe && unsubscribe()
 
       // --- Subscribe to data.
       unsubscribe = onSnapshot(
-        query.value as any,
-        (snapshot: any) => { data.value = unpeelSnapshot(snapshot, options); resolve() },
-        options.onError,
+        <any>query.value,
+        (snapshot) => {
+          data.value = unpeelSnapshot(snapshot, { pickFirst })
+          resolve()
+        },
+        onError,
       )
     }
 
     // --- Unsubscribe and clear cache on scope dispose.
-    if (options.keepAlive) tryOnScopeDispose(() => unsubscribe && unsubscribe())
+    if (keepAlive)
+      tryOnScopeDispose(() => unsubscribe && unsubscribe())
   }
 
-  // --- Update wraps `getDoc(s)`.
+  // --- Get once.
   else {
     update = () => {
       // --- Reset promise.
@@ -84,12 +94,15 @@ export const get: Get = (path, filter, initialValue, options = {}) => {
         : getDocs(query.value).then(x => unpeelSnapshot(x, options))
 
       // --- Set date on resolve.
-      getPromise.then((_data) => { data.value = _data; resolve() })
+      getPromise.then((_data) => {
+        data.value = _data
+        resolve()
+      })
     }
   }
 
   // --- Start `filter` watcher.
-  watch(query, update, { immediate: true })
+  whenever(query, update, { immediate: true })
 
   // --- Return readonly data ref.
   return <any>extendRef(data, {
