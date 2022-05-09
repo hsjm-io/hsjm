@@ -4,11 +4,11 @@ import { MaybeRef, extendRef, isClient, reactify, tryOnScopeDispose } from '@vue
 import { DocumentData, FirestoreError, Unsubscribe, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { resolvable } from '@hsjm/shared'
 import { QueryFilter, createQuery } from './createQuery'
-import { isDocumentReference, unpeelSnapshot } from './utils'
+import { UnpeelSnapshotOptions, isDocumentReference, unpeelSnapshot } from './utils'
 import { save } from './save'
 import { erase } from './erase'
 
-export interface GetOptions {
+export interface GetOptions extends UnpeelSnapshotOptions {
   /** Error handler. */
   onError?: (error: FirestoreError) => void
   /** Sync the data using `onSnapshot` method. */
@@ -33,9 +33,11 @@ const cache: Record<string, any> = {}
 
 // --- Overloads.
 export interface Get<_T = DocumentData> {
-  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<QueryFilter>, initialValue?: MaybeRef<Partial<T>[]>, options?: GetOptions): RefFirestore<T[]>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<QueryFilter>, initialValue?: MaybeRef<Partial<T>[]>, options?: GetOptions & { pickFirst: true }): RefFirestore<T>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<QueryFilter>, initialValue?: MaybeRef<Partial<T>[]>, options?: GetOptions & { pickFirst: false | undefined }): RefFirestore<T[]>
   <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null>, initialValue?: MaybeRef<Partial<T>>, options?: GetOptions): RefFirestore<T>
-  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<Partial<T> | Partial<T>[]>, options?: GetOptions): RefFirestore<T | T[]>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<Partial<T> | Partial<T>[]>, options?: GetOptions & { pickFirst: true }): RefFirestore<T>
+  <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<string | null | QueryFilter>, initialValue?: MaybeRef<Partial<T> | Partial<T>[]>, options?: GetOptions & { pickFirst: false | undefined }): RefFirestore<T | T[]>
 }
 
 /**
@@ -72,7 +74,7 @@ export const get: Get = (path, filter, initialValue, options = {}) => {
       // --- Subscribe to data.
       unsubscribe = onSnapshot(
         query.value as any,
-        (snapshot: any) => { data.value = unpeelSnapshot(snapshot); resolve() },
+        (snapshot: any) => { data.value = unpeelSnapshot(snapshot, options); resolve() },
         options.onError,
       )
     }
@@ -96,8 +98,8 @@ export const get: Get = (path, filter, initialValue, options = {}) => {
 
       // --- Get data from firestore.
       const getPromise = isDocumentReference(query.value)
-        ? getDoc(query.value as any).then(unpeelSnapshot)
-        : getDocs(query.value).then(unpeelSnapshot)
+        ? getDoc(query.value as any).then(x => unpeelSnapshot(x, options))
+        : getDocs(query.value).then(x => unpeelSnapshot(x, options))
 
       // --- Set date on resolve.
       getPromise.then((_data) => { data.value = _data; resolve() })

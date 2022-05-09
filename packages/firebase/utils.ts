@@ -16,18 +16,26 @@ export const isDocumentSnapshot = (value: any): value is DocumentSnapshot => val
   && typeof value.id === 'string'
   && value.ref.type === 'document'
 
+export interface UnpeelSnapshotOptions {
+  pickFirst?: boolean
+}
+
+export interface UnpeelSnapshot {
+  <T = DocumentData>(snapshot: QuerySnapshot<T>, options: UnpeelSnapshotOptions & { pickFirst: true }): T
+  <T = DocumentData>(snapshot: QuerySnapshot<T>, options?: UnpeelSnapshotOptions): T[]
+  <T = DocumentData>(snapshot: DocumentSnapshot<T>, options?: UnpeelSnapshotOptions): T
+  <T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>, options?: UnpeelSnapshotOptions): T | T[]
+}
+
 /**
  * Extract data from a snapshot of any type.
  * @param snapshot Snapshot to extract from.
  */
-export interface UnpeelSnapshot {
-  <T = DocumentData>(snapshot: QuerySnapshot<T>): T[]
-  <T = DocumentData>(snapshot: DocumentSnapshot<T>): T
-  <T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>): T | T[]
-}
-
-export const unpeelSnapshot: UnpeelSnapshot = (snapshot): any => (
+export const unpeelSnapshot: UnpeelSnapshot = (snapshot, options = {}): any => (
   isDocumentSnapshot(snapshot)
     ? { id: snapshot.id, ...snapshot.data() }
-    : snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
+    : (options.pickFirst
+      ? { id: snapshot.docs[0].id, ...snapshot.docs[0].data() }
+      : snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
+    )
 )
