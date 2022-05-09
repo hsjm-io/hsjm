@@ -28,9 +28,6 @@ export interface RefFirestore<T = DocumentData | DocumentData[]> extends Ref<T> 
   erase: () => Promise<void>
 }
 
-// --- Cache register.
-const cache: Record<string, any> = {}
-
 // --- Overloads.
 export interface Get<_T = DocumentData> {
   <T extends _T>(path: MaybeRef<string>, filter?: MaybeRef<QueryFilter>, initialValue?: MaybeRef<Partial<T>[]>, options?: GetOptions & { pickFirst: true }): RefFirestore<T>
@@ -48,14 +45,6 @@ export interface Get<_T = DocumentData> {
  * @param options Custom parameters of the method.
  */
 export const get: Get = (path, filter, initialValue, options = {}) => {
-  // --- Caching.
-  const cacheId = `${!!options.onSnapshot}:${path}:${JSON.stringify(unref(filter))}`
-  if (cacheId in cache) {
-    // eslint-disable-next-line no-console
-    if (options.debug) console.log(`deleted cache entry ${cacheId}`)
-    return cache[cacheId]
-  }
-
   // --- Init local variables.
   let update: () => void
   const { promise, resolve, pending, reset } = resolvable<void>()
@@ -80,14 +69,7 @@ export const get: Get = (path, filter, initialValue, options = {}) => {
     }
 
     // --- Unsubscribe and clear cache on scope dispose.
-    if (options.keepAlive) {
-      tryOnScopeDispose(() => {
-        if (unsubscribe) unsubscribe()
-        if (cache[cacheId]) delete cache[cacheId]
-        // eslint-disable-next-line no-console
-        if (options.debug) console.log(`deleted cache entry ${cacheId}`)
-      })
-    }
+    if (options.keepAlive) tryOnScopeDispose(() => unsubscribe && unsubscribe())
   }
 
   // --- Update wraps `getDoc(s)`.
@@ -110,11 +92,11 @@ export const get: Get = (path, filter, initialValue, options = {}) => {
   watch(query, update, { immediate: true })
 
   // --- Return readonly data ref.
-  return (cache[cacheId] = extendRef(data, {
+  return <any>extendRef(data, {
     ready: promise,
     loading: pending,
     refresh: update,
     save: () => { if (!Array.isArray(data.value)) createUnrefFn(save)(path, data) },
     erase: () => { if (!Array.isArray(data.value)) createUnrefFn(erase)(path, data) },
-  }))
+  })
 }
