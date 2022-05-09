@@ -1,6 +1,6 @@
 import { Schema } from '@hsjm/shared'
 import { createSharedFirestore } from '@hsjm/firebase'
-import { FirestoreReference } from '../utils'
+import { FirestoreReference } from './utils'
 import { Identity } from './identity'
 import { Data } from './data'
 import { Organization } from './organization'

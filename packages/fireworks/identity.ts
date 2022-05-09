@@ -1,9 +1,7 @@
-import { Schema, compact, defaultToContext, isArrayEmpty, isArrayOf, isStringEmail, isStringFirestoreId, isStringNotEmpty, isStringUrl, isUndefined, join, toContext, trim } from '@hsjm/shared'
-import functions from 'firebase-functions'
-import admin from 'firebase-admin'
+import { Schema, compact, defaultToContext, isArrayEmpty, isArrayNotEmpty, isArrayOf, isStringEmail, isStringFirestoreId, isStringNotEmpty, isStringUrl, isUndefined, join, toContext, trim } from '@hsjm/shared'
 import { createSharedFirestore, get, useAuth } from '@hsjm/firebase'
 import { createSharedComposable } from '@vueuse/shared'
-import { FirestoreReference, toFirestoreReference } from '../utils'
+import { FirestoreReference, toFirestoreReference } from './utils'
 import { Data, dataSchema } from './data'
 import { Organization } from './organization'
 
@@ -12,6 +10,7 @@ export interface Identity extends Data {
   name: string
   firstName?: string
   lastName?: string
+  title?: string
   portraitUrl?: string
   contactEmails?: string[]
   contactPhones?: string[]
@@ -41,6 +40,11 @@ export const identitySchema: Schema = {
     [[defaultToContext, 'name'], v => v.split(' ').slice(1).join(' ')],
   ],
 
+  title: [
+    [isUndefined],
+    [isStringNotEmpty, trim],
+  ],
+
   portraitUrl: [
     [isUndefined],
     [isStringUrl],
@@ -54,8 +58,7 @@ export const identitySchema: Schema = {
 
   contactPhones: [
     [isUndefined],
-    [isArrayEmpty],
-    [[isArrayOf, [isStringNotEmpty]]],
+    [isArrayNotEmpty, compact, [isArrayOf, [isStringNotEmpty]]],
   ],
 
   contactSocials: [
@@ -76,7 +79,7 @@ export const identitySchema: Schema = {
 }
 
 /** Reactive `Profile` composable. */
-export const useProfiles = createSharedFirestore<Identity>('identity')
+export const useIdentities = createSharedFirestore<Identity>('identity')
 
 /** Current user's profile. */
 export const useProfile = createSharedComposable(() => {

@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/consistent-type-imports */
 import { Schema, validateSchema } from '@hsjm/shared'
+import admin from 'firebase-admin'
+import functions from 'firebase-functions'
 
-export const firebaseAdmin = () => require('firebase-admin').default as typeof import('firebase-admin')
-export const firebaseFunctions = () => require('firebase-functions').default as typeof import('firebase-functions')
-
-export const validateOnWrite = (collectionPath: string, schema: Schema) => firebaseFunctions().firestore
+export const validateOnWrite = (collectionPath: string, schema: Schema) => functions.firestore
   .document(`${collectionPath}/{id}`)
   .onWrite(async(changes, context) => {
     // --- Abort on no changes.
@@ -15,12 +12,12 @@ export const validateOnWrite = (collectionPath: string, schema: Schema) => fireb
     // --- Validate data.
     const dataAfter = changes.after.data()
     const dataBefore = changes.after.data()
-    const result = await validateSchema(dataAfter, schema, context)
+    const result = await validateSchema(dataAfter, schema, { context, admin })
 
     // --- Apply transformation if valid, or abort if invalid.
-    if (result.isValid) changes.after.ref.set(result.value)
+    if (result.isValid) changes.after.ref.set({ ...result.value, errors: result.errors })
     else if (!dataBefore) changes.after.ref.delete()
-    else changes.after.ref.set(dataBefore)
+    else changes.after.ref.set({ ...dataBefore, errors: result.errors })
   })
 
 /**
@@ -28,10 +25,10 @@ export const validateOnWrite = (collectionPath: string, schema: Schema) => fireb
  * @param extend Function to extend the document.
  * @returns Firebase function instance.
  */
-export const createIdentityOnUserCreate = (handler?: Function) => firebaseFunctions().auth
+export const createIdentityOnUserCreate = (handler?: Function) => functions.auth
   .user()
   .onCreate((user, context) =>
-    firebaseAdmin().firestore().collection('identity').doc().set({
+    admin.firestore().collection('identity').doc().set({
       userId: user.uid,
       portraitUrl: user.photoURL,
       name: user.displayName,
@@ -41,6 +38,6 @@ export const createIdentityOnUserCreate = (handler?: Function) => firebaseFuncti
     }),
   )
 
-export const deleteIdentityOnUserDelete = () => firebaseFunctions().auth
+export const deleteIdentityOnUserDelete = () => functions.auth
   .user()
-  .onDelete(user => firebaseAdmin().firestore().collection('identity').doc(user.uid).delete())
+  .onDelete(user => admin.firestore().collection('identity').doc(user.uid).delete())
