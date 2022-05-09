@@ -34,8 +34,9 @@ export const metadataSchema: Schema = {
 }
 
 export const useMetadatas = createSharedFirestore<Metadata>('metadata')
-export const useMetadata = createGlobalState(() => get<Metadata>('metadata', 'default', { id: 'default' }, {
-  keepAlive: true,
-  onSnapshot: false,
+export const useMetadata = createGlobalState(() => get<Metadata>('metadata', 'default', {
+  sync: true,
   pickFirst: true,
+  keepAlive: true,
+  initialValue: { id: 'default' },
 }))

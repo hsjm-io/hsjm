@@ -84,5 +84,10 @@ export const useIdentities = createSharedFirestore<Identity>('identity')
 /** Current user's profile. */
 export const useProfile = createSharedComposable(() => {
   const { user } = useAuth()
-  return get<Identity>('identity', { userId: user.value?.uid }, { userId: user.value?.uid }, { pickFirst: true })
+  return get<Identity>('identity', { userId: user.value?.uid }, {
+    sync: true,
+    pickFirst: true,
+    keepAlive: true,
+    initialValue: { userId: user.value?.uid },
+  })
 })
