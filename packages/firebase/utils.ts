@@ -31,11 +31,11 @@ export interface UnpeelSnapshot {
  * Extract data from a snapshot of any type.
  * @param snapshot Snapshot to extract from.
  */
-export const unpeelSnapshot: UnpeelSnapshot = (snapshot, options = {}): any => (
-  isDocumentSnapshot(snapshot)
+export const unpeelSnapshot: UnpeelSnapshot = (snapshot, options = {}): any => {
+  const result = isDocumentSnapshot(snapshot)
     ? { id: snapshot.id, ...snapshot.data() }
-    : (options.pickFirst
-      ? { id: snapshot.docs[0].id, ...snapshot.docs[0].data() }
-      : snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
-    )
-)
+    : snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
+  return Array.isArray(result) && options.pickFirst
+    ? result.unshift()
+    : result
+}
