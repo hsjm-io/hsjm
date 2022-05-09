@@ -32,7 +32,7 @@ export const useGeocoding = (request: MaybeRef<GeocodeRequest>): Ref<GeocodeResp
     return await service(unref(request))
       .send()
       .then(response => response.body)
-  }, {})
+  })
 
 /**
  * An isochrone, from the Greek root words iso (equal) and chrone (time), is a line that connects points of
@@ -62,7 +62,7 @@ export const useGeocoding = (request: MaybeRef<GeocodeRequest>): Ref<GeocodeResp
  * @returns Request response.
  */
 export const useDirections = (request: MaybeRef<DirectionsRequest>): Ref<DirectionsResponse> =>
-  computedAsync(() => directionsClient(config).getDirections(unref(request)).send().then(response => response.body), {})
+  computedAsync(() => directionsClient(config).getDirections(unref(request)).send().then(response => response.body))
 
 /**
  * The **Mapbox Map Matching API** snaps fuzzy, inaccurate traces from a GPS unit or a phone to the OpenStreetMap
@@ -72,7 +72,7 @@ export const useDirections = (request: MaybeRef<DirectionsRequest>): Ref<Directi
  * @returns Request response.
  */
 export const useMapMatching = (request: MaybeRef<MapMatchingRequest>): Ref<MapMatchingResponse> =>
-  computedAsync(() => mapMatchingClient(config).getMatch(unref(request)).send().then(response => response.body), {})
+  computedAsync(() => mapMatchingClient(config).getMatch(unref(request)).send().then(response => response.body))
 
 /**
  * The **Mapbox Optimization API*** returns a duration-optimized route between the input coordinates. This is also known
