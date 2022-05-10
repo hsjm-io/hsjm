@@ -19,6 +19,11 @@
       "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
     },
+    "./functions": {
+      "require": "./functions/dist/index.js",
+      "import": "./functions/dist/index.mjs",
+      "types": "./functions/dist/index.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -28,7 +33,7 @@
   ],
   "scripts": {
     "dev": "pnpm build -- --watch",
-    "build": "tsup build ./index.ts --onSuccess 'pnpm build:post && pnpm build:lint'",
+    "build": "tsup build index.ts */index.ts --onSuccess 'pnpm build:post && pnpm build:lint'",
     "build:post": "esno ../../scripts/buildPost.ts",
     "build:lint": "eslint package.json --fix --no-ignore"
   },
