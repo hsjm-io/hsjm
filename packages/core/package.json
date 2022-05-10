@@ -1,7 +1,37 @@
 {
   "name": "@hsjm/core",
+  "version": "1.0.0",
+  "author": "Stanley Horwood <stanley@hsjm.io>",
   "description": "Opinionated collection of common components, composables and utils for Vue projects.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hsjm-io/hsjm.git",
+    "directory": "/home/shorwood/workspaces/hsjm/packages/core"
+  },
   "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENCE"
+  ],
+  "scripts": {
+    "dev": "pnpm build -- --watch",
+    "build": "tsup build ./index.ts --onSuccess 'pnpm build:post && pnpm build:lint'",
+    "build:post": "esno ../../scripts/buildPost.ts",
+    "build:lint": "eslint package.json --fix --no-ignore"
+  },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-rc.1",
     "vue": "^2.0.0 || >=3.0.0"
