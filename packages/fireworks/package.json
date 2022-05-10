@@ -20,9 +20,9 @@
       "types": "./dist/index.d.ts"
     },
     "./functions": {
-      "require": "./functions/dist/index.js",
-      "import": "./functions/dist/index.mjs",
-      "types": "./functions/dist/index.d.ts"
+      "require": "./dist/functions/index.js",
+      "import": "./dist/functions/index.mjs",
+      "types": "./dist/functions/index.d.ts"
     },
     "./package.json": "./package.json"
   },
