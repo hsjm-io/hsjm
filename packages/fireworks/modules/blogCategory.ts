@@ -1,5 +1,5 @@
 import { createSharedFirestore } from '@hsjm/firebase'
-import { FirestoreReference } from './utils'
+import { FirestoreReference } from '../utils'
 import { BlogPost } from './blogPost'
 import { Data } from './data'
 

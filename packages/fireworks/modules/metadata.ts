@@ -9,6 +9,7 @@ export interface Metadata extends Data {
   metaDescription: string
   metaImage?: string
   metaTags?: string[]
+  legalId?: string
   legalName?: string
   legalAddress?: string
   contactEmail?: string
@@ -19,11 +20,12 @@ export interface Metadata extends Data {
 }
 
 export const metadataSchema: Schema = {
-  cannonicalUrl: [isStringUrl],
+  cannonicalUrl: [[isUndefined], [isStringUrl]],
   metaTitle: [isStringNotEmpty, [isStringShorterOrEq, 60], trim],
   metaDescription: [isStringNotEmpty, [isStringShorterOrEq, 160], trim],
   metaImage: [[isUndefined], [isStringUrl]],
   metaTags: [[isUndefined], [[isArrayOf, [isStringNotEmpty]], trim]],
+  legalId: [[isUndefined], [isStringNotEmpty]],
   legalName: [[isStringNotEmpty], [[defaultToContext, 'metaTitle'], trim]],
   legalAddress: [[isUndefined], [isStringNotEmpty]],
   contactEmail: [[isUndefined], [isStringEmail]],

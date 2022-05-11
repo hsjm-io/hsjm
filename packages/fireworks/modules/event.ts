@@ -1,4 +1,4 @@
-import { FirestoreReference } from './utils'
+import { FirestoreReference } from '../utils'
 import { Data } from './data'
 import { Identity } from './identity'
 

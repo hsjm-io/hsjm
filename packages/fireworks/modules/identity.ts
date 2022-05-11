@@ -1,7 +1,7 @@
 import { Schema, compact, isArrayEmpty, isArrayOf, isNil, isStringEmail, isStringFirestoreId, isStringNotEmpty, isStringUrl, join, toContext, trim } from '@hsjm/shared'
 import { createSharedFirestore, get, useAuth } from '@hsjm/firebase'
 import { createSharedComposable } from '@vueuse/shared'
-import { FirestoreReference } from './utils'
+import { FirestoreReference } from '../utils'
 import { Data, dataSchema } from './data'
 import { Organization } from './organization'
 

@@ -1,6 +1,6 @@
 import { createSharedFirestore } from '@hsjm/firebase'
 import { Schema, isArrayNotEmpty, isArrayOf, isStringFirestoreId, isStringNotEmpty, isStringUrl, isUndefined, trim } from '@hsjm/shared'
-import { FirestoreReference } from './utils'
+import { FirestoreReference } from '../utils'
 import { Data, dataSchema } from './data'
 import { Identity } from './identity'
 

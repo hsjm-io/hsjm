@@ -1,5 +1,5 @@
 import { Schema, arrayify, defaultToContext, isArray, isArrayNotEmpty, isArrayOf, isBrowser, isNotUndefined, isStringFirestoreId, isStringNotEmpty, isStringTimestamp, isUndefined, kebabCase, toContext, trim } from '@hsjm/shared'
-import { FirestoreReference, isUserId, toFirestoreIdentity } from './utils'
+import { FirestoreReference, isUserId, toFirestoreIdentity } from '../utils'
 import { Identity } from './identity'
 
 /** Data properties common to all documents. */
