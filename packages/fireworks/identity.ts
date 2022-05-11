@@ -1,7 +1,7 @@
-import { Schema, compact, defaultToContext, isArrayEmpty, isArrayNotEmpty, isArrayOf, isStringEmail, isStringFirestoreId, isStringNotEmpty, isStringUrl, isUndefined, join, toContext, trim } from '@hsjm/shared'
+import { Schema, compact, isArrayEmpty, isArrayOf, isNil, isStringEmail, isStringFirestoreId, isStringNotEmpty, isStringUrl, join, toContext, trim } from '@hsjm/shared'
 import { createSharedFirestore, get, useAuth } from '@hsjm/firebase'
 import { createSharedComposable } from '@vueuse/shared'
-import { FirestoreReference, toFirestoreReference } from './utils'
+import { FirestoreReference } from './utils'
 import { Data, dataSchema } from './data'
 import { Organization } from './organization'
 
@@ -24,57 +24,51 @@ export const identitySchema: Schema = {
   ...dataSchema,
 
   name: [
+    [[toContext, ['firstName', 'lastName']], compact, [join, ' '], trim],
     [isStringNotEmpty, trim],
-    [[defaultToContext, ['firstName', 'lastName']], compact, [join, ' '], trim],
   ],
 
   firstName: [
-    [isUndefined],
-    [isStringNotEmpty, trim],
-    [[defaultToContext, 'name'], v => v.split(' ')[0]],
+    [[toContext, 'name'], v => v.split(' ')[0], isStringNotEmpty],
+    [isNil],
   ],
 
   lastName: [
-    [isUndefined],
-    [isStringNotEmpty, trim],
-    [[defaultToContext, 'name'], v => v.split(' ').slice(1).join(' ')],
+    [[toContext, 'name'], v => v.split(' ').slice(1).join(' '), isStringNotEmpty],
+    [isNil],
   ],
 
   title: [
-    [isUndefined],
+    [isNil],
     [isStringNotEmpty, trim],
   ],
 
   portraitUrl: [
-    [isUndefined],
+    [isNil],
     [isStringUrl],
   ],
 
   contactEmails: [
-    [isUndefined],
+    [isNil],
     [isArrayEmpty],
     [[isArrayOf, [isStringEmail]]],
   ],
 
   contactPhones: [
-    [isUndefined],
-    [isArrayNotEmpty, compact, [isArrayOf, [isStringNotEmpty]]],
+    [isNil],
+    [isArrayEmpty],
+    [[isArrayOf, [isStringNotEmpty]]],
   ],
 
   contactSocials: [
-    [isUndefined],
+    [isNil],
     [isArrayEmpty],
     [[isArrayOf, [isStringUrl]]],
   ],
 
   userId: [
     [isStringFirestoreId],
-    [isUndefined],
-  ],
-
-  user: [
-    [[toContext, 'userId'], toFirestoreReference],
-    [isUndefined],
+    [isNil],
   ],
 }
 

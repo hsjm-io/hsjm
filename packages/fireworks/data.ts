@@ -1,5 +1,5 @@
-import { Schema, arrayify, defaultToContext, defaultToValue, isArray, isArrayNotEmpty, isArrayOf, isBrowser, isNotUndefined, isStringFirestoreId, isStringNotEmpty, isStringTimestamp, isUndefined, kebabCase, toContext, toValue, trim } from '@hsjm/shared'
-import { FirestoreReference, toFirestoreReference } from './utils'
+import { Schema, arrayify, defaultToContext, isArray, isArrayNotEmpty, isArrayOf, isBrowser, isNotUndefined, isStringFirestoreId, isStringNotEmpty, isStringTimestamp, isUndefined, kebabCase, toContext, trim } from '@hsjm/shared'
+import { FirestoreReference, isUserId, toFirestoreIdentity } from './utils'
 import { Identity } from './identity'
 
 /** Data properties common to all documents. */
@@ -31,7 +31,9 @@ const dataSchemaServer: Schema = {
   ],
 
   // --- Name must be set and will be trimmed.
-  name: [isStringNotEmpty, trim],
+  name: [
+    isStringNotEmpty, trim,
+  ],
 
   // --- Slug can be set or will be defaulted to kebabCased `name`.
   slug: [
@@ -41,41 +43,38 @@ const dataSchemaServer: Schema = {
 
   // --- Owner ids must be an array of firestore ids or will be defaulted to request's author id.
   ownerIds: [
-    [isArray, isArrayNotEmpty, [isArrayOf, [isStringFirestoreId]]],
-    [[defaultToContext, 'auth.uid'], isStringFirestoreId, arrayify],
+    [isArray, isArrayNotEmpty, [isArrayOf, [isUserId]]],
+    [[defaultToContext, 'updatedById'], arrayify],
   ],
 
   owners: [
-    [isNotUndefined],
-    [[defaultToContext, 'auth.uid'], [toFirestoreReference, 'identities'], arrayify],
+    [isArrayNotEmpty],
+    [[defaultToContext, 'updatedById'], toFirestoreIdentity, arrayify],
   ],
 
   createdById: [
-    [isStringFirestoreId],
-    [[defaultToContext, 'auth.uid']],
+    [isUserId],
+    [[defaultToContext, 'updatedById']],
   ],
 
   createdBy: [
     [isNotUndefined],
-    [[defaultToContext, 'createdById'], [toFirestoreReference, 'identities']],
+    [[defaultToContext, 'updatedById'], toFirestoreIdentity],
   ],
 
-  updatedById: [
-    [toContext, 'auth.uid'],
-  ],
-
-  updatedBy: [
-    [toContext, 'auth.uid'], [toFirestoreReference, 'identities'],
-  ],
+  updatedById: [isUserId],
+  updatedBy: [[toContext, 'updatedById'], toFirestoreIdentity],
 
   // --- Default to current timestamp.
   createdAt: [
     [isStringTimestamp],
-    [[defaultToValue, new Date().toISOString()], isStringTimestamp],
+    [[defaultToContext, 'context.timestamp'], isStringTimestamp],
   ],
 
   // --- Force value to current timestamp.
-  updatedAt: [[toValue, new Date().toISOString()], isStringTimestamp],
+  updatedAt: [
+    [toContext, 'context.timestamp'], isStringTimestamp,
+  ],
 }
 
 /** Data schema */
