@@ -3,9 +3,7 @@ import { chunk } from '@hsjm/shared'
 import { useFirebase } from './useFirebase'
 
 // --- Overloads.
-export interface Save<_T = DocumentData> {
-  <T extends _T>(path: string, data: T | T[]): Promise<void>
-}
+export type Save<T = DocumentData> = (path: string, data: T | T[]) => Promise<void>
 
 /**
  * Update or create document(s) to Firestore.
@@ -37,7 +35,7 @@ export const save: Save = async(path, data) => {
   // --- Save single.
   return await setDoc(documentReference, {
     ...data,
-    _origin: 'client',
+    origin: 'client',
     updatedById: auth.currentUser?.uid,
   })
 }

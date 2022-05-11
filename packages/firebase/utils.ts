@@ -17,7 +17,9 @@ export const isDocumentSnapshot = (value: any): value is DocumentSnapshot => val
   && value.ref.type === 'document'
 
 export interface UnpeelSnapshotOptions {
+  /** Take the first document of a returned array. */
   pickFirst?: boolean
+  /** Initial value. */
   initialValue?: any
 }
 

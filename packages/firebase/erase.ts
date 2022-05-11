@@ -3,9 +3,7 @@ import { chunk } from '@hsjm/shared'
 import { useFirebase } from './useFirebase'
 
 // --- Overloads.
-export interface Erase<_T = DocumentData> {
-  <T extends _T>(path: string, data: string | T | Array<string | T>): Promise<void>
-}
+export type Erase<T = DocumentData> = (path: string, data: string | T | Array<string | T>) => Promise<void>
 
 /**
  * Erase document(s) from Firestore.

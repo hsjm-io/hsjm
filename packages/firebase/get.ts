@@ -4,11 +4,11 @@ import { MaybeRef, extendRef, isClient, reactify, tryOnScopeDispose, whenever } 
 import { DocumentData, FirestoreError, Unsubscribe, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { resolvable } from '@hsjm/shared'
 import { QueryFilter, createQuery } from './createQuery'
-import { isDocumentReference, unpeelSnapshot } from './utils'
+import { UnpeelSnapshotOptions, isDocumentReference, unpeelSnapshot } from './utils'
 import { save } from './save'
 import { erase } from './erase'
 
-export interface GetOptions {
+export interface GetOptions extends UnpeelSnapshotOptions {
   /** Error handler. */
   onError?: (error: FirestoreError) => void
   /** Sync the data using `onSnapshot` method. */
@@ -17,10 +17,6 @@ export interface GetOptions {
   keepAlive?: boolean
   /** Debug. */
   debug?: boolean
-  /** Take the first document of a returned array. */
-  pickFirst: true
-  /** Initial value. */
-  initialValue?: any
 }
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
@@ -45,7 +41,6 @@ export interface Get<_T = DocumentData> {
  * Fetch data from firestore and bind it to a `Ref`
  * @param path Path to the collection
  * @param filter ID or filter parameters.
- * @param initialValue Initial value of the returned `Ref`.
  * @param options Custom parameters of the method.
  */
 export const get: Get = (path, filter, options = {} as GetOptions) => {
