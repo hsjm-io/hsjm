@@ -1,6 +1,4 @@
-import { createSharedFirestore, get } from '@hsjm/firebase'
 import { Schema, defaultToContext, isArrayOf, isStringEmail, isStringNotEmpty, isStringShorterOrEq, isStringUrl, isUndefined, trim } from '@hsjm/shared'
-import { createGlobalState } from '@vueuse/shared'
 import { Data } from './data'
 
 export interface Metadata extends Data {
@@ -34,11 +32,3 @@ export const metadataSchema: Schema = {
   bannerText: [[isUndefined], [isStringNotEmpty, [isStringShorterOrEq, 60]]],
   bannerHref: [[isUndefined], [isStringUrl]],
 }
-
-export const useMetadatas = createSharedFirestore<Metadata>('metadata')
-export const useMetadata = createGlobalState(() => get<Metadata>('metadata', 'default', {
-  sync: true,
-  pickFirst: true,
-  keepAlive: true,
-  initialValue: { id: 'default' },
-}))

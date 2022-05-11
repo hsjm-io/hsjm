@@ -8,14 +8,14 @@ import { Organization } from './organization'
 export interface Identity extends Data {
   userId?: string
   name: string
-  firstName?: string
-  lastName?: string
   title?: string
-  portraitUrl?: string
+  avatar?: string
   contactEmails?: string[]
   contactPhones?: string[]
   contactSocials?: string[]
   organizationIds?: string[]
+  readonly firstName?: string
+  readonly lastName?: string
   readonly organizations?: FirestoreReference<Organization>[]
 }
 
@@ -43,7 +43,7 @@ export const identitySchema: Schema = {
     [isStringNotEmpty, trim],
   ],
 
-  portraitUrl: [
+  avatar: [
     [isNil],
     [isStringUrl],
   ],
@@ -71,17 +71,3 @@ export const identitySchema: Schema = {
     [isNil],
   ],
 }
-
-/** Reactive `Profile` composable. */
-export const useIdentities = createSharedFirestore<Identity>('identity')
-
-/** Current user's profile. */
-export const useProfile = createSharedComposable(() => {
-  const { user } = useAuth()
-  return get<Identity>('identity', { userId: user.value?.uid }, {
-    sync: true,
-    pickFirst: true,
-    keepAlive: true,
-    initialValue: { userId: user.value?.uid },
-  })
-})

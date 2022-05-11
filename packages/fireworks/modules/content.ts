@@ -1,4 +1,3 @@
-import { createSharedFirestore } from '@hsjm/firebase'
 import { Schema, isBoolean, isNumberPositive, isStringMatching, isStringNotEmpty, isStringUrl, isUndefined } from '@hsjm/shared'
 import { Data } from './data'
 
@@ -21,5 +20,3 @@ export const contentSchema: Schema = {
   order: [[isUndefined], [isNumberPositive]],
   isPrivate: [[isUndefined], [isBoolean]],
 }
-
-export const useContents = createSharedFirestore<Content>('contents')

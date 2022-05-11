@@ -24,6 +24,11 @@
       "import": "./dist/functions/index.mjs",
       "types": "./dist/functions/index.d.ts"
     },
+    "./modules": {
+      "require": "./dist/modules/index.js",
+      "import": "./dist/modules/index.mjs",
+      "types": "./dist/modules/index.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -58,6 +63,7 @@
     }
   },
   "dependencies": {
+    "@faker-js/faker": "^6.3.1",
     "@hsjm/firebase": "workspace:*",
     "@hsjm/shared": "workspace:*",
     "@vueuse/shared": "^8.4.2",

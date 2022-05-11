@@ -1,4 +1,4 @@
-import { Schema, arrayify, defaultToContext, isArray, isArrayNotEmpty, isArrayOf, isBrowser, isNotUndefined, isStringFirestoreId, isStringNotEmpty, isStringTimestamp, isUndefined, kebabCase, toContext, trim } from '@hsjm/shared'
+import { Schema, arrayify, defaultToContext, isArray, isArrayNotEmpty, isArrayOf, isNotUndefined, isStringFirestoreId, isStringNotEmpty, isStringTimestamp, isUndefined, kebabCase, toContext, trim } from '@hsjm/shared'
 import { FirestoreReference, isUserId, toFirestoreIdentity } from '../utils'
 import { Identity } from './identity'
 
@@ -17,23 +17,16 @@ export interface Data {
   readonly updatedAt: string
 }
 
-/** Client side data schema. */
-const dataSchemaClient: Schema = {
-  name: [isStringNotEmpty, trim],
-}
-
-/** Server side data schema. */
-const dataSchemaServer: Schema = {
+/** Data schema. */
+export const dataSchema: Schema = {
   // --- Id can be undefined or matching firestore id regex.
   id: [
     [isStringFirestoreId],
-    [[isUndefined, 'dwad']],
+    [isUndefined],
   ],
 
   // --- Name must be set and will be trimmed.
-  name: [
-    isStringNotEmpty, trim,
-  ],
+  name: [isStringNotEmpty, trim],
 
   // --- Slug can be set or will be defaulted to kebabCased `name`.
   slug: [
@@ -76,8 +69,3 @@ const dataSchemaServer: Schema = {
     [toContext, 'context.timestamp'], isStringTimestamp,
   ],
 }
-
-/** Data schema */
-export const dataSchema = isBrowser
-  ? dataSchemaClient
-  : dataSchemaServer

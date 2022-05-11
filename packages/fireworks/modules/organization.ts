@@ -1,4 +1,3 @@
-import { createSharedFirestore } from '@hsjm/firebase'
 import { Schema, isArrayNotEmpty, isArrayOf, isStringFirestoreId, isStringNotEmpty, isStringUrl, isUndefined, trim } from '@hsjm/shared'
 import { FirestoreReference } from '../utils'
 import { Data, dataSchema } from './data'
@@ -37,5 +36,3 @@ export const organizationSchema: Schema = {
   contactSocials: [[isUndefined], [isArrayNotEmpty, [isArrayOf, [isStringUrl]]]],
   contactIds: [[isUndefined], [isArrayNotEmpty, [isArrayOf, [isStringFirestoreId]]]],
 }
-
-export const useOrganizations = createSharedFirestore<Organization>('organizations')
