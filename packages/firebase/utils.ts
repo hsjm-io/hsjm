@@ -18,6 +18,7 @@ export const isDocumentSnapshot = (value: any): value is DocumentSnapshot => val
 
 export interface UnpeelSnapshotOptions {
   pickFirst?: boolean
+  initialValue?: any
 }
 
 export interface UnpeelSnapshot {
@@ -32,10 +33,19 @@ export interface UnpeelSnapshot {
  * @param snapshot Snapshot to extract from.
  */
 export const unpeelSnapshot: UnpeelSnapshot = (snapshot, options = {}): any => {
-  const result = isDocumentSnapshot(snapshot)
-    ? { id: snapshot.id, ...snapshot.data() }
-    : snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
-  return Array.isArray(result) && options.pickFirst
-    ? result?.[0] ?? {}
-    : result
+  // --- Destructure options.
+  const { pickFirst, initialValue } = options
+  const isDocumentSnap = isDocumentSnapshot(snapshot)
+
+  // --- If is document snapshot, extract data.
+  if (isDocumentSnap) {
+    return snapshot.exists()
+      ? { id: snapshot.id, ...snapshot.data() }
+      : initialValue
+  }
+
+  // --- If is array of documents, extract data. Default to initial value if no results.
+  const data = snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
+  if (data.length === 0) return initialValue
+  return pickFirst ? data[0] : data
 }

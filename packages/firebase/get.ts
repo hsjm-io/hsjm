@@ -50,7 +50,7 @@ export interface Get<_T = DocumentData> {
  */
 export const get: Get = (path, filter, options = {} as GetOptions) => {
   // --- Destructure options.
-  const { initialValue, onError, sync, keepAlive, pickFirst } = options
+  const { initialValue, onError, sync, keepAlive } = options
 
   // --- Init local variables.
   let update: () => void
@@ -70,7 +70,7 @@ export const get: Get = (path, filter, options = {} as GetOptions) => {
       unsubscribe = onSnapshot(
         <any>query.value,
         (snapshot) => {
-          data.value = unpeelSnapshot(snapshot, { pickFirst })
+          data.value = unpeelSnapshot(snapshot, options)
           resolve()
         },
         onError,
@@ -90,12 +90,12 @@ export const get: Get = (path, filter, options = {} as GetOptions) => {
 
       // --- Get data from firestore.
       const getPromise = isDocumentReference(query.value)
-        ? getDoc(query.value as any).then(x => unpeelSnapshot(x, options))
-        : getDocs(query.value).then(x => unpeelSnapshot(x, options))
+        ? getDoc(query.value)
+        : getDocs(query.value)
 
       // --- Set date on resolve.
-      getPromise.then((_data) => {
-        data.value = _data
+      getPromise.then((snapshot) => {
+        data.value = unpeelSnapshot(snapshot, options)
         resolve()
       })
     }

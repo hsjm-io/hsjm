@@ -14,7 +14,7 @@ export interface Save<_T = DocumentData> {
  */
 export const save: Save = async(path, data) => {
   // --- Get collection reference.
-  const { firestore } = useFirebase()
+  const { firestore, auth } = useFirebase()
   const colReference = collection(firestore, path)
 
   // --- Save batches in bulk.
@@ -29,6 +29,15 @@ export const save: Save = async(path, data) => {
     return
   }
 
+  // --- Compute document reference.
+  const documentReference = data.id
+    ? doc(colReference, data.id)
+    : doc(colReference)
+
   // --- Save single.
-  return await setDoc(doc(colReference, data.id), data)
+  return await setDoc(documentReference, {
+    ...data,
+    _origin: 'client',
+    updatedById: auth.currentUser?.uid,
+  })
 }

@@ -1,3 +1,4 @@
+import { isNil } from '@hsjm/shared'
 import {
   CollectionReference, DocumentData, DocumentReference, Query,
   QueryConstraint, collection, doc, endAt,
@@ -54,7 +55,7 @@ export const createQuery: CreateQuery = (path: string, filter: string | null | u
       else if (key.endsWith('_nin')) constraints.push(where(key.replace('_nin', ''), 'not-in', value))
       else if (key.endsWith('_ac')) constraints.push(where(key.replace('_ac', ''), 'array-contains', value))
       else if (key.endsWith('_aca')) constraints.push(where(key.replace('_aca', ''), 'array-contains-any', value))
-      else constraints.push(where(key, '==', value))
+      else if (key && !isNil(value)) constraints.push(where(key, '==', value))
     }
   })
 
