@@ -43,6 +43,7 @@
     }
   },
   "dependencies": {
+    "@hsjm/core": "workspace:*",
     "@hsjm/shared": "workspace:*",
     "@vueuse/core": "^8.4.2",
     "@vueuse/shared": "^8.4.2",

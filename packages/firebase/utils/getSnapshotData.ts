@@ -16,38 +16,38 @@ export const isDocumentSnapshot = (value: any): value is DocumentSnapshot => val
   && typeof value.id === 'string'
   && value.ref.type === 'document'
 
-export interface UnpeelSnapshotOptions {
+export interface GetSnapshotDataOptions {
   /** Take the first document of a returned array. */
   pickFirst?: boolean
   /** Initial value. */
   initialValue?: any
 }
 
-export interface UnpeelSnapshot {
-  <T = DocumentData>(snapshot: QuerySnapshot<T>, options: UnpeelSnapshotOptions & { pickFirst: true }): T
-  <T = DocumentData>(snapshot: QuerySnapshot<T>, options?: UnpeelSnapshotOptions): T[]
-  <T = DocumentData>(snapshot: DocumentSnapshot<T>, options?: UnpeelSnapshotOptions): T
-  <T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>, options?: UnpeelSnapshotOptions): T | T[]
+export interface GetSnapshotData {
+  <T = DocumentData>(snapshot: QuerySnapshot<T>, options?: GetSnapshotDataOptions & { pickFirst: true }): T
+  <T = DocumentData>(snapshot: QuerySnapshot<T>, options?: GetSnapshotDataOptions): T[]
+  <T = DocumentData>(snapshot: DocumentSnapshot<T>, options?: GetSnapshotDataOptions): T
+  <T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>, options?: GetSnapshotDataOptions & { pickFirst: true }): T
+  <T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>, options?: GetSnapshotDataOptions): T | T[]
 }
 
 /**
  * Extract data from a snapshot of any type.
  * @param snapshot Snapshot to extract from.
  */
-export const unpeelSnapshot: UnpeelSnapshot = (snapshot, options = {}): any => {
+export const getSnapshotData: GetSnapshotData = (snapshot, options = {}) => {
   // --- Destructure options.
   const { pickFirst, initialValue } = options
-  const isDocumentSnap = isDocumentSnapshot(snapshot)
 
   // --- If is document snapshot, extract data.
-  if (isDocumentSnap) {
+  if (isDocumentSnapshot(snapshot)) {
     return snapshot.exists()
-      ? { id: snapshot.id, ...snapshot.data() }
+      ? snapshot.data()
       : initialValue
   }
 
   // --- If is array of documents, extract data. Default to initial value if no results.
-  const data = snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
+  const data = snapshot.docs.map(x => x.data())
   if (data.length === 0) return initialValue
   return pickFirst ? data[0] : data
 }

@@ -1,5 +1,4 @@
 import { resolvable } from '@hsjm/shared'
-import { createUnrefFn } from '@vueuse/core'
 import { tryOnScopeDispose } from '@vueuse/shared'
 import {
   ActionCodeSettings,
@@ -22,7 +21,7 @@ import {
   signInWithRedirect,
   signOut,
 } from 'firebase/auth'
-import { ref } from 'vue-demi'
+import { reactive, ref } from 'vue-demi'
 import { useFirebase } from './useFirebase'
 import { useRecaptcha } from './useRecaptcha'
 
@@ -48,8 +47,8 @@ export const useAuth = (options = {} as UseAuthOptions) => {
 
   // --- Restore & watch user.
   const user = ref(auth.currentUser)
-  const ready = resolvable()
-  const unsubscribe = onAuthStateChanged(auth, (_user) => { user.value = _user; ready.resolve() }, onError)
+  const { promise: ready, resolve } = resolvable()
+  const unsubscribe = onAuthStateChanged(auth, (_user) => { user.value = _user; resolve() }, onError)
   tryOnScopeDispose(unsubscribe)
 
   // --- Extend `onError` hook.
@@ -71,25 +70,24 @@ export const useAuth = (options = {} as UseAuthOptions) => {
 
   // --- Oauth.
   const loginFromRedirectResult = () => getRedirectResult(auth).then(result => result && onSuccess && onSuccess(result)).catch(_onError)
-  const loginWithProvider = (provider: AuthProvider | string, options = {} as LoginWithProviderOptions) => {
+  const loginWithProvider = (provider: AuthProvider | OAuthProvider | string, options = {} as LoginWithProviderOptions) => {
     const { scopes, type = 'redirect', ...customParameters } = options
 
     // --- Get provider.
-    let _provider = provider
-    if (_provider === 'google') _provider = new GoogleAuthProvider()
-    if (_provider === 'github') _provider = new GithubAuthProvider()
+    if (provider === 'google') provider = new GoogleAuthProvider()
+    else if (provider === 'github') provider = new GithubAuthProvider()
+    else if (typeof provider === 'string') throw new Error(`Provider ${provider} does not exists.`)
 
-    // @ts-expect-error: Type
-    if (_provider.setCustomParameters && customParameters) (<OAuthProvider>_provider).setCustomParameters(customParameters)
-    // @ts-expect-error: Type
-    if (_provider.addScope && scopes) scopes.split(/[\s']+/).forEach(scope => (<OAuthProvider>_provider).addScope(scope))
+    // --- Set parameters & add scopes.
+    if ('addScope' in provider && scopes) scopes.split(/[\s']+/).forEach(scope => (<OAuthProvider>provider).addScope(scope))
+    if ('setCustomParameters' in provider && customParameters) provider.setCustomParameters(customParameters)
 
     // --- If invalid, throw error.
-    if (typeof _provider === 'string')
+    if (typeof provider === 'string')
       return _onError(new Error('Invalid auth provider') as AuthError)
 
     // --- Start.
-    return (type === 'popup' ? signInWithPopup : signInWithRedirect)(auth, _provider, browserPopupRedirectResolver)
+    return (type === 'popup' ? signInWithPopup : signInWithRedirect)(auth, provider, browserPopupRedirectResolver)
       .then(onSuccess)
       .catch(_onError)
   }
@@ -97,18 +95,17 @@ export const useAuth = (options = {} as UseAuthOptions) => {
   // --- Yeet-out.
   const logout = () => signOut(auth).then(<any>onSuccess).catch(_onError)
 
-  return {
-    auth,
+  return reactive({
     error,
     user,
-    ready: ready.promise,
+    ready,
     loginAnonymously,
-    loginWithPhone: createUnrefFn(loginWithPhone),
-    confirmCode: createUnrefFn(confirmCode),
-    registerWithEmail: createUnrefFn(registerWithEmail),
-    loginWithEmail: createUnrefFn(loginWithEmail),
+    loginWithPhone,
+    confirmCode,
+    registerWithEmail,
+    loginWithEmail,
     loginFromRedirectResult,
-    loginWithProvider: createUnrefFn(loginWithProvider),
+    loginWithProvider,
     logout,
-  }
+  })
 }

@@ -1,11 +1,11 @@
-/* eslint-disable unicorn/prevent-abbreviations */
+import { createUnrefFn } from '@vueuse/core'
 import { DocumentData } from 'firebase/firestore'
 import { MaybeRef, createSharedComposable } from '@vueuse/shared'
-import { createUnrefFn } from '@vueuse/core'
-import { GetOptions, RefFirestore, get } from './get'
-import { erase } from './erase'
-import { save } from './save'
-import { QueryFilter } from './createQuery'
+import { computed, unref } from 'vue-demi'
+import { erase } from './utils/erase'
+import { save } from './utils/save'
+import { QueryFilter } from './utils/createQuery'
+import { GetOptions, GetResult, get } from './utils/get'
 
 export interface UseFirestoreReturnType<T = DocumentData> {
   /**
@@ -14,39 +14,40 @@ export interface UseFirestoreReturnType<T = DocumentData> {
    * @param options Custom parameters.
    */
   get: {
-    (filter?: MaybeRef<QueryFilter>, options?: GetOptions & { pickFirst: true }): RefFirestore<T>
-    (filter?: MaybeRef<QueryFilter>, options?: GetOptions & { pickFirst: false | undefined }): RefFirestore<T[]>
-    (filter?: MaybeRef<string | null>, options?: GetOptions): RefFirestore<T>
-    (filter?: MaybeRef<string | null | QueryFilter>, options?: GetOptions & { pickFirst: true }): RefFirestore<T>
-    (filter?: MaybeRef<string | null | QueryFilter>, options?: GetOptions & { pickFirst: false | undefined }): RefFirestore<T | T[]>
+    (filter: QueryFilter, options?: GetOptions & { pickFirst: true }): GetResult<T>
+    (filter: QueryFilter, options?: GetOptions): GetResult<T[]>
+    (filter: MaybeRef<string | null | undefined>, options?: GetOptions): GetResult<T>
   }
 
   /**
    * Save document(s) to collection.
    * @param data Document(s) and/or ID(s) to save.
    */
-  save: (data: MaybeRef<T | T[]>) => Promise<void>
+  save: (data: MaybeRef<T> | Array<T>) => Promise<void>
 
   /**
-    * Erase document(s) from collection.
-    * @param data Document(s) and/or ID(s) to erase.
-    */
-  erase: (data: MaybeRef<string | T | Array<string | T>>) => Promise<void>
+   * Create a shared instance of methods to manipulate data from Firestore.
+   * @param path Path to collection.
+   */
+  erase: (data: MaybeRef<string | T> | Array<string | T>) => Promise<void>
+
+  /**
+   * Instiate a new composable targetting a specific sub-collection path from Firestore.
+   * @param path Path to collection.
+   */
+  collection: <T = DocumentData>(subPath: MaybeRef<string>) => UseFirestoreReturnType<T>
 }
 
 /**
- * Create an instance of methods to manipulate data from Firestore.
+ * Instiate a composable targetting a specific collection path from Firestore.
  * @param path Path to collection.
  */
 export const useFirestore = <T>(path: MaybeRef<string>): UseFirestoreReturnType<T> => ({
-  get: <any>get.bind(undefined, path),
+  get: get.bind(undefined, path) as any,
   save: createUnrefFn(save).bind(undefined, path),
   erase: createUnrefFn(erase).bind(undefined, path),
+  collection: subPath => useFirestore(computed(() => `${unref(path)}/${unref(subPath)}`)),
 })
 
-/**
- * Create a shared instance of methods to manipulate data from Firestore.
- * @param path Path to collection.
- */
 export const createSharedFirestore = <T extends DocumentData>(path: string) =>
   createSharedComposable(() => useFirestore<T>(path))
