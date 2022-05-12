@@ -42,7 +42,7 @@ export const createQuery: CreateQuery = (path, filter, options = {}): any => {
 
   // --- Return a single document's reference & Abort early.
   if (typeof filter === 'string') return doc(firestore, path, filter).withConverter(converter)
-  if (filter === null || filter === undefined) return doc(firestore, path).withConverter(converter)
+  if (filter === null || filter === undefined) return doc(collection(firestore, path)).withConverter(converter)
 
   // --- Resolve collection
   const colReference = collection(firestore, path).withConverter(converter)
