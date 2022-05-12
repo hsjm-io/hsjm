@@ -46,7 +46,7 @@ export const useFirestore = <T>(path: MaybeRef<string>): UseFirestoreReturnType<
   get: get.bind(undefined, path) as any,
   save: createUnrefFn(save).bind(undefined, path),
   erase: createUnrefFn(erase).bind(undefined, path),
-  collection: subPath => useFirestore(computed(() => `${unref(path)}/${unref(subPath)}`)),
+  collection: subPath => useFirestore(computed(() => [path, subPath].map(unref).join('/'))),
 })
 
 export const createSharedFirestore = <T extends DocumentData>(path: string) =>

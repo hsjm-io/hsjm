@@ -46,8 +46,7 @@ export const getSnapshotData: GetSnapshotData = (snapshot, options = {}) => {
       : initialValue
   }
 
-  // --- If is array of documents, extract data. Default to initial value if no results.
-  const data = snapshot.docs.map(x => x.data())
-  if (data.length === 0) return initialValue
+  // --- If result not empty, extract data. Default to initial value if no results.
+  const data = !snapshot.empty ? snapshot.docs.map(x => x.data()) : initialValue
   return pickFirst ? data[0] : data
 }

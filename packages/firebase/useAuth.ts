@@ -95,8 +95,8 @@ export const useAuth = (options = {} as UseAuthOptions) => {
   // --- Yeet-out.
   const logout = () => signOut(auth).then(<any>onSuccess).catch(_onError)
 
-  return {
-    user: reactive(user),
+  return reactive({
+    user,
     error,
     ready,
     loginAnonymously,
@@ -107,5 +107,5 @@ export const useAuth = (options = {} as UseAuthOptions) => {
     loginFromRedirectResult,
     loginWithProvider,
     logout,
-  }
+  })
 }

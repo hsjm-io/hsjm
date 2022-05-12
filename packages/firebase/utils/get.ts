@@ -45,7 +45,7 @@ export interface Get<T = DocumentData> {
  * @param filter ID or filter parameters.
  * @param options Custom parameters of the method.
  */
-export const get: Get = (path, filter, options = {}) => {
+export const get: Get = (path, filter, options = {}): any => {
   // --- Destructure options.
   const { initialValue, onError, sync, keepAlive } = options
 

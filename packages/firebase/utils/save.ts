@@ -1,6 +1,7 @@
 import { DocumentData, doc, setDoc, writeBatch } from 'firebase/firestore'
 import { arrayify, chunk } from '@hsjm/shared'
 import { useFirebase } from '../useFirebase'
+import { toFirestore } from './defaultConverter'
 
 // --- Overloads.
 export type Save<T = DocumentData> = (path: string, data?: T | T[]) => Promise<void>
@@ -17,7 +18,10 @@ export const save: Save = async(path, data) => {
   // --- Map input to document references.
   const documentReferences = arrayify(data)
     .filter(Boolean)
-    .map(x => ({ ref: doc(firestore, path, x.id), data: x }))
+    .map(x => ({
+      ref: doc(firestore, path, x.id),
+      data: toFirestore(x),
+    }))
 
   // --- Delete single document or abort if empty.
   if (documentReferences.length === 1) await setDoc(documentReferences[0].ref, documentReferences[0].data)
