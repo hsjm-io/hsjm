@@ -1,4 +1,5 @@
 export * from './loadify'
+export * from './unrefObject'
 export * from './useAlert'
 export * from './useButton'
 export * from './useInputFile'
