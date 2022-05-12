@@ -93,6 +93,7 @@ importers:
 
   packages/firebase:
     specifiers:
+      '@hsjm/core': workspace:^1.0.0
       '@hsjm/shared': workspace:*
       '@vueuse/core': ^8.4.2
       '@vueuse/shared': ^8.4.2
@@ -100,6 +101,7 @@ importers:
       vue: ^3.2.33
       vue-demi: '*'
     dependencies:
+      '@hsjm/core': link:../core
       '@hsjm/shared': link:../shared
       '@vueuse/core': 8.4.2_vue@3.2.33
       '@vueuse/shared': 8.4.2_vue@3.2.33
@@ -110,6 +112,7 @@ importers:
 
   packages/fireworks:
     specifiers:
+      '@faker-js/faker': ^6.3.1
       '@firebase/app-compat': ^0.1.25
       '@firebase/app-types': ^0.7.0
       '@hsjm/firebase': workspace:*
@@ -121,6 +124,7 @@ importers:
       vue: ^3.2.33
       vue-demi: '*'
     dependencies:
+      '@faker-js/faker': 6.3.1
       '@hsjm/firebase': link:../firebase
       '@hsjm/shared': link:../shared
       '@vueuse/shared': 8.4.2_vue@3.2.33
@@ -270,6 +274,11 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@faker-js/faker/6.3.1:
+    resolution: {integrity: sha512-8YXBE2ZcU/pImVOHX7MWrSR/X5up7t6rPWZlk34RwZEcdr3ua6X+32pSd6XuOQRN+vbuvYNfA6iey8NbrjuMFQ==}
+    engines: {node: '>=14.0.0', npm: '>=6.0.0'}
+    dev: false
 
   /@firebase/analytics-compat/0.1.10_6af5709537e33c478d39e1a01ffd592e:
     resolution: {integrity: sha512-7zfB+BBO5RbF7RSHOA4ZPyLvOEEvMOhRbfIjh5ZmizAQY2J6tZB8t+dwQ/q4hqZVGgw4ds4g0JYuRKZKYsWADg==}
@@ -1933,7 +1942,7 @@ packages:
   /axios/0.26.1:
     resolution: {integrity: sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==}
     dependencies:
-      follow-redirects: 1.15.0
+      follow-redirects: 1.15.0_debug@4.3.4
     transitivePeerDependencies:
       - debug
 
@@ -3571,15 +3580,6 @@ packages:
     resolution: {integrity: sha512-WIWGi2L3DyTUvUrwRKgGi9TwxQMUEqPOPQBVi71R96jZXJdFskXEmf54BoZaS1kknGODoIGASGEzBUYdyMCBJg==}
     dev: true
 
-  /follow-redirects/1.15.0:
-    resolution: {integrity: sha512-aExlJShTV4qOUOL7yF1U5tvLCB0xQuudbf6toyYA0E/acBNw71mvjFTnLaRp50aQaYocMR0a/RMMBIHeZnGyjQ==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-
   /follow-redirects/1.15.0_debug@4.3.4:
     resolution: {integrity: sha512-aExlJShTV4qOUOL7yF1U5tvLCB0xQuudbf6toyYA0E/acBNw71mvjFTnLaRp50aQaYocMR0a/RMMBIHeZnGyjQ==}
     engines: {node: '>=4.0'}
@@ -3590,7 +3590,6 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.4
-    dev: true
 
   /forever-agent/0.6.1:
     resolution: {integrity: sha1-+8cfDEGt6zf5bFd60e1C2P2sypE=}
