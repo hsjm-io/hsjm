@@ -22,10 +22,10 @@ export interface GetOptions extends
 }
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
-export interface GetResult<T> {
+export interface GetResult<T = DocumentData> {
   data: T
   ready: Promise<void>
-  query: Query<T> | DocumentReference<T>
+  query: Query | DocumentReference
   loading: boolean
   refresh: () => void
   save: () => Promise<void>
@@ -92,13 +92,13 @@ export const get: Get = (path, filter, options = {}) => {
   whenever(query, refresh, { immediate: true })
 
   // --- Return readonly data ref.
-  return reactive({
-    data,
-    query,
+  return {
+    data: reactive(data),
+    query: reactive(query),
     ready,
     loading,
     refresh,
     save: createUnrefFn(save).bind(undefined, path, data),
     erase: createUnrefFn(erase).bind(undefined, path, data),
-  })
+  }
 }
