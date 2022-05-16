@@ -19,6 +19,16 @@
       "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
     },
+    "./components": {
+      "require": "./dist/components/index.js",
+      "import": "./dist/components/index.mjs",
+      "types": "./dist/components/index.d.ts"
+    },
+    "./composables": {
+      "require": "./dist/composables/index.js",
+      "import": "./dist/composables/index.mjs",
+      "types": "./dist/composables/index.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -34,10 +44,18 @@
   },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-rc.1",
-    "vue": "^2.0.0 || >=3.0.0"
+    "vee-validate": "^4.0.0",
+    "vue": "^2.0.0 || >=3.0.0",
+    "vue-router": "^3.0.0 || >=4.0.0"
   },
   "peerDependenciesMeta": {
+    "vee-validate": {
+      "optional": true
+    },
     "@vue/composition-api": {
+      "optional": true
+    },
+    "vue-router": {
       "optional": true
     }
   },
@@ -45,10 +63,11 @@
     "@hsjm/shared": "workspace:*",
     "@vueuse/core": "^8.4.2",
     "@vueuse/shared": "^8.4.2",
-    "vee-validate": "^4.5.11",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "vue": "^3.2.33"
+    "vee-validate": "^4.5.11",
+    "vue": "^3.2.33",
+    "vue-router": "^4.0.15"
   }
 }

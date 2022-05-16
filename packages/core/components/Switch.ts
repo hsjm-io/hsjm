@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-null */
 import { useVModel } from '@vueuse/core'
 import { PropType, defineComponent, h, toRefs } from 'vue-demi'
-import { useSwitch } from '@hsjm/core'
+import { useSwitch } from '../composables'
 
 export const Switch = defineComponent({
   name: 'Switch',

@@ -46,7 +46,6 @@ export const useButton = (options = {} as UseButtonOptions) => {
     ...(isLink.value
       ? {
         'to': computed(() => (isInternalLink.value && !options.newtab ? options.to : undefined)),
-        'href': options.to,
         'target': computed(() => (options.newtab ? '_blank' : undefined)),
         'rel': computed(() => (options.newtab ? 'noreferrer' : undefined)),
         'active-class': computed(() => (typeof type.value !== 'string' ? options.classActive : undefined)),

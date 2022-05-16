@@ -57,23 +57,6 @@ importers:
       lodash: 4.17.21
       windicss: 3.5.2
 
-  packages/components:
-    specifiers:
-      '@hsjm/core': workspace:*
-      '@hsjm/shared': workspace:*
-      '@vueuse/core': ^8.4.2
-      vue: ^3.2.33
-      vue-demi: '*'
-      vue-router: ^4.0.15
-    dependencies:
-      '@hsjm/core': link:../core
-      '@hsjm/shared': link:../shared
-      '@vueuse/core': 8.4.2_vue@3.2.33
-      vue-demi: 0.12.5_vue@3.2.33
-    devDependencies:
-      vue: 3.2.33
-      vue-router: 4.0.15_vue@3.2.33
-
   packages/core:
     specifiers:
       '@hsjm/shared': workspace:*
@@ -82,18 +65,20 @@ importers:
       vee-validate: ^4.5.11
       vue: ^3.2.33
       vue-demi: '*'
+      vue-router: ^4.0.15
     dependencies:
       '@hsjm/shared': link:../shared
       '@vueuse/core': 8.4.2_vue@3.2.33
       '@vueuse/shared': 8.4.2_vue@3.2.33
-      vee-validate: 4.5.11_vue@3.2.33
       vue-demi: 0.12.5_vue@3.2.33
     devDependencies:
+      vee-validate: 4.5.11_vue@3.2.33
       vue: 3.2.33
+      vue-router: 4.0.15_vue@3.2.33
 
   packages/firebase:
     specifiers:
-      '@hsjm/core': workspace:^1.0.0
+      '@hsjm/core': workspace:*
       '@hsjm/shared': workspace:*
       '@vueuse/core': ^8.4.2
       '@vueuse/shared': ^8.4.2
@@ -1617,6 +1602,7 @@ packages:
 
   /@vue/devtools-api/6.1.4:
     resolution: {integrity: sha512-IiA0SvDrJEgXvVxjNkHPFfDx6SXw0b/TUkqMcDZWNg9fnCAHbTpoo59YfJ9QLFkwa3raau5vSlRVzMSLDnfdtQ==}
+    dev: true
 
   /@vue/reactivity-transform/3.2.33:
     resolution: {integrity: sha512-4UL5KOIvSQb254aqenW4q34qMXbfZcmEsV/yVidLUgvwYQQ/D21bGX3DlgPUGI3c4C+iOnNmDCkIxkILoX/Pyw==}
@@ -6682,7 +6668,7 @@ packages:
     dependencies:
       '@vue/devtools-api': 6.1.4
       vue: 3.2.33
-    dev: false
+    dev: true
 
   /verror/1.10.0:
     resolution: {integrity: sha1-OhBcoXBTr1XW4nDB+CiGguGNpAA=}
