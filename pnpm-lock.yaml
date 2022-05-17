@@ -192,9 +192,11 @@ importers:
     specifiers:
       '@types/node': ^17.0.31
       axios: ^0.26.1
+      lodash: ^4.17.21
     devDependencies:
       '@types/node': 17.0.31
       axios: 0.26.1
+      lodash: 4.17.21
 
   packages/unocss-preset:
     specifiers:
