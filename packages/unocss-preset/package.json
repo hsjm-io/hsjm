@@ -32,9 +32,11 @@
     "build:post": "esno ../../scripts/buildPost.ts",
     "build:lint": "eslint package.json --fix --no-ignore"
   },
+  "peerDependencies": {
+    "@unocss/preset-mini": "^0.33.00",
+    "unocss": "^0.33.00"
+  },
   "dependencies": {
-    "@hsjm/shared": "workspace:*",
-    "@unocss/preset-mini": "^0.30.13",
-    "unocss": "^0.30.13"
+    "@hsjm/shared": "workspace:*"
   }
 }

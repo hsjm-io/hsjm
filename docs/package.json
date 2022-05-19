@@ -8,16 +8,16 @@
     "serve": "vitepress serve"
   },
   "devDependencies": {
-    "@algolia/client-search": "^4.13.0",
+    "@algolia/client-search": "^4.13.1",
     "@microsoft/api-extractor": "^7.24.0",
     "@microsoft/tsdoc": "^0.14.1",
     "@ts-docs/default-docs-structure": "^0.4.3",
     "@ts-docs/extractor": "^3.1.0",
     "@ts-docs/ts-docs": "^0.4.3",
-    "@types/react": "^17.0.0",
+    "@types/react": "^17.0.45",
     "@vue/theme": "^1.0.2",
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "vitepress": "^0.22.4",
     "vue": "^3.2.33"
   }

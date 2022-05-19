@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hsjm-io/hsjm.git",
-    "directory": "/home/shorwood/workspaces/hsjm/packages/mapbox"
+    "directory": "/home/shorwood/workspaces/hsjm/packages/services"
   },
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -45,8 +45,8 @@
     "@hsjm/shared": "workspace:^1.0.0",
     "@mapbox/mapbox-sdk": "^0.13.3",
     "@types/mapbox__mapbox-sdk": "^0.13.4",
-    "@vueuse/core": "^8.4.2",
-    "@vueuse/shared": "^8.4.2",
+    "@vueuse/core": "^8.5.0",
+    "@vueuse/shared": "^8.5.0",
     "vue-demi": "*"
   },
   "devDependencies": {
