@@ -18,7 +18,7 @@ export const save: Save = async(path, data) => {
   // --- Map input to document references.
   const documentReferences = arrayify(data)
     .filter(Boolean)
-    .map(x => ({
+    .map((x: any) => ({
       ref: doc(firestore, path, x.id),
       data: toFirestore(x),
     }))

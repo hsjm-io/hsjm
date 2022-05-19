@@ -1,6 +1,6 @@
 import { createUnrefFn } from '@vueuse/core'
 import { DocumentData } from 'firebase/firestore'
-import { MaybeRef, createSharedComposable } from '@vueuse/shared'
+import { MaybeRef } from '@vueuse/shared'
 import { computed, unref } from 'vue-demi'
 import { erase } from './utils/erase'
 import { save } from './utils/save'
@@ -42,15 +42,9 @@ export interface UseFirestoreReturnType<T = DocumentData> {
  * Instiate a composable targetting a specific collection path from Firestore.
  * @param path Path to collection.
  */
-export const useFirestore = <T>(...pathSegments: MaybeRef<string>[]): UseFirestoreReturnType<T> => {
-  const path = pathSegments.map(unref).join('/')
-  return {
-    get: get.bind(undefined, path) as any,
-    save: createUnrefFn(save).bind(undefined, path),
-    erase: createUnrefFn(erase).bind(undefined, path),
-    collection: (...subSegments) => useFirestore(computed(() => [...pathSegments, ...subSegments].map(unref).join('/'))),
-  }
-}
-
-export const createSharedFirestore = <T extends DocumentData>(path: string) =>
-  createSharedComposable(() => useFirestore<T>(path))
+export const useFirestore = <T>(path: MaybeRef<string>): UseFirestoreReturnType<T> => ({
+  get: get.bind(undefined, path) as any,
+  save: createUnrefFn(save).bind(undefined, path),
+  erase: createUnrefFn(erase).bind(undefined, path),
+  collection: subPath => useFirestore(computed(() => [path, subPath].map(unref).join('/'))),
+})

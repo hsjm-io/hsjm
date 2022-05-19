@@ -21,7 +21,7 @@ import {
   signInWithRedirect,
   signOut,
 } from 'firebase/auth'
-import { reactive, ref } from 'vue-demi'
+import { ref } from 'vue-demi'
 import { useFirebase } from './useFirebase'
 import { useRecaptcha } from './useRecaptcha'
 
@@ -48,7 +48,7 @@ export const useAuth = (options = {} as UseAuthOptions) => {
   // --- Restore & watch user.
   const user = ref(auth.currentUser)
   const { promise: ready, resolve } = resolvable()
-  const unsubscribe = onAuthStateChanged(auth, (_user) => { user.value = _user; resolve() }, onError)
+  const unsubscribe = onAuthStateChanged(auth, (state) => { user.value = state; resolve() }, onError)
   tryOnScopeDispose(unsubscribe)
 
   // --- Extend `onError` hook.
@@ -95,7 +95,7 @@ export const useAuth = (options = {} as UseAuthOptions) => {
   // --- Yeet-out.
   const logout = () => signOut(auth).then(<any>onSuccess).catch(_onError)
 
-  return reactive({
+  return {
     user,
     error,
     ready,
@@ -107,5 +107,5 @@ export const useAuth = (options = {} as UseAuthOptions) => {
     loginFromRedirectResult,
     loginWithProvider,
     logout,
-  })
+  }
 }

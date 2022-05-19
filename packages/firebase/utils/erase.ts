@@ -16,7 +16,7 @@ export const erase: Erase = async(path, data) => {
 
   // --- Map input to document references.
   const documentReferences = arrayify(data)
-    .map(x => (typeof x === 'string' ? x : x.id))
+    .map(x => (typeof x === 'string' ? x : x?.id))
     .filter(Boolean)
     .map(id => doc(firestore, path, id))
 

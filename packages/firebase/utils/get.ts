@@ -1,5 +1,5 @@
 import { createUnrefFn } from '@vueuse/core'
-import { reactive, ref } from 'vue-demi'
+import { Ref, ref } from 'vue-demi'
 import { MaybeRef, isClient, reactify, tryOnScopeDispose, whenever } from '@vueuse/shared'
 import { DocumentData, DocumentReference, FirestoreError, Query, Unsubscribe, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { resolvable } from '@hsjm/shared'
@@ -23,10 +23,9 @@ export interface GetOptions extends
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
 export interface GetResult<T = DocumentData> {
-  data: T
+  data: Ref<T>
+  query: Ref<Query | DocumentReference>
   ready: Promise<void>
-  query: Query | DocumentReference
-  loading: boolean
   refresh: () => void
   save: () => Promise<void>
   erase: () => Promise<void>
@@ -53,7 +52,7 @@ export const get: Get = (path, filter, options = {}): any => {
   let unsubscribe: Unsubscribe
 
   // --- Init local variables.
-  const { promise: ready, resolve, pending: loading, reset } = resolvable()
+  const { promise: ready, resolve, reset } = resolvable()
   const data: any = ref(initialValue)
   const query: any = reactify<any>(createQuery)(path, filter, options)
 
@@ -93,10 +92,9 @@ export const get: Get = (path, filter, options = {}): any => {
 
   // --- Return readonly data ref.
   return {
-    data: reactive(data),
-    query: reactive(query),
+    data,
+    query,
     ready,
-    loading,
     refresh,
     save: createUnrefFn(save).bind(undefined, path, data),
     erase: createUnrefFn(erase).bind(undefined, path, data),

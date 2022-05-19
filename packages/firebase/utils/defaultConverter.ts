@@ -3,8 +3,7 @@ import { DocumentData, FirestoreDataConverter } from 'firebase/firestore'
 import { useFirebase } from '../useFirebase'
 
 export const toFirestore: FirestoreDataConverter<DocumentData>['toFirestore'] = data => ({
-  ...omit(data, 'id'),
-  origin: 'client',
+  ...omit(data, ['origin', 'id']),
   updatedById: useFirebase().auth.currentUser?.uid,
 })
 
