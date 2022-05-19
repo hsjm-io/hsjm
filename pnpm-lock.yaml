@@ -216,6 +216,27 @@ importers:
     devDependencies:
       vue: 3.2.33
 
+  packages/services:
+    specifiers:
+      '@hsjm/shared': workspace:^1.0.0
+      '@mapbox/mapbox-sdk': ^0.13.3
+      '@types/mapbox__mapbox-sdk': ^0.13.4
+      '@vueuse/core': ^8.4.2
+      '@vueuse/shared': ^8.4.2
+      axios: ^0.26.1
+      vue: ^3.2.33
+      vue-demi: '*'
+    dependencies:
+      '@hsjm/shared': link:../shared
+      '@mapbox/mapbox-sdk': 0.13.3
+      '@types/mapbox__mapbox-sdk': 0.13.4
+      '@vueuse/core': 8.4.2_vue@3.2.33
+      '@vueuse/shared': 8.4.2_vue@3.2.33
+      vue-demi: 0.12.5_vue@3.2.33
+    devDependencies:
+      axios: 0.26.1
+      vue: 3.2.33
+
   packages/shared:
     specifiers:
       '@types/node': ^17.0.31
@@ -2219,7 +2240,7 @@ packages:
     dev: true
 
   /arrify/1.0.1:
-    resolution: {integrity: sha1-iYUI2iIm84DfkEcoRWhJwVAaSw0=}
+    resolution: {integrity: sha512-3CYzex9M9FGQjCGMGyi6/31c8GJbgb0qGyrx5HWxPd0aCwh4cB2YjMb2Xf9UuoogrMrlO9cTqnB5rI5GHZTcUA==}
     engines: {node: '>=0.10.0'}
     dev: false
 
@@ -2277,7 +2298,7 @@ packages:
     dev: true
 
   /asynckit/0.4.0:
-    resolution: {integrity: sha1-x57Zf380y48robyXkLzDZkdLS3k=}
+    resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
   /aws-sign2/0.7.0:
     resolution: {integrity: sha1-tG6JCTSpWR8tL2+G1+ap8bP+dqg=}
@@ -2307,7 +2328,7 @@ packages:
     dev: true
 
   /base-64/0.1.0:
-    resolution: {integrity: sha1-eAqZyE59YAJgNhURxId2E78k9rs=}
+    resolution: {integrity: sha512-Y5gU45svrR5tI2Vt/X9GPd3L0HNIKzGu202EjxrXMpuc2V2CiKgemAbUUsqYmZJvPtCXoUKjNZwBJzsNScUbXA==}
     dev: false
 
   /base64-js/1.5.1:

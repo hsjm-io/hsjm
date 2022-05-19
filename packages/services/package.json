@@ -1,8 +1,8 @@
 {
-  "name": "@hsjm/mapbox",
+  "name": "@hsjm/services",
   "version": "1.0.0",
   "author": "Stanley Horwood <stanley@hsjm.io>",
-  "description": "Vue integration with Mapbox.",
+  "description": "Common web-service utilities.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -42,6 +42,7 @@
     }
   },
   "dependencies": {
+    "@hsjm/shared": "workspace:^1.0.0",
     "@mapbox/mapbox-sdk": "^0.13.3",
     "@types/mapbox__mapbox-sdk": "^0.13.4",
     "@vueuse/core": "^8.4.2",
@@ -49,6 +50,7 @@
     "vue-demi": "*"
   },
   "devDependencies": {
+    "axios": "^0.26.1",
     "vue": "^3.2.33"
   }
 }

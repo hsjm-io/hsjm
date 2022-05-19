@@ -1,18 +1,9 @@
-import { SdkConfig } from '@mapbox/mapbox-sdk/lib/classes/mapi-client'
-import geocodeClient, { GeocodeRequest, GeocodeResponse } from '@mapbox/mapbox-sdk/services/geocoding'
-import directionsClient, { DirectionsRequest, DirectionsResponse } from '@mapbox/mapbox-sdk/services/directions'
-import mapMatchingClient, { MapMatchingRequest, MapMatchingResponse } from '@mapbox/mapbox-sdk/services/map-matching'
-import optimizationClient, { OptimizationRequest } from '@mapbox/mapbox-sdk/services/optimization'
-import { MaybeRef, createSharedComposable } from '@vueuse/shared'
-import { computedAsync } from '@vueuse/core'
-import { Ref, unref } from 'vue-demi'
+import axios from 'axios'
 
-let config = <SdkConfig>{}
-export const initializeMapbox = createSharedComposable((options = {} as SdkConfig) =>
-  config = options)
+const mapboxBaseUrl = 'https://api.mapbox.com'
 
 /**
- * The Mapbox Geocoding API does two things: forward geocoding and reverse geocoding.
+ * Forward or reverse geocoding using [Mapbox API](https://docs.mapbox.com/).
  *
  * Forward geocoding converts location text into geographic coordinates, turning
  * `2 Lincoln Memorial Circle NW` into `-77.050,38.889`.
@@ -23,16 +14,10 @@ export const initializeMapbox = createSharedComposable((options = {} as SdkConfi
  * @param request Request parameters.
  * @returns Request response.
  */
-export const useGeocoding = (request: MaybeRef<GeocodeRequest>): Ref<GeocodeResponse> =>
-  computedAsync(async() => {
-    const { query } = unref(request)
-    const service = typeof query === 'string'
-      ? geocodeClient(config).forwardGeocode
-      : geocodeClient(config).reverseGeocode
-    return await service(unref(request))
-      .send()
-      .then(response => response.body)
-  })
+export const useGeocoding = (options: any) => axios.get(
+  `${mapboxBaseUrl}/directions/${options.profile}/${options.coordinates}?access_token=${options.accessToken}`,
+  { data: options, headers: { Authorization: options } },
+)
 
 /**
  * An isochrone, from the Greek root words iso (equal) and chrone (time), is a line that connects points of
@@ -61,8 +46,8 @@ export const useGeocoding = (request: MaybeRef<GeocodeRequest>): Ref<GeocodeResp
  * @param request Request parameters.
  * @returns Request response.
  */
-export const useDirections = (request: MaybeRef<DirectionsRequest>): Ref<DirectionsResponse> =>
-  computedAsync(() => directionsClient(config).getDirections(unref(request)).send().then(response => response.body))
+// export const useDirections = (request: MaybeRef<DirectionsRequest>): Ref<DirectionsResponse> =>
+//   computedAsync(() => directionsClient(config).getDirections(unref(request)).send().then(response => response.body))
 
 /**
  * The **Mapbox Map Matching API** snaps fuzzy, inaccurate traces from a GPS unit or a phone to the OpenStreetMap
@@ -71,8 +56,8 @@ export const useDirections = (request: MaybeRef<DirectionsRequest>): Ref<Directi
  * @param request Request parameters.
  * @returns Request response.
  */
-export const useMapMatching = (request: MaybeRef<MapMatchingRequest>): Ref<MapMatchingResponse> =>
-  computedAsync(() => mapMatchingClient(config).getMatch(unref(request)).send().then(response => response.body))
+// export const useMapMatching = (request: MaybeRef<MapMatchingRequest>): Ref<MapMatchingResponse> =>
+//   computedAsync(() => mapMatchingClient(config).getMatch(unref(request)).send().then(response => response.body))
 
 /**
  * The **Mapbox Optimization API*** returns a duration-optimized route between the input coordinates. This is also known
@@ -81,5 +66,5 @@ export const useMapMatching = (request: MaybeRef<MapMatchingRequest>): Ref<MapMa
  * @param request Request parameters.
  * @returns Request response.
  */
-export const useOptimization = (request: MaybeRef<OptimizationRequest>): Ref<JSON> =>
-  computedAsync(() => optimizationClient(config).getOptimization(unref(request)).send().then(response => response.body), {})
+// export const useOptimization = (request: MaybeRef<OptimizationRequest>): Ref<JSON> =>
+//   computedAsync(() => optimizationClient(config).getOptimization(unref(request)).send().then(response => response.body), {})
