@@ -127,6 +127,6 @@ const getDocumentation = (cwd: string) => {
 }
 
 // --- Generate and export metadata.
-const paths = glob('../../../packages/*', { onlyDirectories: true })
+const paths = glob(join(__dirname, '../../../packages/*'), { onlyDirectories: true })
 const metadata = paths.map(getDocumentation)
-jsonExport('./metadata.json', metadata)
+jsonExport(join(__dirname, './metadata.json'), metadata)

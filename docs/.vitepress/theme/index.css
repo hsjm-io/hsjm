@@ -29,7 +29,12 @@ html.dark {
   display: none;
 }
 
-.vt-doc ul li a {
+.vt-doc h1 {
+  margin: 0;
+}
+
+
+.vt-doc ul li a:first-of-type {
   background-color: var(--vt-c-bg-mute);
 	padding: 0.25em 0.5em;
 	border-radius: 4px;

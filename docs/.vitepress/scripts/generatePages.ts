@@ -1,36 +1,51 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { capitalize } from '../../../packages/shared'
+import { capitalize, groupBy } from '../../../packages/shared'
 import metadata from './metadata.json'
 
-const generateItem = (x: any) => `- [${x.name}](${x.sourceFile}) - ${x.description ?? 'No description'}`
+const generateItemLines = (name: string, items: any) => {
+  const lines = items.map(x => `- [${x.name}](${x.sourceFile}) - ${x.description?.split('\n').shift() ?? 'N/A'}`)
+  return `## ${capitalize(name)}\n${lines.join('\n')}`
+}
 
 const generatePage = (documentation: typeof metadata[number]) => {
-  const functions = [
-    ...documentation.flatMap(x => x.functions),
-    ...documentation.flatMap(x => x.constants),
-  ]
+  let sections: any
+
+  // --- If submodules are present.
+  if (documentation.length > 1) {
+    sections = documentation
+      .map(x => generateItemLines(x.module, [...x.functions, ...x.constants]))
+      .sort()
+  }
+
+  // --- If not, split by aknowledged type.
+  else {
+    const functions = [
+      ...documentation.flatMap(x => x.functions),
+      ...documentation.flatMap(x => x.constants),
+    ]
+
+    const composables = functions.filter(x => x.name.startsWith('use'))
+    const utilities = functions.filter(x => !x.name.startsWith('use') && !/^[A-Z].+/.test(x.name))
+    const components = functions.filter(x => /^[A-Z].+/.test(x.name))
+    sections = [
+      composables.length > 0 && generateItemLines('composables', composables),
+      components.length > 0 && generateItemLines('components', components),
+      utilities.length > 0 && generateItemLines('utilities', utilities),
+    ]
+  }
 
   const types = [
     ...documentation.flatMap(x => x.interfaces),
     ...documentation.flatMap(x => x.types),
   ]
 
-  const composables = functions.filter(x => x.name.startsWith('use'))
-  const utilities = functions.filter(x => !x.name.startsWith('use'))
-  const components = functions.filter(x => /^[A-Z].+/.test(x.name))
-
+  // --- Build markdown.
   return [
-    // documentation.readme,
     `# ${capitalize(documentation[0].name)}`,
     documentation[0].description,
-    // documentation.readme,
-
-    // --- Generate functions.
-    (composables.length > 0 && `## Composables\n${composables.map(generateItem).join('\n')}`),
-    (components.length > 0 && `## Components\n${components.map(generateItem).join('\n')}`),
-    (utilities.length > 0 && `## Utilities\n${utilities.map(generateItem).join('\n')}`),
-    (types.length > 0 && `## Types\n${types.map(generateItem).join('\n')}`),
+    sections,
+    types.length > 0 && generateItemLines('types', types),
   ]
     .flat()
     .filter(Boolean)

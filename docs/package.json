@@ -4,6 +4,8 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
+    "build:metadata": "esno .vitepress/scripts/generateMetadata.ts",
+    "build:pages": "esno .vitepress/scripts/generatePages.ts",
     "serve": "vitepress serve"
   },
   "devDependencies": {
