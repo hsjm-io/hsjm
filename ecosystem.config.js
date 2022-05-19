@@ -16,6 +16,13 @@ module.exports = {
       name: 'hsjm-docs',
       cwd: 'docs',
       script: 'pnpm dev'
+    },
+
+    // Nuxt playground.
+    {
+      name: 'hsjm-playground',
+      cwd: 'playground',
+      script: 'pnpm dev'
     }
   ]
 }
