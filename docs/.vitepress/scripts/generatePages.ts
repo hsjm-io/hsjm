@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { capitalize, groupBy } from '../../../packages/shared'
+import { capitalize } from '../../../packages/shared'
 import metadata from './metadata.json'
 
 const generateItemLines = (name: string, items: any) => {
