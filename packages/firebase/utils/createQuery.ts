@@ -30,9 +30,11 @@ export interface CreateQuery {
 }
 
 /**
- * Create a `Query` or `DocumentReference` based on the `filter` object.
- * @param path Collection path.
- * @param filter ID string or `QueryFilter`
+ * Creates a Firestore query from a path & filter object.
+ * @param {string} path The path to the collection.
+ * @param {QueryFilter} filter The query filter object or document id.
+ * @param {CreateQueryOptions} [options] The query options.
+ * @returns {Query<any> | DocumentReference<any>} The query or document reference.
  */
 export const createQuery: CreateQuery = (path, filter, options = {}): any => {
   // --- Initialize variables.

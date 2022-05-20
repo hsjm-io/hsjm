@@ -1,22 +1,28 @@
+/* eslint-disable array-callback-return */
 import { DocumentData, deleteDoc, doc, writeBatch } from 'firebase/firestore'
-import { arrayify, chunk } from '@hsjm/shared'
+import { MaybeArray, arrayify, chunk } from '@hsjm/shared'
 import { useFirebase } from '../useFirebase'
-
-// --- Overloads.
-export type Erase<T = DocumentData> = (path: string, data?: string | T | Array<string | T>) => Promise<void>
 
 /**
  * Erase document(s) from Firestore.
- * @param path Collection path.
- * @param data Document(s) to erase.
+ * @param {string} path The path of the collection
+ * @param {string | T | Array<string | T>} [data] The ID of the document to delete, or an object with an ID
+ * @returns {Promise<void>}
  */
-export const erase: Erase = async(path, data) => {
+export const erase = async<T = DocumentData>(path: string, data?: MaybeArray<string | T>): Promise<void> => {
   // --- Get collection reference.
   const { firestore } = useFirebase()
 
+  // --- Handle errors.
+  if (!path) throw new Error('No path was provided.')
+  if (!data) throw new Error('No data was provided.')
+
   // --- Map input to document references.
   const documentReferences = arrayify(data)
-    .map(x => (typeof x === 'string' ? x : x?.id))
+    .map((x) => {
+      if (typeof x === 'string') return x
+      if ('id' in x) return (<any>x).id
+    })
     .filter(Boolean)
     .map(id => doc(firestore, path, id))
 

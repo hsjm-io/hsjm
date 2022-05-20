@@ -3,15 +3,12 @@ import { arrayify, chunk } from '@hsjm/shared'
 import { useFirebase } from '../useFirebase'
 import { toFirestore } from './defaultConverter'
 
-// --- Overloads.
-export type Save<T = DocumentData> = (path: string, data?: T | T[]) => Promise<void>
-
 /**
  * Update or create document(s) to Firestore.
  * @param path Collection path.
  * @param data Document(s) to save.
  */
-export const save: Save = async(path, data) => {
+export const save = async<T = DocumentData>(path: string, data?: T | T[]): Promise<void> => {
   // --- Get collection reference.
   const { firestore } = useFirebase()
 
