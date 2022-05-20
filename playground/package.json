@@ -6,12 +6,15 @@
     "start": "node .output/server/index.mjs"
   },
   "devDependencies": {
+    "@headlessui/vue": "^1.6.1",
     "@nuxt/ufo": "^0.5.4",
     "@unocss/nuxt": "^0.33.5",
     "@unocss/reset": "^0.33.5",
     "@vueuse/core": "^8.5.0",
     "@vueuse/nuxt": "^8.5.0",
     "nuxt": "^3.0.0-rc.3",
-    "vue": "^3.2.33"
+    "vite": "^2.9.9",
+    "vue": "^3.2.33",
+    "webpack": "^5.72.1"
   }
 }
