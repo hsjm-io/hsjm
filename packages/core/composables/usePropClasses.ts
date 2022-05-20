@@ -9,10 +9,10 @@ import { computed } from 'vue-demi'
  * @returns An array of CSS classes to apply on the root of the component.
  *
  * @example
- * ```
- * <script setup>
+ * ```vue
+ * <script setup lang="ts">
  * import { useCssModule } from 'vue-demi'
- * import { usePropertiesClasses } from '@hsjm/core'
+ * import { usePropClasses } from '@hsjm/core'
  *
  * const props = defineProps<{
  *  size?: 'small' | 'large'
@@ -20,7 +20,7 @@ import { computed } from 'vue-demi'
  * }>()
  *
  * const $style = useCssModule()
- * const classes = usePropertiesClasses(props, $style)
+ * const classes = usePropClasses(props, $style)
  * </script>
  *
  * <template>
