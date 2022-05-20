@@ -63,6 +63,7 @@
     "@hsjm/shared": "workspace:*",
     "@vueuse/core": "^8.5.0",
     "@vueuse/shared": "^8.5.0",
+    "unplugin-vue-components": "^0.19.5",
     "vue-demi": "*"
   },
   "devDependencies": {

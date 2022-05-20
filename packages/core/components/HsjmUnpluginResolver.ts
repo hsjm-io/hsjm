@@ -1,3 +1,5 @@
+import { ComponentResolver } from 'unplugin-vue-components/types'
+
 const components = new Set([
   'Button',
   'Input',
@@ -18,7 +20,7 @@ export interface HsjmResolverOptions {
  * Unplugin component resolver for HSJM Vue components.
  * @param {HsjmResolverOptions} options Options of the resolver.
  */
-export function HsjmUnpluginResolver(options: HsjmResolverOptions = {}) {
+export function HsjmUnpluginResolver(options: HsjmResolverOptions = {}): ComponentResolver {
   const { prefix = '' } = options
   return {
     type: 'component',
