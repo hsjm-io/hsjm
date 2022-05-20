@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "vitepress dev",
+    "dev": "vitepress dev --port 3050",
     "build": "vitepress build",
     "build:metadata": "esno .vitepress/scripts/generateMetadata.ts",
     "build:pages": "esno .vitepress/scripts/generatePages.ts",

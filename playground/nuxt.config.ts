@@ -21,10 +21,6 @@ export default defineNuxtConfig({
     { path: '~/components', extensions: ['vue', 'ts'] },
   ],
   unocss: {
-    include: [
-      './components/**/*.ts',
-      './App.vue',
-    ],
     preflight: true,
     presets: [
       presetUno(),
