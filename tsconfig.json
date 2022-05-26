@@ -11,6 +11,6 @@
     "resolveJsonModule": true,
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": [ "packages", "script" ],
+  "include": [ "packages", "scripts" ],
   "exclude": [ "node_modules", "dist" ]
 }
