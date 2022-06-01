@@ -61,14 +61,14 @@
   },
   "dependencies": {
     "@hsjm/shared": "workspace:*",
-    "@vueuse/core": "^8.5.0",
-    "@vueuse/shared": "^8.5.0",
-    "unplugin-vue-components": "^0.19.5",
+    "@vueuse/core": "^8.6.0",
+    "@vueuse/shared": "^8.6.0",
+    "unplugin-vue-components": "^0.19.6",
     "vue-demi": "*"
   },
   "devDependencies": {
     "vee-validate": "^4.5.11",
-    "vue": "^3.2.33",
+    "vue": "^3.2.36",
     "vue-router": "^4.0.15"
   }
 }

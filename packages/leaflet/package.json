@@ -43,11 +43,11 @@
   },
   "dependencies": {
     "@types/leaflet": "^1.7.10",
-    "@vueuse/shared": "^8.5.0",
+    "@vueuse/shared": "^8.6.0",
     "leaflet": "^1.8.0",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "vue": "^3.2.33"
+    "vue": "^3.2.36"
   }
 }
