@@ -101,7 +101,7 @@ export const useFirebase = createSharedComposable((options?: UseFirebaseOptions 
   useDeviceLanguage(auth)
 
   // --- If available and in devmode, connect to emulator instances.
-  if (isDevelopment) {
+  if (isDevelopment()) {
     // @ts-expect-error: Missing `self` definition.
     if (appCheckDebugToken) self.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken
     if (emulatorAuthPort) connectAuthEmulator(auth, `http://${emulatorHost}:${emulatorAuthPort}`)
