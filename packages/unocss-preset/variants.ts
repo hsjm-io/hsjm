@@ -14,6 +14,21 @@ export const variantCurrentPage: Variant = {
   autocomplete: '(current):',
 }
 
+/** Variant for selector `&[aria-busy="true"]`. */
+export const variantLoading: Variant = {
+  match: (input: string) => {
+    const match = input.match(/^loading[:-]/)
+    if (match) {
+      return {
+        matcher: input.slice(match[0].length),
+        selector: (s: string) => `${s}[aria-busy="true"]`,
+      }
+    }
+  },
+  autocomplete: '(loading):',
+}
+
 export const variants: Variant[] = [
   variantCurrentPage,
+  variantLoading,
 ]
