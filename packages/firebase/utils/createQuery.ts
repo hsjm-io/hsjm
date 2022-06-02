@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-null */
 /* eslint-disable unicorn/prefer-switch */
 import { isNil } from '@hsjm/shared'
 import {
@@ -25,29 +24,29 @@ export interface QueryFilter {
 }
 
 export interface CreateQuery {
+  <T extends DocumentData>(path: string, filter?: string): DocumentReference<T>
   <T extends DocumentData>(path: string, filter?: QueryFilter, options?: CreateQueryOptions): Query<T>
-  <T extends DocumentData>(path: string, filter?: string | null, options?: CreateQueryOptions): DocumentReference<T>
 }
 
 /**
  * Creates a Firestore query from a path & filter object.
- * @param {string} path The path to the collection.
- * @param {QueryFilter} filter The query filter object or document id.
- * @param {CreateQueryOptions} [options] The query options.
- * @returns {Query<any> | DocumentReference<any>} The query or document reference.
+ * @param path The path to the collection.
+ * @param filter The query filter object or document id.
+ * @param options The query options.
+ * @returns The query or document reference.
  */
 export const createQuery: CreateQuery = (path, filter, options = {}): any => {
   // --- Initialize variables.
   const { firestore } = useFirebase()
-  const { converter = defaultConverter } = options
+  const { converter = defaultConverter } = <CreateQueryOptions>options
   const constraints: QueryConstraint[] = []
-
-  // --- Return a single document's reference & Abort early.
-  if (typeof filter === 'string') return doc(firestore, path, filter).withConverter(converter)
-  if (filter === null || filter === undefined) return doc(collection(firestore, path)).withConverter(converter)
 
   // --- Resolve collection
   const colReference = collection(firestore, path).withConverter(converter)
+
+  // --- Return a single document's reference & Abort early.
+  if (typeof filter === 'string') return doc(colReference, filter)
+  if (typeof filter === 'undefined') return doc(colReference)
 
   // --- Generate constraints from object.
   Object.entries(filter).forEach(([key, value]) => {

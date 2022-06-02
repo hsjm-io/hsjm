@@ -1,6 +1,6 @@
 import { createUnrefFn } from '@vueuse/core'
-import { Ref, ref } from 'vue-demi'
-import { MaybeRef, isClient, reactify, tryOnScopeDispose, whenever } from '@vueuse/shared'
+import { ref } from 'vue-demi'
+import { MaybeRef, isClient, reactify, toReactive, tryOnScopeDispose, whenever } from '@vueuse/shared'
 import { DocumentData, DocumentReference, FirestoreError, Query, Unsubscribe, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { resolvable } from '@hsjm/shared'
 import { CreateQueryOptions, QueryFilter, createQuery } from './createQuery'
@@ -23,8 +23,8 @@ export interface GetOptions extends
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
 export interface GetResult<T = DocumentData> {
-  data: Ref<T>
-  query: Ref<Query | DocumentReference>
+  data: T
+  query: Query | DocumentReference
   ready: Promise<void>
   refresh: () => void
   save: () => Promise<void>
@@ -48,42 +48,36 @@ export const get: Get = (path, filter, options = {}): any => {
   // --- Destructure options.
   const { initialValue, onError, sync, keepAlive } = options
 
+  // --- Init variables.
   let refresh: () => void
   let unsubscribe: Unsubscribe
-
-  // --- Init local variables.
   const { promise: ready, resolve, reset } = resolvable()
-  const data: any = ref(initialValue)
-  const query: any = reactify<any>(createQuery)(path, filter, options)
+  const data = ref(initialValue)
+  const query = reactify(createQuery)(path, <any>filter, options)
+  const onSnapshotSuccess = (snapshot: any) => {
+    data.value = getSnapshotData(snapshot, options)
+    resolve()
+  }
 
   // --- Get on snapshot.
   if (sync && isClient) {
     refresh = () => {
       reset()
       unsubscribe && unsubscribe()
-      unsubscribe = onSnapshot(
-        query.value,
-        (snapshot) => { data.value = getSnapshotData(snapshot, options); resolve() },
-        onError,
-      )
+      unsubscribe = onSnapshot(query.value, onSnapshotSuccess, onError)
     }
 
     // --- Unsubscribe and clear cache on scope dispose.
-    if (!keepAlive)
-      tryOnScopeDispose(() => unsubscribe && unsubscribe())
+    if (!keepAlive) tryOnScopeDispose(() => unsubscribe && unsubscribe())
   }
 
   // --- Get once.
   else {
     refresh = () => {
       reset()
-      const getPromise = isDocumentReference(query.value)
-        ? getDoc(query.value)
-        : getDocs(query.value)
-      getPromise.then((snapshot) => {
-        data.value = getSnapshotData(snapshot, options)
-        resolve()
-      })
+      isDocumentReference(query.value)
+        ? getDoc(query.value).then(onSnapshotSuccess)
+        : getDocs(query.value).then(onSnapshotSuccess)
     }
   }
 
@@ -92,8 +86,8 @@ export const get: Get = (path, filter, options = {}): any => {
 
   // --- Return readonly data ref.
   return {
-    data,
-    query,
+    data: toReactive(data),
+    query: toReactive(data),
     ready,
     refresh,
     save: createUnrefFn(save).bind(undefined, path, data),

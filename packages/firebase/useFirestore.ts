@@ -1,7 +1,7 @@
 import { createUnrefFn } from '@vueuse/core'
 import { DocumentData } from 'firebase/firestore'
 import { MaybeRef } from '@vueuse/shared'
-import { computed, unref } from 'vue-demi'
+// import { computed, unref } from 'vue-demi'
 import { erase } from './utils/erase'
 import { save } from './utils/save'
 import { QueryFilter } from './utils/createQuery'
@@ -35,7 +35,7 @@ export interface UseFirestoreReturnType<T = DocumentData> {
    * Instiate a new composable targetting a specific sub-collection path from Firestore.
    * @param path Path to collection.
    */
-  collection: <T = DocumentData>(...pathSegments: MaybeRef<string>[]) => UseFirestoreReturnType<T>
+  // collection: <T = DocumentData>(...pathSegments: MaybeRef<string>[]) => UseFirestoreReturnType<T>
 }
 
 /**
@@ -46,5 +46,5 @@ export const useFirestore = <T>(path: MaybeRef<string>): UseFirestoreReturnType<
   get: get.bind(undefined, path) as any,
   save: createUnrefFn(save).bind(undefined, path),
   erase: createUnrefFn(erase).bind(undefined, path),
-  collection: subPath => useFirestore(computed(() => [path, subPath].map(unref).join('/'))),
+  // collection: subPath => useFirestore(computed(() => [path, subPath].map(unref).join('/'))),
 })
