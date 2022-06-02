@@ -38,5 +38,9 @@
   },
   "dependencies": {
     "@hsjm/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@unocss/preset-mini": "^0.37.2",
+    "unocss": "^0.37.2"
   }
 }
