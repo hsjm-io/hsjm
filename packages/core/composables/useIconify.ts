@@ -27,7 +27,7 @@ export const useIconify = (icon: MaybeRef<string>, options = {} as MaybeRef<Icon
   watch([icon, options], update)
 
   // --- Update on init if not SSR.
-  if (!isClient || isDevelopment) update()
+  if (!isClient || isDevelopment()) update()
 
   // --- Return SVG.
   return extendRef(svg, { ready: promise })

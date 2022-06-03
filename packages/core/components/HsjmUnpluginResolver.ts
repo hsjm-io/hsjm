@@ -2,6 +2,7 @@ import { ComponentResolver } from 'unplugin-vue-components/types'
 
 const components = new Set([
   'Button',
+  'Icon',
   'Input',
   'Switch',
   'Table',

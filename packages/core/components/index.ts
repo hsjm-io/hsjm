@@ -1,5 +1,6 @@
 export * from './Button'
 export * from './HsjmUnpluginResolver'
 export * from './Input'
+export * from './Icon'
 export * from './Switch'
 export * from './Table'
