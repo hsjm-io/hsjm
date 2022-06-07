@@ -61,6 +61,8 @@
   },
   "dependencies": {
     "@hsjm/shared": "workspace:*",
+    "@iconify/iconify": "^2.2.1",
+    "@iconify/utils": "^1.0.32",
     "@vueuse/core": "^8.6.0",
     "@vueuse/shared": "^8.6.0",
     "unplugin-vue-components": "^0.19.6",
