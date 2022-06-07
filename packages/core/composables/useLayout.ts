@@ -8,6 +8,11 @@ interface UseLayoutOptions {
   footerEl?: Ref<HTMLElement | SVGElement>
 }
 
+/**
+ * Returns an object with various information related to the layout of an element.
+ * @param {UseLayoutOptions} [options]
+ * @returns {UseLayout}
+ */
 export const useLayout = createSharedComposable((options?: UseLayoutOptions) => {
   const { y: scroll } = useWindowScroll()
 
