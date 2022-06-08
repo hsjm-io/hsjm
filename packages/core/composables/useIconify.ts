@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue-demi'
+import { isReactive, isRef, ref, watch } from 'vue-demi'
 import { MaybeRef, extendRef, isClient } from '@vueuse/shared'
 import { IconifyIconCustomisations } from '@iconify/iconify'
 import { createUnrefFn } from '@vueuse/core'
@@ -24,7 +24,8 @@ export const useIconify = (icon: MaybeRef<string>, options = {} as MaybeRef<Icon
   }
 
   // --- Update on server init & prop changes.
-  watch([icon, options], update)
+  if (isRef(icon)) watch(icon, update)
+  if (isRef(options) || isReactive(options)) watch(options, update)
 
   // --- Update on init if not SSR.
   if (!isClient || isDevelopment()) update()
