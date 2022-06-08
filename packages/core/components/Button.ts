@@ -71,6 +71,7 @@ export const Button = /* @__PURE__ */ defineComponent({
       return onClick
     })
 
+    // --- Expose for debugging.
     exposeToDevtool({
       is,
       isExternalLink,
