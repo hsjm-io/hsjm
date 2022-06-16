@@ -1,6 +1,6 @@
 import { createUnrefFn } from '@vueuse/core'
-import { ref } from 'vue-demi'
-import { MaybeRef, isClient, reactify, toReactive, tryOnScopeDispose, whenever } from '@vueuse/shared'
+import { Ref, ref } from 'vue-demi'
+import { MaybeRef, isClient, reactify, tryOnScopeDispose, whenever } from '@vueuse/shared'
 import { DocumentData, DocumentReference, FirestoreError, Query, Unsubscribe, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { resolvable } from '@hsjm/shared'
 import { CreateQueryOptions, QueryFilter, createQuery } from './createQuery'
@@ -23,7 +23,7 @@ export interface GetOptions extends
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
 export interface GetResult<T = DocumentData> {
-  data: T
+  data: Ref<T>
   query: Query | DocumentReference
   ready: Promise<void>
   refresh: () => void
@@ -71,7 +71,7 @@ export const get: Get = (path, filter, options = {}): any => {
     if (!keepAlive) tryOnScopeDispose(() => unsubscribe && unsubscribe())
   }
 
-  // --- Get once.
+  // --- Get once.s
   else {
     refresh = () => {
       reset()
@@ -86,8 +86,8 @@ export const get: Get = (path, filter, options = {}): any => {
 
   // --- Return readonly data ref.
   return {
-    data: toReactive(data),
-    query: toReactive(data),
+    data,
+    query,
     ready,
     refresh,
     save: createUnrefFn(save).bind(undefined, path, data),
