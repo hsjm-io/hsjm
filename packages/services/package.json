@@ -45,12 +45,12 @@
     "@hsjm/shared": "workspace:^1.0.0",
     "@mapbox/mapbox-sdk": "^0.13.3",
     "@types/mapbox__mapbox-sdk": "^0.13.4",
-    "@vueuse/core": "^8.6.0",
-    "@vueuse/shared": "^8.6.0",
+    "@vueuse/core": "^8.7.3",
+    "@vueuse/shared": "^8.7.3",
     "vue-demi": "*"
   },
   "devDependencies": {
     "axios": "^0.26.1",
-    "vue": "^3.2.36"
+    "vue": "^3.2.37"
   }
 }

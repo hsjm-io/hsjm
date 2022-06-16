@@ -63,14 +63,14 @@
     "@hsjm/shared": "workspace:*",
     "@iconify/iconify": "^2.2.1",
     "@iconify/utils": "^1.0.32",
-    "@vueuse/core": "^8.6.0",
-    "@vueuse/shared": "^8.6.0",
+    "@vueuse/core": "^8.7.3",
+    "@vueuse/shared": "^8.7.3",
     "unplugin-vue-components": "^0.19.6",
     "vue-demi": "*"
   },
   "devDependencies": {
     "vee-validate": "^4.5.11",
-    "vue": "^3.2.36",
-    "vue-router": "^4.0.15"
+    "vue": "^3.2.37",
+    "vue-router": "^4.0.16"
   }
 }

@@ -42,12 +42,12 @@
     }
   },
   "dependencies": {
-    "@vueuse/core": "^8.6.0",
-    "@vueuse/shared": "^8.6.0",
+    "@vueuse/core": "^8.7.3",
+    "@vueuse/shared": "^8.7.3",
     "milsymbol": "^2.0.0",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "vue": "^3.2.36"
+    "vue": "^3.2.37"
   }
 }
