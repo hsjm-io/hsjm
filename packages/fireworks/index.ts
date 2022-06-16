@@ -1,2 +1,3 @@
 export * from './modules'
-export * from './composables'
+export * from './functions'
+export * from './shared'

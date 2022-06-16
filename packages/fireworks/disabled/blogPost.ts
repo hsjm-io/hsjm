@@ -1,4 +1,4 @@
-import { FirestoreReference } from '../utils'
+import { FirestoreReference } from '../shared/validators'
 import { BlogCategory } from './blogCategory'
 import { Data } from './data'
 

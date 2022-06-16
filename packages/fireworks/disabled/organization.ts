@@ -1,7 +1,7 @@
 import { Schema, isArrayNotEmpty, isArrayOf, isStringFirestoreId, isStringNotEmpty, isStringUrl, isUndefined, trim } from '@hsjm/shared'
-import { FirestoreReference } from '../utils'
+import { FirestoreReference } from '../shared/validators'
+import { Identity } from '../modules/coreIdentity'
 import { Data, dataSchema } from './data'
-import { Identity } from './identity'
 
 export interface Organization extends Data {
   nameLegal?: string

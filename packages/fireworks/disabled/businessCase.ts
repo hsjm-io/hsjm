@@ -1,6 +1,6 @@
 import { Schema } from '@hsjm/shared'
-import { FirestoreReference } from '../utils'
-import { Identity } from './identity'
+import { FirestoreReference } from '../shared/validators'
+import { Identity } from '../modules/coreIdentity'
 import { Data } from './data'
 import { Organization } from './organization'
 
