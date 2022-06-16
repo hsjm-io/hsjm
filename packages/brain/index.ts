@@ -1,1 +1,1 @@
-export * from './createPalette'
+export * from './shadeColor'

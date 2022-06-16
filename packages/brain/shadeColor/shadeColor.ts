@@ -1,6 +1,6 @@
 import mock from 'mock-require'
-import model from './shadeColor/model.json'
-import { colorToLayer, layerToColor } from './shadeColor/utils'
+import model from './model/data.json'
+import { colorToLayer, layerToColor } from './utils'
 
 // --- Mock `gpu.js` import.
 mock('gpu.js', {})
@@ -34,20 +34,3 @@ export const shadeColor = (color: string, shade: string | number) => {
   const output = neuralNetwork.run(input)
   return layerToColor(output)
 }
-
-/**
- * Generate a TailwindCSS / WindiCSS color palette from a single hex color.
- * @param color Input color.
- */
-export const createPalette = (color: string): ColorPalette => ({
-  50: shadeColor(color, 50),
-  100: shadeColor(color, 100),
-  200: shadeColor(color, 200),
-  300: shadeColor(color, 300),
-  400: shadeColor(color, 400),
-  500: shadeColor(color, 500),
-  600: shadeColor(color, 600),
-  700: shadeColor(color, 700),
-  800: shadeColor(color, 800),
-  900: shadeColor(color, 900),
-})

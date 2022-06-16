@@ -8,8 +8,8 @@ import consola from 'consola'
 import chalk from 'chalk'
 import { plot } from 'asciichart'
 import { shuffle } from 'lodash'
+import { colorToLayer, logPalette } from '../utils'
 import data from './data.json'
-import { colorToLayer, logPalette } from './utils'
 
 // --- Initialize NN.
 const neuralNetwork = new NeuralNetwork({

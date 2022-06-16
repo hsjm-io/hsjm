@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import windiCssPalettes from 'windicss/colors'
 import { createPalette } from '@hsjm/shared'
 import axios from 'axios'
-import { logPalette } from './utils'
+import { logPalette } from '../utils'
 
 axios.get('https://tsmcdgolhhtzzotghypz.supabase.co/rest/v1/shades?limit=1000', {
   headers: {
