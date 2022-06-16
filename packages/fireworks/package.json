@@ -29,6 +29,11 @@
       "import": "./dist/modules/index.mjs",
       "types": "./dist/modules/index.d.ts"
     },
+    "./shared": {
+      "require": "./dist/shared/index.js",
+      "import": "./dist/shared/index.mjs",
+      "types": "./dist/shared/index.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [

@@ -19,6 +19,11 @@
       "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
     },
+    "./shadeColor": {
+      "require": "./dist/shadeColor/index.js",
+      "import": "./dist/shadeColor/index.mjs",
+      "types": "./dist/shadeColor/index.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
