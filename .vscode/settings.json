@@ -1,11 +1,8 @@
 {
-  "eslint.validate": [
-    "javascript",
-    "typescript",
-    "json",
-    "markdown"
-  ],
+  "eslint.validate": ["javascript", "typescript", "json", "markdown"],
   "prettier.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "unocss.root": "./playground"
+  "unocss.root": "./playground",
+  "vitest.commandLine": "pnpm test:dev --",
+  "testing.automaticallyOpenPeekView": "never"
 }
