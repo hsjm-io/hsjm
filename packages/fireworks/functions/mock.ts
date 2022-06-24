@@ -1,11 +1,8 @@
-import { Module, firebaseAdmin, firebaseFunctions } from '../shared'
-import { getModuleMock } from './../shared/getModuleMock'
+import { FirebaseContext, Module, getModuleMock } from '../shared'
 
-export const mock = <T>(module: Module) => firebaseFunctions?.https.onCall(
-  async() => firebaseAdmin
-    ?.firestore()
+export const mock = (module: Module, { admin, functions }: FirebaseContext) => functions.https
+  .onCall(async() => admin.firestore()
     .collection(module.collection)
     .doc()
-    .set(getModuleMock<T>(module),
-    ),
-)
+    .set(getModuleMock(module)),
+  )

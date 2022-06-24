@@ -1,10 +1,18 @@
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 import { ValidationRuleSet } from '@hsjm/shared'
+
+export type FirestoreReference<T = any> = import('firebase/compat/app').default.firestore.DocumentReference<T>
+
+export interface FirebaseContext {
+  admin: typeof import('firebase-admin')
+  functions: typeof import('firebase-functions')
+}
 
 export type ModuleFieldType = 'text' | 'markdown' | 'number' | 'slider' | 'asset' | 'image' | `reference:${string}`
 
 export interface ModuleField {
   name: string
-  label: string
+  label?: string
   group?: string
   description?: string
   rules?: ValidationRuleSet

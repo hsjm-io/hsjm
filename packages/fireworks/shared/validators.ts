@@ -1,10 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports */
-export type FirestoreReference<T = any> = import('firebase/compat/app').default.firestore.DocumentReference<T>
-
-interface FirebaseContext {
-  admin: typeof import('firebase-admin')
-  context: import('firebase-functions').EventContext
-}
+import { FirebaseContext } from './types'
 
 export const isUserId = (id: string, _: any, context: FirebaseContext) =>
   context.admin.auth().getUser(id).then(user => !!user)
