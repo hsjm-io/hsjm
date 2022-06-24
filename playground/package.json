@@ -10,11 +10,11 @@
     "@nuxt/ufo": "^0.5.4",
     "@unocss/nuxt": "^0.33.5",
     "@unocss/reset": "^0.33.5",
-    "@vueuse/core": "^8.6.0",
-    "@vueuse/nuxt": "^8.6.0",
-    "nuxt": "^3.0.0-rc.3",
-    "vite": "^2.9.9",
-    "vue": "^3.2.36",
-    "webpack": "^5.72.1"
+    "@vueuse/core": "^8.7.3",
+    "@vueuse/nuxt": "^8.7.3",
+    "nuxt": "^3.0.0-rc.4",
+    "vite": "^2.9.12",
+    "vue": "^3.2.37",
+    "webpack": "^5.73.0"
   }
 }

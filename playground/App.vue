@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Switch, Table, customizeComponent, Input } from '@hsjm/core'
+import { Button, Switch, Table, customizeComponent, Input } from '@hsjm/core'
 
 const log = () =>console.log()
 
@@ -83,6 +83,16 @@ const ShinyInput = customizeComponent(Input, {
         </p>
         <ShinyInput label="Email" message="Provide valid email address">
         </ShinyInput>
+      </div>
+
+      <!-- Button -->
+      <div class="border-2 border-nord3 rounded-lg p-8 space-y-4">
+        <h3 class="text-3xl font-bold">The button.</h3>
+        <p class="text-base">
+          Foobar and shits
+        </p>
+        <Button class="btn btn-nord4">
+        </Button>
       </div>
 
 
