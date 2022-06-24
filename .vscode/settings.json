@@ -3,6 +3,5 @@
   "prettier.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
   "unocss.root": "./playground",
-  "vitest.commandLine": "pnpm test:dev --",
-  "testing.automaticallyOpenPeekView": "never"
+  "vitest.commandLine": "pnpm test:dev --"
 }
