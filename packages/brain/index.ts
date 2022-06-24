@@ -1,1 +1,2 @@
-export * from './shadeColor'
+export * from './color'
+export * from './code'

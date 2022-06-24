@@ -1,0 +1,36 @@
+Generate a function declaration and make sure it only has these specific features:
+- name: fibonacci
+- description: Compute Fibonacci number at N (non recursively)
+- language: rust
+- languageVersion: latest
+- languageFeatures: public, no-semicolons
+- documentation: returns a number
+
+---
+
+/// Reverse an array
+///
+/// # Arguments
+///
+/// * \`n\` - The number to calculate
+pub fn fibonacci(n: i32) -> i32 {
+  // --- Handle edge and common cases.
+  if n < 0 { panic!("Fibonacci only defined for non-negative integers") 
+  else if n == 0 { return 0 } 
+  else if n == 1 { return 1 }
+
+  // --- Define two big integers
+  let mut a: i64 = 0
+  let mut b: i64 = 1
+  let mut c: i64 = 0
+
+  // --- Loop N times
+  for _ in 2..n + 1 {
+    c = a + b
+    a = b
+    b = c
+  }
+
+  // --- Return result as number
+  c as i32
+}
