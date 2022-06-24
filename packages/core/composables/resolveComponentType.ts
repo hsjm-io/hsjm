@@ -5,6 +5,8 @@ import { DefineComponent, resolveComponent } from 'vue-demi'
  * @param {string} type The type to resolve
  * @returns {DefineComponent|keyof HTMLElementTagNameMap}
  */
-export const resolveComponentType = <T extends DefineComponent>(type: string) => (/^[A-Z]/.test(type)
-  ? resolveComponent(type) as T
-  : type as keyof HTMLElementTagNameMap)
+export const resolveComponentType = <T extends DefineComponent>(type: string) => (
+  /^[A-Z]/.test(type)
+    ? resolveComponent(type) as T
+    : type as keyof HTMLElementTagNameMap
+)
