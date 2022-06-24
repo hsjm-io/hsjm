@@ -1,8 +1,8 @@
 import { isReactive, isRef, ref, watch } from 'vue-demi'
-import { MaybeRef, extendRef, isClient } from '@vueuse/shared'
+import { MaybeRef, extendRef } from '@vueuse/shared'
 import { IconifyIconCustomisations } from '@iconify/iconify'
 import { createUnrefFn } from '@vueuse/core'
-import { isDevelopment, resolvable } from '@hsjm/shared'
+import { isDevelopment, isNode, resolvable } from '@hsjm/shared'
 import { fetchIcon } from './fetchIcons'
 
 /**
@@ -28,7 +28,7 @@ export const useIconify = (icon: MaybeRef<string>, options = {} as MaybeRef<Icon
   if (isRef(options) || isReactive(options)) watch(options, update)
 
   // --- Update on init if not SSR.
-  if (!isClient || isDevelopment()) update()
+  if (isNode || isDevelopment) update()
 
   // --- Return SVG.
   return extendRef(svg, { ready: promise })

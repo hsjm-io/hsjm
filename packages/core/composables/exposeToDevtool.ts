@@ -7,7 +7,7 @@ import { getCurrentInstance, nextTick, reactive } from 'vue-demi'
  */
 export const exposeToDevtool = async(object: Record<string, any>) => {
   const instance = getCurrentInstance()
-  if (!instance || isProduction()) return
+  if (!instance || isProduction) return
 
   // --- Await init.
   await nextTick()
