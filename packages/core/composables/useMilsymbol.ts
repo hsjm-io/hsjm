@@ -1,30 +1,26 @@
-import { isReactive, isRef, ref, unref, watch } from 'vue-demi'
+import { Ref, isReactive, isRef, ref, unref, watch } from 'vue-demi'
 import { MaybeRef } from '@vueuse/shared'
 import { isDevelopment, isNode } from '@hsjm/shared'
 import { Symbol, SymbolOptions } from 'milsymbol'
 
 /**
- * Resolve the SVG for a given Nato Icon.
- * @param sidc Name of the symbol. (Example: ``)
- * @param options Customisation options.
+ * Resolve the SVG for a given sidc with `milsymbol`.
+ * @param {MaybeRef<string>} sidc SIDH of the icon. (Example: `SFG-UCI----D` )
+ * @param {MaybeRef<IconifyIconCustomisations>} [options] Customisation options.
+ * @returns {Ref<string | undefined>} The SVG as a `Ref<string>`
  */
-export const useMilsymbol = (sidc: MaybeRef<string>, options = {} as MaybeRef<SymbolOptions>) => {
-  // --- State.
-  const svg = ref<string>('<svg></svg>')
+export const useMilsymbol = (sidc: MaybeRef<string>, options: MaybeRef<SymbolOptions> = {}): Ref<string | undefined> => {
+  // --- Initalize state.
+  const svg = ref<string | undefined>()
 
-  // --- Create and append the icon in the template.
-  const update = () => {
-    const symbol = new Symbol(unref(sidc), { size: 24 })
-    svg.value = symbol.asSVG()
-  }
+  // --- Declare function to get the svg.
+  const update = () => svg.value = new Symbol(unref(sidc), { size: 24 }).asSVG()
 
-  // --- Update on server init & prop changes.
+  // --- Update on server init if not SSR & on prop changes.
   if (isRef(sidc)) watch(sidc, update)
   if (isRef(options) || isReactive(options)) watch(options, update)
-
-  // --- Update on init if not SSR.
   if (isNode || isDevelopment) update()
 
-  // --- Return SVG.
+  // --- Return SVG ref.
   return svg
 }

@@ -7,33 +7,6 @@ import { computed } from 'vue-demi'
  * @param props Object used to conditionnaly apply the CSS classes.
  * @param targets Whitelist of CSS classes. Can be an array of classes or the CSS Module object.
  * @returns An array of CSS classes to apply on the root of the component.
- *
- * @example
- * ```vue
- * <script setup lang="ts">
- * import { useCssModule } from 'vue-demi'
- * import { usePropClasses } from '@hsjm/core'
- *
- * const props = defineProps<{
- *  size?: 'small' | 'large'
- *  vertical?: boolean
- * }>()
- *
- * const $style = useCssModule()
- * const classes = usePropClasses(props, $style)
- * </script>
- *
- * <template>
- *   <div :class="classes"> ... </div>
- * </template>
- *
- * <style module>
- * .small { ... }
- * .large { ... }
- * .vertical { ... }
- * </style>
- *
- * ```
  */
 export const usePropClasses = <T = string>(props: Record<string, any>, targets = [] as T[] | Record<string, T>) =>
   computed(() => {
