@@ -1,8 +1,11 @@
-
-import { Ref, ref, unref, watch } from 'vue-demi'
-import { refDefault, tryOnMounted } from '@vueuse/shared'
-import { Map, MapOptions, Marker, map as createMap, tileLayer as createTileLayer } from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import { createUnrefFn } from '@vueuse/core'
+/* eslint-disable unicorn/no-array-method-this-argument */
+/* eslint-disable @typescript-eslint/consistent-type-imports */
+import { isReactive, ref, unref, watch } from 'vue-demi'
+import { Map, MapOptions, Marker } from 'leaflet'
+import { requireSafe } from '@hsjm/shared'
+import { MaybeRef } from '@vueuse/shared'
+// import 'leaflet/dist/leaflet.css'
 
 export type TileLayerOptions = L.TileLayerOptions & { urlTemplate: string }
 
@@ -15,54 +18,67 @@ export interface UseLeafletOptions extends MapOptions {
 
 export const useLeaflet = (
   element: string | HTMLElement,
-  options: UseLeafletOptions,
-  markers = [] as Ref<Marker[]> | Marker[],
+  options: MaybeRef<UseLeafletOptions>,
+  markers: MaybeRef<Marker[]> = [],
 ) => {
+  // --- Destructure and defaults options
+  const {
+    tileLayers,
+    initialLat = 0,
+    initialLng = 0,
+    initialZoom = 8,
+  } = unref(options)
+
   // --- Initialize variables.
-  const lat = refDefault(ref(options.initialLat), 0)
-  const lng = refDefault(ref(options.initialLng), 0)
-  const zoom = refDefault(ref(options.initialZoom), 8)
-  const map = refDefault(ref<Map>(), {} as Map)
-  let _markers: Marker[] = []
+  const lat = ref(initialLat)
+  const lng = ref(initialLng)
+  const zoom = ref(initialZoom)
+  const map = ref<Map | undefined>()
+
+  // --- Import dependencies.
+  const L = requireSafe<typeof import('leaflet')>('leaflet')
+  if (!L) throw new Error('Leaflet dependency not found')
 
   // --- Initialize map.
-  tryOnMounted(() => {
-    const _map = createMap(element, options)
-      .setView([lat.value, lng.value], zoom.value)
-
-    // --- Make sure var is an array.
-    if (!Array.isArray(options.tileLayers))
-      options.tileLayers = [options.tileLayers]
-
-    // --- Add layers.
-    for (const tileLayer of options.tileLayers)
-      createTileLayer(tileLayer.urlTemplate, tileLayer).addTo(_map)
-
-    // --- Sync map markers.
-    watch(
-      markers,
-      (markers) => {
-        for (const _marker of _markers) _marker.removeFrom(_map)
-        _markers = []
-        for (const marker of unref(markers)) _markers.push(marker.addTo(_map))
-      },
-      { immediate: true, deep: true },
-    )
+  const updateMap = (options: UseLeafletOptions) => {
+    map.value = L.map(element, options).setView([lat.value, lng.value], zoom.value)
 
     // --- Sync map view with ref values.
-    _map.on('move', () => {
-      const center = _map.getCenter()
+    map.value.on('move', () => {
+      const center = (<Map>map.value).getCenter()
       lat.value = center.lat
       lng.value = center.lng
-      zoom.value = _map.getZoom()
+      zoom.value = (<Map>map.value).getZoom()
     })
 
-    // --- Sync ref values with map view.
-    watch([lat, lng, zoom], ([lat, lng, zoom]) =>
-      _map.setView([lat, lng], zoom))
+    // --- Add layer(s)
+    for (const tileLayer of Array.isArray(tileLayers) ? tileLayers : [tileLayers])
+      L.tileLayer(tileLayer.urlTemplate, tileLayer).addTo(map.value)
+  }
 
-    // --- Set map.
-    map.value = _map
+  const updateMarkers = (markers?: Marker[], oldMarkers?: Marker[]) => {
+    if (!map.value) return
+
+    // --- Flush markers.
+    if (oldMarkers !== undefined) {
+      for (const oldMarker of oldMarkers)
+        oldMarker.removeFrom(map.value)
+    }
+
+    // --- Add markers.
+    if (markers !== undefined) {
+      for (const marker of markers)
+        marker.addTo(map.value)
+    }
+  }
+
+  // --- Sync map & markers.
+  if (isReactive(options)) watch(options, createUnrefFn(updateMap), { immediate: true, deep: true })
+  if (isReactive(markers)) watch(markers, createUnrefFn(updateMarkers), { deep: true })
+
+  // --- Sync ref values with map view.
+  watch([lat, lng, zoom], ([lat, lng, zoom]) => {
+    if (map.value) map.value.setView([lat, lng], zoom)
   })
 
   return { lat, lng, zoom, map }
