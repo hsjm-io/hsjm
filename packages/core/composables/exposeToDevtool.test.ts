@@ -1,21 +1,17 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 // @vitest-environment happy-dom
 import { expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { defineComponent, h, nextTick } from 'vue-demi'
+import { h, nextTick } from 'vue-demi'
 import { exposeToDevtool } from './exposeToDevtool'
 
-const Component = defineComponent({
-  setup() {
-    exposeToDevtool({ foo: 'bar' })
-    return () => h('div')
-  },
-})
-
 it('should expose an object to the Vue Devtools', async() => {
-  const wrapper = mount(Component)
+  const wrapper = mount({ render: () => h('div') })
+  const instance = wrapper.getCurrentComponent()
+  exposeToDevtool({ foo: 'bar' }, instance)
   await nextTick()
   // @ts-expect-error: ignore
-  expect(wrapper.getCurrentComponent().setupState).toEqual({ foo: 'bar' })
+  expect(instance.setupState).toEqual({ foo: 'bar' })
 })
 
 it('should return the exposed object', () => {
