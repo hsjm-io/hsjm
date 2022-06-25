@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { expect, it } from 'vitest'
 import { nextTick, ref } from 'vue-demi'
 import { until } from '@vueuse/shared'
