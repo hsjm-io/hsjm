@@ -1,8 +1,7 @@
-import { createSharedComposable } from '@vueuse/shared'
-import { ref } from 'vue-demi'
+import { createGlobalState } from '@vueuse/shared'
+import { reactive } from 'vue-demi'
 
-/** Configurable alert object. */
-interface Alert {
+export interface Alert {
   /** Unique id for lifecycle handling. Defaults to auto-generated one. */
   id?: string
   /** Content of the alert. */
@@ -13,26 +12,64 @@ interface Alert {
   duration?: number
 }
 
-/** Dismiss alert. */
 type Dismiss = () => void
 
-// --- Indexer.
+export interface UseAlertReturnType {
+  /** The active alerts pool. */
+  alerts: Alert[]
+  /**
+   * Create an alert that is displayed for a duration, then automatically dismissed.
+   * @param {Alert} alert The alert to be displayed
+   * @returns {Function} A function that can be used to dismiss the alert manually
+   */
+  alert: (alert: Alert) => Dismiss
+  /**
+   * Create an error alert that is displayed for a duration, then automatically dismissed.
+   * @param {string} text The text to be displayed in the error alert
+   * @returns A function that can be used to dismiss the alert manually
+   */
+  alertError: (text: string) => Dismiss
+  /**
+   * Create a success alert that is displayed for a duration, then automatically dismissed.
+   * @param {string} text The text to be displayed in the success alert
+   * @returns A function that can be used to dismiss the alert manually
+   */
+  alertSuccess: (text: string) => Dismiss
+  /**
+   * Create a warning alert that is displayed for a duration, then automatically dismissed.
+   * @param {string} text The text to be displayed in the warning alert
+   * @returns A function that can be used to dismiss the alert manually
+   */
+  alertWarning: (text: string) => Dismiss
+  /**
+   * Dismiss an alert or all allerts
+   * @param {Alert} [alert] The alert to dismiss. If undefined, all alerts will be dismissed
+   */
+  dismiss: (alert?: Alert) => void
+}
+
+// --- Global index.
 let index = 0
 
 /**
- * Return globally scoped registered functions to allow for UI alert managment.
+ * Return a composable to manage the global alert pool.
+ * @returns {UseAlertReturnType} A composable to manage the global alert pool.
  */
-export const useAlert = createSharedComposable(() => {
+export const useAlert = createGlobalState((): UseAlertReturnType => {
   // --- Initialize global alert pool.
-  const alerts = ref([] as Alert[])
+  const alerts = reactive<Alert[]>([])
 
-  // --- Dismiss method.
-  const dismiss = (alert: Alert) => { alerts.value = alerts.value.filter(x => x.id !== alert.id) }
+  // --- Dismiss an alert.
+  const dismiss = (alert?: Alert) => {
+    if (alert === undefined) { alerts.length = 0; return }
+    const index = alerts.findIndex(x => x.id !== alert.id)
+    alerts.splice(index, 1)
+  }
 
-  // --- Alert lifecycle.
-  const alert = (alert: Alert): Dismiss => {
+  // --- Create an alert.
+  const alert = (alert: Alert) => {
     alert.id = alert.id ?? (index++).toString()
-    alerts.value = [...alerts.value, alert]
+    alerts.push(alert)
     const dismissThisAlert = () => dismiss(alert)
     setTimeout(dismissThisAlert, alert.duration ?? 5000)
     return dismissThisAlert
@@ -44,12 +81,5 @@ export const useAlert = createSharedComposable(() => {
   const alertWarning = (text: string) => alert({ text, type: 'warning' })
 
   // --- Return pool and methods.
-  return {
-    alerts,
-    alert,
-    alertError,
-    alertSuccess,
-    alertWarning,
-    dismiss,
-  }
+  return { alerts, alert, alertError, alertSuccess, alertWarning, dismiss }
 })
