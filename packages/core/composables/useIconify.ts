@@ -11,8 +11,11 @@ import { isDevelopment, isNode } from '@hsjm/shared'
  * @param {IconifyIconCustomisations} options Iconify options
  * @returns {Promise<string>} SVG string
  */
-const fetchIconSvg = async(icon: string, options: IconifyIconCustomisations): Promise<string> => {
-  const [collectionName, iconName] = icon.split(/:|-/)
+const fetchIconSvg = async(icon: string, options: IconifyIconCustomisations): Promise<string | undefined> => {
+  // --- Extract collection and icon names.
+  const matches = icon.match(/(.+?)[:-](.+)/)
+  if (!matches) return undefined
+  const [, collectionName, iconName] = [...matches]
 
   // --- Fetch data from remote.
   const response = await fetch(`https://api.iconify.design/${collectionName}.json?icons=${iconName}`)
@@ -20,6 +23,7 @@ const fetchIconSvg = async(icon: string, options: IconifyIconCustomisations): Pr
 
   // --- Compile icon data.
   expandIconSet(iconSet)
+  if (!iconSet.icons[iconName]) return undefined
   const iconData = fullIconData(iconSet.icons[iconName])
   const renderData = iconToSVG(iconData, { ...defaults, ...options })
 
