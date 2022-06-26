@@ -1,16 +1,15 @@
+import { noop } from '@hsjm/shared'
 import { createUnrefFn } from '@vueuse/core'
-import { Ref, ref } from 'vue-demi'
+import { Ref, ref, toRefs } from 'vue-demi'
 import { MaybeRef, isClient, reactify, tryOnScopeDispose, whenever } from '@vueuse/shared'
-import { DocumentData, DocumentReference, FirestoreError, Query, Unsubscribe, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
-import { resolvable } from '@hsjm/shared'
-import { CreateQueryOptions, QueryFilter, createQuery } from './createQuery'
-import { GetSnapshotDataOptions, getSnapshotData, isDocumentReference } from './getSnapshotData'
+import { DocumentData, DocumentReference, FirestoreDataConverter, FirestoreError, Query, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
+import { noopAsync } from './../../shared/misc/noop'
+import { QueryFilter, createQuery } from './createQuery'
+import { getSnapshotData, isDocumentReference } from './getSnapshotData'
 import { save } from './save'
 import { erase } from './erase'
 
-export interface GetOptions extends
-  GetSnapshotDataOptions,
-  CreateQueryOptions {
+export interface GetOptions<T = DocumentData> extends SnapshotListenOptions {
   /** Error handler. */
   onError?: (error: FirestoreError) => void
   /** Sync the data using `onSnapshot` method. */
@@ -19,23 +18,29 @@ export interface GetOptions extends
   keepAlive?: boolean
   /** Debug. */
   debug?: boolean
+  /** Initial value. */
+  initialValue?: any
+  /** Pick the first item of the result if it's an array of documents. */
+  pickFirst?: any
+  /** Pick the first item of the result if it's an array of documents. */
+  converter?: FirestoreDataConverter<T>
 }
 
 // eslint-disable-next-line unicorn/prevent-abbreviations
-export interface GetResult<T = DocumentData> {
+export interface GetReturnType<T = DocumentData> {
   data: Ref<T>
   query: Query | DocumentReference
-  ready: Promise<void>
-  refresh: () => void
+  loading: Ref<boolean>
+  update: () => void
   save: () => Promise<void>
   erase: () => Promise<void>
 }
 
 // --- Overloads.
 export interface Get<T = DocumentData> {
-  <U extends T>(path: MaybeRef<string>, filter?: QueryFilter, options?: GetOptions & { pickFirst: true }): GetResult<U>
-  <U extends T>(path: MaybeRef<string>, filter?: QueryFilter, options?: GetOptions): GetResult<U[]>
-  <U extends T>(path: MaybeRef<string>, filter?: MaybeRef<string | null | undefined>, options?: GetOptions): GetResult<U>
+  <U extends T>(path: MaybeRef<string>, filter?: QueryFilter, options?: GetOptions<T> & { pickFirst: true }): GetReturnType<U>
+  <U extends T>(path: MaybeRef<string>, filter?: QueryFilter, options?: GetOptions<T>): GetReturnType<U[]>
+  <U extends T>(path: MaybeRef<string>, filter?: MaybeRef<string | undefined>, options?: GetOptions<T>): GetReturnType<U>
 }
 
 /**
@@ -46,50 +51,53 @@ export interface Get<T = DocumentData> {
  */
 export const get: Get = (path, filter, options = {}): any => {
   // --- Destructure options.
-  const { initialValue, onError, sync, keepAlive } = options
+  const { initialValue, onError, sync, keepAlive, pickFirst, converter } = toRefs(options)
 
   // --- Init variables.
-  let refresh: () => void
-  let unsubscribe: Unsubscribe
-  const { promise: ready, resolve, reset } = resolvable()
+  let update = noopAsync
+  let unsubscribe = noop
   const data = ref(initialValue)
-  const query = reactify(createQuery)(path, <any>filter, options)
-  const onSnapshotSuccess = (snapshot: any) => {
-    data.value = getSnapshotData(snapshot, options)
-    resolve()
-  }
+  const loading = ref(false)
+  const query = reactify(createQuery)(path, filter, converter) as Ref<any>
+
+  // --- Daclare `onNext` callback.
+  const onNext = (snapshot: any) =>
+    data.value = getSnapshotData(snapshot, pickFirst?.value) ?? initialValue?.value
 
   // --- Get on snapshot.
   if (sync && isClient) {
-    refresh = () => {
-      reset()
-      unsubscribe && unsubscribe()
-      unsubscribe = onSnapshot(query.value, onSnapshotSuccess, onError)
+    update = async() => {
+      loading.value = true
+      unsubscribe()
+      unsubscribe = onSnapshot(query.value as any, options, {
+        next: onNext,
+        error: onError?.value,
+      })
     }
 
     // --- Unsubscribe and clear cache on scope dispose.
-    if (!keepAlive) tryOnScopeDispose(() => unsubscribe && unsubscribe())
+    if (!keepAlive) tryOnScopeDispose(unsubscribe)
   }
 
   // --- Get once.s
   else {
-    refresh = () => {
-      reset()
+    update = async() => {
+      loading.value = true
       isDocumentReference(query.value)
-        ? getDoc(query.value).then(onSnapshotSuccess)
-        : getDocs(query.value).then(onSnapshotSuccess)
+        ? await getDoc(query.value).then(onNext)
+        : await getDocs(query.value).then(onNext)
     }
   }
 
   // --- Start `filter` watcher.
-  whenever(query, refresh, { immediate: true })
+  whenever(query, update, { immediate: true })
 
   // --- Return readonly data ref.
   return {
     data,
     query,
-    ready,
-    refresh,
+    loading,
+    update,
     save: createUnrefFn(save).bind(undefined, path, data),
     erase: createUnrefFn(erase).bind(undefined, path, data),
   }

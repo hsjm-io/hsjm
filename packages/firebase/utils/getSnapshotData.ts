@@ -1,4 +1,4 @@
-import { DocumentData, DocumentReference, DocumentSnapshot, QuerySnapshot } from 'firebase/firestore'
+import { DocumentReference, DocumentSnapshot, QuerySnapshot } from 'firebase/firestore'
 
 /**
  * Check if value is of type `DocumentSnapshot`
@@ -16,37 +16,20 @@ export const isDocumentSnapshot = (value: any): value is DocumentSnapshot => val
   && typeof value.id === 'string'
   && value.ref.type === 'document'
 
-export interface GetSnapshotDataOptions {
-  /** Take the first document of a returned array. */
-  pickFirst?: boolean
-  /** Initial value. */
-  initialValue?: any
-}
-
-export interface GetSnapshotData {
-  <T = DocumentData>(snapshot: QuerySnapshot<T>, options?: GetSnapshotDataOptions & { pickFirst: true }): T
-  <T = DocumentData>(snapshot: QuerySnapshot<T>, options?: GetSnapshotDataOptions): T[]
-  <T = DocumentData>(snapshot: DocumentSnapshot<T>, options?: GetSnapshotDataOptions): T
-  <T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>, options?: GetSnapshotDataOptions & { pickFirst: true }): T
-  <T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>, options?: GetSnapshotDataOptions): T | T[]
-}
-
 /**
  * Extract data from a snapshot of any type.
  * @param snapshot Snapshot to extract from.
  */
-export const getSnapshotData: GetSnapshotData = (snapshot, options = {}) => {
-  // --- Destructure options.
-  const { pickFirst, initialValue } = options
-
+export const getSnapshotData = <T>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>, pickFirst?: boolean): T | T[] | undefined => {
   // --- If is document snapshot, extract data.
-  if (isDocumentSnapshot(snapshot)) {
-    return snapshot.exists()
-      ? snapshot.data()
-      : initialValue
-  }
+  if (isDocumentSnapshot(snapshot))
+    return snapshot.exists() ? snapshot.data() : undefined
 
-  // --- If result not empty, extract data. Default to initial value if no results.
-  const data = !snapshot.empty ? snapshot.docs.map(x => x.data()) : initialValue
-  return pickFirst ? data[0] : data
+  // --- If is query snapshot and empty, return initial value.
+  if (snapshot.empty) return
+
+  // --- If result not empty, extract data.
+  return pickFirst
+    ? snapshot.docs[0].data()
+    : snapshot.docs.map(x => x.data())
 }

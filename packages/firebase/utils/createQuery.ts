@@ -1,17 +1,13 @@
 /* eslint-disable unicorn/prefer-switch */
 import { isNil } from '@hsjm/shared'
 import {
-  DocumentData, DocumentReference, FirestoreDataConverter,
-  Query, QueryConstraint, collection, doc,
-  endAt, endBefore, limit,
-  orderBy, query, startAfter, startAt, where,
+  CollectionReference, DocumentData, DocumentReference,
+  FirestoreDataConverter, Query, QueryConstraint, collection,
+  doc, endAt, endBefore,
+  limit, orderBy, query, startAfter, startAt, where,
 } from 'firebase/firestore'
 import { useFirebase } from '../useFirebase'
 import { defaultConverter } from './defaultConverter'
-
-export interface CreateQueryOptions {
-  converter?: FirestoreDataConverter<DocumentData>
-}
 
 export interface QueryFilter {
   $limit?: number
@@ -23,22 +19,20 @@ export interface QueryFilter {
   [x: string]: any
 }
 
-export interface CreateQuery {
-  <T extends DocumentData>(path: string, filter?: string): DocumentReference<T>
-  <T extends DocumentData>(path: string, filter?: QueryFilter, options?: CreateQueryOptions): Query<T>
-}
-
 /**
- * Creates a Firestore query from a path & filter object.
- * @param path The path to the collection.
- * @param filter The query filter object or document id.
- * @param options The query options.
- * @returns The query or document reference.
+ * Creates a Firestore query from a path and filter object or document id.
+ * @param {string} path The path to the collection.
+ * @param {string | QueryFilter} [filter] The query filter object or document id.
+ * @param {FirestoreDataConverter<T>} [converter] A custom converter.
+ * @returns {DocumentReference<T> | CollectionReference<T> | Query<T>} The query or document reference.
  */
-export const createQuery: CreateQuery = (path, filter, options = {}): any => {
+export const createQuery = <T = DocumentData>(
+  path: string,
+  filter?: string | QueryFilter,
+  converter = defaultConverter as FirestoreDataConverter<T>,
+): DocumentReference<T> | CollectionReference<T> | Query<T> => {
   // --- Initialize variables.
   const { firestore } = useFirebase()
-  const { converter = defaultConverter } = <CreateQueryOptions>options
   const constraints: QueryConstraint[] = []
 
   // --- Resolve collection
@@ -48,7 +42,7 @@ export const createQuery: CreateQuery = (path, filter, options = {}): any => {
   if (typeof filter === 'string') return doc(colReference, filter)
   if (typeof filter === 'undefined') return doc(colReference)
 
-  // --- Generate constraints from object.
+  // --- Build constraints from object.
   Object.entries(filter).forEach(([key, value]) => {
     if (key === '$limit') constraints.push(limit(value))
     else if (key === '$startAt') constraints.push(startAt(value))

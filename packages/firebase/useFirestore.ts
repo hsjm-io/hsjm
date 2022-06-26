@@ -5,7 +5,7 @@ import { MaybeRef } from '@vueuse/shared'
 import { erase } from './utils/erase'
 import { save } from './utils/save'
 import { QueryFilter } from './utils/createQuery'
-import { GetOptions, GetResult, get } from './utils/get'
+import { GetOptions, GetReturnType, get } from './utils/get'
 
 export interface UseFirestoreReturnType<T = DocumentData> {
   /**
@@ -14,9 +14,9 @@ export interface UseFirestoreReturnType<T = DocumentData> {
    * @param options Custom parameters.
    */
   get: {
-    (filter: QueryFilter, options?: GetOptions & { pickFirst: true }): GetResult<T>
-    (filter: QueryFilter, options?: GetOptions): GetResult<T[]>
-    (filter: MaybeRef<string | null | undefined>, options?: GetOptions): GetResult<T>
+    (filter: QueryFilter, options?: GetOptions & { pickFirst: true }): GetReturnType<T>
+    (filter: QueryFilter, options?: GetOptions): GetReturnType<T[]>
+    (filter: MaybeRef<string | null | undefined>, options?: GetOptions): GetReturnType<T>
   }
 
   /**
