@@ -1,15 +1,12 @@
 /* eslint-disable unicorn/no-null */
 import { useVModel } from '@vueuse/core'
-import { PropType, computed, defineComponent, h, reactive, toRefs } from 'vue-demi'
+import { PropType, computed, defineComponent, h, toRefs } from 'vue-demi'
+import { exposeToDevtool } from '../composables'
 
-export const Switch = defineComponent({
+export const Switch = /* @__PURE__ */ defineComponent({
   name: 'Switch',
-
   props: {
-    as: {
-      type: String as PropType<keyof HTMLElementTagNameMap>,
-      default: 'button',
-    },
+    as: { type: String as PropType<keyof HTMLElementTagNameMap>, default: 'button' },
 
     // --- State.
     disabled: Boolean,
@@ -17,14 +14,8 @@ export const Switch = defineComponent({
     loading: Boolean,
 
     // --- Input.
-    modelValue: {
-      type: [Boolean, Number, String, Array],
-      default: false,
-    },
-    value: {
-      type: [Boolean, Number, String],
-      default: true,
-    },
+    modelValue: { type: [Boolean, Number, String, Array], default: false },
+    value: { type: [Boolean, Number, String], default: true },
     multiple: Boolean,
 
     // --- Classes.
@@ -34,9 +25,9 @@ export const Switch = defineComponent({
     onClick: Function,
   },
 
-  setup: (properties, { emit, slots, expose }) => {
+  setup: (properties, { emit, slots }) => {
     // --- Destructure props.
-    const { as, value, multiple, classActive, onClick } = toRefs(properties)
+    const { value, multiple, classActive, onClick } = toRefs(properties)
 
     // --- Compute states variables.
     const model = useVModel(properties, 'modelValue')
@@ -46,10 +37,8 @@ export const Switch = defineComponent({
 
     // --- Compute reactive `active` state.
     const active = computed(() => {
-      if (multiple.value && Array.isArray(model.value))
-        return model.value.includes(value.value)
-      if (multiple.value && !Array.isArray(model.value))
-        return false
+      if (multiple.value && Array.isArray(model.value)) return model.value.includes(value.value)
+      if (multiple.value && !Array.isArray(model.value)) return false
       return model.value === value.value
     })
 
@@ -90,7 +79,8 @@ export const Switch = defineComponent({
         : undefined
     ))
 
-    const slotProperties = reactive({
+    // --- Expose for debugging.
+    const slotProperties = exposeToDevtool({
       active,
       modelDisabled,
       modelLoading,
@@ -99,23 +89,14 @@ export const Switch = defineComponent({
       toggle,
     })
 
-    expose(slotProperties)
-
     // --- Return virtual DOM node.
-    return () => h(as.value, {
-      // --- State.
+    return () => h(properties.as, {
       'disabled': modelDisabled.value || null,
       'readonly': modelReadonly.value || null,
-
-      // --- Accessibility.
       'aria-disabled': modelDisabled.value || null,
       'aria-readonly': modelReadonly.value || null,
       'aria-busy': modelLoading.value || null,
-
-      // --- Classes.
       'class': classes.value,
-
-      // --- Events.
       'onClick': toggle,
     }, slots.default?.(slotProperties))
   },

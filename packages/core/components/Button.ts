@@ -69,7 +69,7 @@ export const Button = /* @__PURE__ */ defineComponent({
     // --- Wrap function to handle loading state & catch error.
     const onClickWrapped = computed(() => {
       const onClick = () => {
-        const result = props.onClick?.()
+        const result = props.onClick()
         if (result instanceof Promise) {
           modelLoading.value = true
           result
@@ -84,7 +84,8 @@ export const Button = /* @__PURE__ */ defineComponent({
       return onClick
     })
 
-    const exposed = {
+    // --- Expose for debugging.
+    const slotProps = exposeToDevtool({
       is,
       isExternalLink,
       isInternalLink,
@@ -94,10 +95,7 @@ export const Button = /* @__PURE__ */ defineComponent({
       modelLoading,
       modelReadonly,
       onClickWrapped,
-    }
-
-    // --- Expose for debugging.
-    exposeToDevtool(exposed)
+    })
 
     // --- Declare render icon method.
     const createIconVNode = (icon?: string) => (icon ? h(Icon, { icon, options: props.iconOptions }) : undefined)
@@ -143,9 +141,9 @@ export const Button = /* @__PURE__ */ defineComponent({
       // --- VNode slots.
       {
         default: () => [
-          slots.prepend?.(exposed) ?? createIconVNode(props.icon ?? props.iconPrepend),
-          slots.default?.(exposed) ?? (props.label ? h('span', props.label) : undefined),
-          slots.append?.(exposed) ?? createIconVNode(props.iconAppend),
+          slots.prepend?.(slotProps) ?? createIconVNode(props.icon ?? props.iconPrepend),
+          slots.default?.(slotProps) ?? (props.label ? h('span', props.label) : undefined),
+          slots.append?.(slotProps) ?? createIconVNode(props.iconAppend),
         ],
       },
     )
