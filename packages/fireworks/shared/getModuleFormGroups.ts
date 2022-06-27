@@ -1,15 +1,25 @@
-import { groupBy, map } from '@hsjm/shared'
-import { Module } from './types'
+import { groupBy, map, sortBy } from '@hsjm/shared'
+import { Module, ModuleField, ModuleGroup } from './types'
+
+export interface ModuleFormGroup extends Partial<ModuleGroup> {
+  fields: ModuleField[]
+}
 
 /**
  * Gets the form groups for a module.
- * @param module The module
- * @returns The module's form groups
+ * @param {Module} module The module
+ * @returns {ModuleFormGroup[]} The module's form groups
  */
-export const getModuleFormGroups = (module: Module) => {
+export const getModuleFormGroups = (module: Module): ModuleFormGroup[] => {
+  // --- Group fields by group
   const groupedFields = groupBy(module.fields, 'group')
-  return map(groupedFields, (fields, groupName) => {
-    const group = module.groups?.find(group => group.name === groupName)
-    return { ...group, fields }
-  })
+
+  // --- Add fields to group objects.
+  const formGroups = map(groupedFields, (fields, groupName) => ({
+    ...module.groups?.find(group => group.name === groupName),
+    fields: fields.filter(x => x.isHidden !== true && x.isHidden !== 'form'),
+  }))
+
+  // --- Return groups sorted by order.
+  return sortBy(formGroups, 'order')
 }

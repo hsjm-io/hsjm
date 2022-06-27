@@ -7,7 +7,8 @@ import { Module } from './types'
  * @returns {ValidationSchema} The module's validation schema
  */
 export const getModuleValidationSchema = (module: Module): ValidationSchema => {
-  const fieldsKeyed = mapKeys(module.fields, 'name')
-  const fieldsRules = mapValues(fieldsKeyed, 'rules') as ValidationSchema
-  return fieldsRules
+  const fieldsWithRules = module.fields.filter(x => x.rules)
+  const fieldsKeyed = mapKeys(fieldsWithRules, 'name')
+  const fieldsRules = mapValues(fieldsKeyed, 'rules')
+  return fieldsRules as ValidationSchema
 }

@@ -1,6 +1,7 @@
 export * from './defineModule'
 export * from './getModuleFormGroups'
 export * from './getModuleMock'
+export * from './getModuleTableColumns'
 export * from './getModuleValidationSchema'
 export * from './mergeModules'
 export * from './types'

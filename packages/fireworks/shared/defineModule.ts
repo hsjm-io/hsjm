@@ -1,8 +1,8 @@
-import { Module } from '../shared'
+import { Module } from './types'
 
 /**
  * Defines a module.
- * @param {Module} schema The module schema
+ * @param {Module} module The module schema
  * @returns {Module} The defined module
  */
-export const defineModule = (schema: Module): Module => schema
+export const defineModule = (module: Module): Module => module

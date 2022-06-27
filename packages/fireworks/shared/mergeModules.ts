@@ -1,14 +1,13 @@
-import { uniqBy } from '@hsjm/shared'
+import { mergeDeep, uniqBy } from '@hsjm/shared'
 import { Module } from './types'
-
 /**
- * Merges multiple module schemas into a single schema.
- * @param {Module[]} modules The module schemas to merge
- * @returns {Module} The merged module schema
+ * Merge multiple modules and make sure there a not duplicate fields or groups
+ * @param {...Module[]} modules Modules to merge together
+ * @returns {Module} A new module
  */
 export const mergeModules = (...modules: Module[]): Module => {
-  const fields = uniqBy([] ?? modules.flatMap(x => x.fields), 'name')
-  const groups = uniqBy([] ?? modules.flatMap(x => x.groups), 'name')
-  const collection = modules.map(x => x.collection)?.[0]
-  return { collection, fields, groups }
+  const newModule = mergeDeep(...modules)
+  newModule.fields = uniqBy(newModule.fields.reverse(), 'name').reverse()
+  if (newModule.groups) newModule.groups = uniqBy(newModule.groups.reverse(), 'name').reverse()
+  return newModule
 }
