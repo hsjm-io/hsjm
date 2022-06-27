@@ -1,9 +1,8 @@
-import { noop } from '@hsjm/shared'
-import { createUnrefFn } from '@vueuse/core'
-import { Ref, ref, toRefs } from 'vue-demi'
+/* eslint-disable unicorn/consistent-function-scoping */
+import { Ref, ref } from 'vue-demi'
 import { MaybeRef, isClient, reactify, tryOnScopeDispose, whenever } from '@vueuse/shared'
 import { DocumentData, DocumentReference, FirestoreDataConverter, FirestoreError, Query, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
-import { noopAsync } from './../../shared/misc/noop'
+import { createUnrefFn } from '@vueuse/core'
 import { QueryFilter, createQuery } from './createQuery'
 import { getSnapshotData, isDocumentReference } from './getSnapshotData'
 import { save } from './save'
@@ -19,9 +18,9 @@ export interface GetOptions<T = DocumentData> extends SnapshotListenOptions {
   /** Debug. */
   debug?: boolean
   /** Initial value. */
-  initialValue?: any
+  initialValue?: T | T[]
   /** Pick the first item of the result if it's an array of documents. */
-  pickFirst?: any
+  pickFirst?: boolean
   /** Pick the first item of the result if it's an array of documents. */
   converter?: FirestoreDataConverter<T>
 }
@@ -51,18 +50,18 @@ export interface Get<T = DocumentData> {
  */
 export const get: Get = (path, filter, options = {}): any => {
   // --- Destructure options.
-  const { initialValue, onError, sync, keepAlive, pickFirst, converter } = toRefs(options)
+  const { initialValue, onError, sync, keepAlive, pickFirst, converter } = options
 
   // --- Init variables.
-  let update = noopAsync
-  let unsubscribe = noop
+  let update = async() => {}
+  let unsubscribe = () => {}
   const data = ref(initialValue)
   const loading = ref(false)
   const query = reactify(createQuery)(path, filter, converter) as Ref<any>
 
   // --- Daclare `onNext` callback.
   const onNext = (snapshot: any) =>
-    data.value = getSnapshotData(snapshot, pickFirst?.value) ?? initialValue?.value
+    data.value = getSnapshotData(snapshot, pickFirst) ?? initialValue
 
   // --- Get on snapshot.
   if (sync && isClient) {
@@ -71,7 +70,7 @@ export const get: Get = (path, filter, options = {}): any => {
       unsubscribe()
       unsubscribe = onSnapshot(query.value as any, options, {
         next: onNext,
-        error: onError?.value,
+        error: onError,
       })
     }
 
@@ -79,7 +78,7 @@ export const get: Get = (path, filter, options = {}): any => {
     if (!keepAlive) tryOnScopeDispose(unsubscribe)
   }
 
-  // --- Get once.s
+  // --- Get once.
   else {
     update = async() => {
       loading.value = true
