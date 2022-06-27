@@ -1,30 +1,35 @@
 import { Ref, isReactive, isRef, ref, unref, watch } from 'vue-demi'
 import { MaybeRef } from '@vueuse/shared'
-import { IconifyIconCustomisations } from '@iconify/iconify'
+import { IconifyIcon, IconifyIconCustomisations } from '@iconify/iconify'
 import { expandIconSet, fullIconData, iconToSVG, replaceIDs } from '@iconify/utils'
 import { defaults } from '@iconify/utils/lib/customisations'
-import { isDevelopment, isNode } from '@hsjm/shared'
+import { isDevelopment, isNode, memoize } from '@hsjm/shared'
 
-/**
- * Fetch an icon and get it as an SVG
- * @param {string} icon Icon to fetch
- * @param {IconifyIconCustomisations} options Iconify options
- * @returns {Promise<string>} SVG string
- */
-const fetchIconSvg = async(icon: string, options: IconifyIconCustomisations): Promise<string | undefined> => {
+/** Fetch an icon data from cache or remote */
+const fetchIconData = memoize(async(icon: string): Promise<Required<IconifyIcon> | undefined> => {
   // --- Extract collection and icon names.
   const matches = icon.match(/(.+?)[:-](.+)/)
   if (!matches) return undefined
   const [, collectionName, iconName] = [...matches]
 
-  // --- Fetch data from remote.
-  const response = await fetch(`https://api.iconify.design/${collectionName}.json?icons=${iconName}`)
-  const iconSet = await response.json()
+  // --- Fetch data from cache orremote.
+  return fetch(`https://api.iconify.design/${collectionName}.json?icons=${iconName}`).then(async(response) => {
+    const iconSet = await response.json()
+    if (!iconSet || !iconSet.icons[iconName]) return
+
+    // --- Compile icon data.
+    expandIconSet(iconSet)
+    return fullIconData(iconSet.icons[iconName])
+  })
+})
+
+/** Fetch an icon and get it as an SVG */
+const fetchIconSvg = async(icon: string, options: IconifyIconCustomisations): Promise<string | undefined> => {
+  // --- Fetch data from cache or remote.
+  const iconData = await fetchIconData(icon)
+  if (!iconData) return undefined
 
   // --- Compile icon data.
-  expandIconSet(iconSet)
-  if (!iconSet.icons[iconName]) return undefined
-  const iconData = fullIconData(iconSet.icons[iconName])
   const renderData = iconToSVG(iconData, { ...defaults, ...options })
 
   // --- Generate attributes for SVG element
