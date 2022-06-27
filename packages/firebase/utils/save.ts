@@ -1,4 +1,4 @@
-import { DocumentData, doc, setDoc, writeBatch } from 'firebase/firestore'
+import { DocumentData, collection, doc, setDoc, writeBatch } from 'firebase/firestore'
 import { arrayify, chunk } from '@hsjm/shared'
 import { useFirebase } from '../useFirebase'
 import { toFirestore } from './defaultConverter'
@@ -13,10 +13,11 @@ export const save = async<T = DocumentData>(path: string, data?: T | T[]): Promi
   const { firestore } = useFirebase()
 
   // --- Map input to document references.
+  const collectionReference = collection(firestore, path)
   const documentReferences = arrayify(data)
     .filter(Boolean)
     .map((x: any) => ({
-      ref: doc(firestore, path, x.id),
+      ref: x.id ? doc(collectionReference, x.id) : doc(collectionReference),
       data: toFirestore(x),
     }))
 
