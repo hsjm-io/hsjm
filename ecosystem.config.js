@@ -23,6 +23,13 @@ module.exports = {
       name: 'hsjm-playground',
       cwd: 'playground',
       script: 'pnpm dev'
+    },
+
+    // Vitest UI
+    {
+      name: 'hsjm-test',
+      cwd: 'playground',
+      script: 'pnpm test:ui'
     }
   ]
 }
