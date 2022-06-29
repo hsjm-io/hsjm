@@ -1,6 +1,9 @@
 {
   "recommendations": [
     "ryanluker.vscode-coverage-gutters",
-    "ZixuanChen.vitest-explorer"
+    "zixuanchen.vitest-explorer",
+    "gruntfuggly.todo-tree",
+    "wayou.vscode-todo-highlight",
+    "Vue.volar"
   ]
 }
