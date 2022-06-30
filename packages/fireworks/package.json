@@ -71,15 +71,15 @@
     "@faker-js/faker": "^6.3.1",
     "@hsjm/firebase": "workspace:*",
     "@hsjm/shared": "workspace:*",
-    "@vueuse/shared": "^8.7.3",
+    "@vueuse/shared": "^8.7.5",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "@firebase/app-compat": "^0.1.27",
+    "@firebase/app-compat": "^0.1.28",
     "@firebase/app-types": "^0.7.0",
-    "firebase": "^9.8.3",
+    "firebase": "^9.8.4",
     "firebase-admin": "^10.3.0",
-    "firebase-functions": "^3.21.2",
+    "firebase-functions": "^3.22.0",
     "vue": "^3.2.37"
   }
 }

@@ -59,7 +59,7 @@
     "consola": "^2.15.3",
     "gpu.js": "^2.15.2",
     "lodash": "^4.17.21",
-    "windicss": "^3.5.4"
+    "windicss": "^3.5.5"
   },
   "pnpm": {
     "peerDependencyRules": {

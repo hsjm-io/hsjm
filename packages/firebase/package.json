@@ -50,12 +50,12 @@
   "dependencies": {
     "@hsjm/core": "workspace:*",
     "@hsjm/shared": "workspace:*",
-    "@vueuse/core": "^8.7.3",
-    "@vueuse/shared": "^8.7.3",
+    "@vueuse/core": "^8.7.5",
+    "@vueuse/shared": "^8.7.5",
     "vue-demi": "*"
   },
   "devDependencies": {
-    "firebase": "^9.8.3",
+    "firebase": "^9.8.4",
     "vue": "^3.2.37"
   }
 }

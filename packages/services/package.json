@@ -19,6 +19,11 @@
       "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
     },
+    "./openai": {
+      "require": "./dist/openai/index.js",
+      "import": "./dist/openai/index.mjs",
+      "types": "./dist/openai/index.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -45,8 +50,8 @@
     "@hsjm/shared": "workspace:^1.0.0",
     "@mapbox/mapbox-sdk": "^0.13.3",
     "@types/mapbox__mapbox-sdk": "^0.13.4",
-    "@vueuse/core": "^8.7.3",
-    "@vueuse/shared": "^8.7.3",
+    "@vueuse/core": "^8.7.5",
+    "@vueuse/shared": "^8.7.5",
     "vue-demi": "*"
   },
   "devDependencies": {
