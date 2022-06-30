@@ -2,7 +2,7 @@ import { DocumentData } from 'firebase/firestore'
 import { Module, ModuleField, ModuleGroup } from './types'
 
 export interface ModuleFormGroup<T = DocumentData> extends Partial<ModuleGroup> {
-  fields: Array<ModuleField<T>>
+  fields: Array<ModuleField<T> & { key: string }>
 }
 
 /**
@@ -12,11 +12,14 @@ export interface ModuleFormGroup<T = DocumentData> extends Partial<ModuleGroup> 
  */
 export const getModuleFormGroups = <T>(module: Module<T>): ModuleFormGroup<T>[] => {
   if (module.fields === undefined) return []
-  if (module.groups === undefined) return [{ fields: Object.values(module.fields) }]
 
   // --- Get fields as an array and apply the key to each field.
   const fields = Object.entries(module.fields)
     .map(([key, field]) => ({ key, ...field }))
+
+  // --- If there is no group, return a single group with the fields.
+  if (module.groups === undefined)
+    return [{ fields: fields as any }]
 
   // --- Group fields by group.
   const formGroups = Object.entries(module.groups)
@@ -35,8 +38,8 @@ export const getModuleFormGroups = <T>(module: Module<T>): ModuleFormGroup<T>[] 
   const formGroupKeys = new Set(formGroups.map(group => group.key))
   const fieldsWithoutGroup = fields
     .filter(field => !field.group || !formGroupKeys.has(field.group))
+  if (fieldsWithoutGroup.length > 0) formGroups.push({ fields: fieldsWithoutGroup } as any)
 
   // --- Return groups sorted by order.
-  return [...formGroups, { fields: fieldsWithoutGroup } as typeof formGroups[0]]
-    .sort((a, b) => (a.order ?? 1) - (b.order ?? 1)) as ModuleFormGroup<T>[]
+  return formGroups.sort((a, b) => (a.order ?? 1) - (b.order ?? 1)) as ModuleFormGroup<T>[]
 }
