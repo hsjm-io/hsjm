@@ -37,8 +37,8 @@ export interface GetReturnType<T = DocumentData> {
 
 // --- Overloads.
 export interface Get<T = DocumentData> {
-  <U extends T>(path: MaybeRef<string>, filter?: QueryFilter, options?: GetOptions<T> & { pickFirst: true }): GetReturnType<U>
-  <U extends T>(path: MaybeRef<string>, filter?: QueryFilter, options?: GetOptions<T>): GetReturnType<U[]>
+  <U extends T>(path: MaybeRef<string>, filter?: QueryFilter<U>, options?: GetOptions<T> & { pickFirst: true }): GetReturnType<U>
+  <U extends T>(path: MaybeRef<string>, filter?: QueryFilter<U>, options?: GetOptions<T>): GetReturnType<U[]>
   <U extends T>(path: MaybeRef<string>, filter?: MaybeRef<string | undefined>, options?: GetOptions<T>): GetReturnType<U>
 }
 
@@ -57,7 +57,7 @@ export const get: Get = (path, filter, options = {}): any => {
   let unsubscribe = () => {}
   const data = ref(initialValue)
   const loading = ref(false)
-  const query = reactify(createQuery)(path, filter, converter) as Ref<any>
+  const query = reactify(createQuery)(path, filter as any, converter) as Ref<any>
 
   // --- Daclare `onNext` callback.
   const onNext = (snapshot: any) =>

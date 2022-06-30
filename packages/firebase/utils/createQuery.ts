@@ -9,27 +9,30 @@ import {
 import { useFirebase } from '../useFirebase'
 import { defaultConverter } from './defaultConverter'
 
-export interface QueryFilter {
+export type QueryFilter<T = DocumentData, K = keyof T> = (
+  K extends string
+    ? Partial<Record<`${K}${'' | '_lt' | '_lte' | '_ne' | '_gt' | '_gte' | '_in' | '_nin' | '_ac' | '_aca'}`, any>>
+    : never
+) & {
   $limit?: number
   $startAt?: number
   $startAfter?: number
   $endAt?: number
   $endBefore?: number
   $orderBy?: string | string[]
-  [x: string]: any
 }
 
 /**
  * Creates a Firestore query from a path and filter object or document id.
  * @param {string} path The path to the collection.
- * @param {string | QueryFilter} [filter] The query filter object or document id.
+ * @param {string | QueryFilter<T>} [filter] The query filter object or document id.
  * @param {FirestoreDataConverter<T>} [converter] A custom converter.
  * @returns {DocumentReference<T> | CollectionReference<T> | Query<T>} The query or document reference.
  */
 export const createQuery = <T = DocumentData>(
   path: string,
-  filter?: string | QueryFilter,
-  converter = defaultConverter as FirestoreDataConverter<T>,
+  filter?: string | QueryFilter<T>,
+  converter: FirestoreDataConverter<T> = defaultConverter as FirestoreDataConverter<T>,
 ): DocumentReference<T> | CollectionReference<T> | Query<T> => {
   // --- Initialize variables.
   const { firestore } = useFirebase()
