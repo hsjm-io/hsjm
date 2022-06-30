@@ -1,4 +1,4 @@
-import { ValidationSchema, mapKeys, mapValues } from '@hsjm/shared'
+import { ValidationSchema } from '@hsjm/shared'
 import { Module } from './types'
 
 /**
@@ -6,9 +6,15 @@ import { Module } from './types'
  * @param {Module} module The module to get the schema for
  * @returns {ValidationSchema} The module's validation schema
  */
-export const getModuleValidationSchema = (module: Module): ValidationSchema => {
-  const fieldsWithRules = module.fields.filter(x => x.rules)
-  const fieldsKeyed = mapKeys(fieldsWithRules, 'name')
-  const fieldsRules = mapValues(fieldsKeyed, 'rules')
-  return fieldsRules as ValidationSchema
+export const getModuleValidationSchema = <T>(module: Module<T>): ValidationSchema<T> => {
+  if (!module.fields) return {} as ValidationSchema<T>
+
+  // --- Map the fields to their validation schema
+  const entries = Object
+    .entries(module.fields)
+    .filter(([_key, field]) => !!field.rules)
+    .map(([key, field]) => [field.key ?? key, field.rules])
+
+  // --- Return the validation schema
+  return Object.fromEntries(entries) as ValidationSchema<T>
 }

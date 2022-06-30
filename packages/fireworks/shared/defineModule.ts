@@ -5,4 +5,4 @@ import { Module } from './types'
  * @param {Module} module The module schema
  * @returns {Module} The defined module
  */
-export const defineModule = (module: Module): Module => module
+export const defineModule = <T>(module: Module<T>): Module<T> => module

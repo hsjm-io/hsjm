@@ -1,40 +1,57 @@
 import { expect, it } from 'vitest'
+import { defineModule } from './defineModule'
 import { getModuleFormGroups } from './getModuleFormGroups'
 
 it('should group the module fields by group', () => {
-  const module = {
-    collection: 'test',
-    fields: [
-      { name: 'field1', group: 'group1' },
-      { name: 'field2', group: 'group2' },
-      { name: 'field3' },
-    ],
-    groups: [
-      { name: 'group1', label: 'Group 1' },
-      { name: 'group2', label: 'Group 2' },
-    ],
-  }
-
+  const module = defineModule({
+    collectionPath: 'test',
+    fields: {
+      field1: { name: 'Foo', group: 'group1' },
+      field2: { name: 'Bar', group: 'group2' },
+      field3: { name: 'Baz', group: 'group2' },
+      field4: { name: 'Baz', group: 'group3' },
+    },
+    groups: {
+      group1: { name: 'Group 1' },
+      group2: { name: 'Group 2' },
+    },
+  })
   const result = getModuleFormGroups(module)
-
   expect(result).toEqual([
     {
-      name: 'group1',
-      label: 'Group 1',
+      key: 'group1',
+      name: 'Group 1',
       fields: [
-        { name: 'field1', group: 'group1' },
+        {
+          key: 'field1',
+          name: 'Foo',
+          group: 'group1',
+        },
       ],
     },
     {
-      name: 'group2',
-      label: 'Group 2',
+      key: 'group2',
+      name: 'Group 2',
       fields: [
-        { name: 'field2', group: 'group2' },
+        {
+          key: 'field2',
+          name: 'Bar',
+          group: 'group2',
+        },
+        {
+          key: 'field3',
+          name: 'Baz',
+          group: 'group2',
+        },
       ],
     },
     {
       fields: [
-        { name: 'field3' },
+        {
+          key: 'field4',
+          name: 'Baz',
+          group: 'group3',
+        },
       ],
     },
   ])
