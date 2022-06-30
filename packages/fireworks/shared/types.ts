@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { QueryFilter } from '@hsjm/firebase'
-import { DocumentData } from 'firebase/firestore'
 import { ValidationRuleSet } from '@hsjm/shared'
 
 /** Firestore Document Reference */
@@ -23,7 +22,7 @@ export type ModuleFieldType =
   | 'image'
   | `reference:${string}`
 
-export interface ModuleField<T = DocumentData> {
+export interface ModuleField<T = any> {
   /** The key of the field. */
   key?: keyof T
   /** The label of the field. */
@@ -55,7 +54,7 @@ export interface ModuleGroup {
   order?: number
 }
 
-export interface ModulePreset<T = DocumentData> {
+export interface ModulePreset<T = any> {
   /** The name of the preset. */
   name?: string
   /**  Description of the preset. */
@@ -69,7 +68,7 @@ export interface ModulePreset<T = DocumentData> {
 }
 
 /** Module is a collection of fields and groups. */
-export interface Module<T = Record<string, any>> {
+export interface Module<T = any> {
   /** Name of the module. */
   name?: string
   /** Description of the module. */

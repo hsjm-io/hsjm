@@ -6,8 +6,8 @@ import { Module } from './types'
  * @param {Module} module The module to get the schema for
  * @returns {ValidationSchema} The module's validation schema
  */
-export const getModuleValidationSchema = <T>(module: Module<T>): ValidationSchema<T> => {
-  if (!module.fields) return {} as ValidationSchema<T>
+export const getModuleValidationSchema = <T>(module: Module<T>): ValidationSchema => {
+  if (!module.fields) return {} as ValidationSchema
 
   // --- Map the fields to their validation schema
   const entries = Object
@@ -16,5 +16,5 @@ export const getModuleValidationSchema = <T>(module: Module<T>): ValidationSchem
     .map(([key, field]) => [field.key ?? key, field.rules])
 
   // --- Return the validation schema
-  return Object.fromEntries(entries) as ValidationSchema<T>
+  return Object.fromEntries(entries) as ValidationSchema
 }
