@@ -75,7 +75,7 @@ export interface Module<T = Record<string, any>> {
   /** Description of the module. */
   description?: string
   /** Collection path of the data in Firestore. */
-  collectionPath: string
+  path: string
   /** Fields of the module. */
   fields?: Record<string, ModuleField<T>>
   /** Groups of the module. */

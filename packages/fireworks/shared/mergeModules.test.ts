@@ -3,7 +3,7 @@ import { mergeModules } from './mergeModules'
 
 it('should merge modules', () => {
   const module1 = {
-    collectionPath: 'module1',
+    path: 'module1',
     fields: {
       field1: {
         name: 'Field 1',
@@ -18,7 +18,7 @@ it('should merge modules', () => {
     },
   }
   const module2 = {
-    collectionPath: 'module2',
+    path: 'module2',
     fields: {
       field1: {
         name: 'Field 1',
@@ -33,7 +33,7 @@ it('should merge modules', () => {
     },
   }
   const module3 = {
-    collectionPath: 'module3',
+    path: 'module3',
     fields: {
       field1: {
         name: 'Field 1',
@@ -49,7 +49,7 @@ it('should merge modules', () => {
   }
   const mergedModule = mergeModules(module1, module2, module3)
   expect(mergedModule).toEqual({
-    collectionPath: 'module3',
+    path: 'module3',
     fields: {
       field1: {
         name: 'Field 1',

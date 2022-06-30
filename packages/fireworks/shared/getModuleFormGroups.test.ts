@@ -4,7 +4,7 @@ import { getModuleFormGroups } from './getModuleFormGroups'
 
 it('should group the module fields by group', () => {
   const module = defineModule({
-    collectionPath: 'test',
+    path: 'test',
     fields: {
       field1: { name: 'Foo', group: 'group1' },
       field2: { name: 'Bar', group: 'group2' },

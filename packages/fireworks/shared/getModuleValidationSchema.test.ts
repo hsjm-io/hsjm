@@ -6,7 +6,7 @@ const isString = (value: any) => typeof value === 'string'
 
 it('should extract the validation schema of a module', () => {
   const module = {
-    collectionPath: 'test',
+    path: 'test',
     fields: {
       field1: { rules: [isNumber], key: 'FIELD1' },
       field2: { rules: [isString] },

@@ -3,7 +3,7 @@ import { getModuleTableColumns } from './getModuleTableColumns'
 
 it('should extract the table columns of a module', () => {
   const module = {
-    collectionPath: 'test',
+    path: 'test',
     fields: {
       field1: { order: 2, key: 'FIELD1', name: 'Field 1' },
       field2: { order: 1, name: 'Field 2' },
