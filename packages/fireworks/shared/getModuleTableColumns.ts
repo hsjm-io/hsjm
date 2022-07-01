@@ -6,7 +6,7 @@ import { Module, ModuleField } from './types'
  * @param {Module} module The module to get the columns for
  * @returns {Column[]} The columns for the module
  */
-export const getModuleTableColumns = <T>(module: Module<T>): ModuleField<T>[] => {
+export const getModuleTableColumns = <T>(module?: Module<T>): ModuleField<T>[] => {
   if (!module?.fields) return []
 
   // --- Get fields as an array and apply the key to each field

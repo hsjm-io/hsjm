@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { QueryFilter } from '@hsjm/firebase'
-import { ValidationRuleSet } from '@hsjm/shared'
+import { Key, ValidationRuleSet } from '@hsjm/shared'
 
 /** Firestore Document Reference */
 export type FirestoreReference<T = any> = import('firebase/compat/app').default.firestore.DocumentReference<T>
@@ -22,9 +22,9 @@ export type ModuleFieldType =
   | 'image'
   | `reference:${string}`
 
-export interface ModuleField<T = any> {
+export interface ModuleField<T = unknown> {
   /** The key of the field. */
-  key?: keyof T
+  key?: T extends unknown ? string : Key<T>
   /** The label of the field. */
   name?: string
   /** The description of the field. */
@@ -42,7 +42,7 @@ export interface ModuleField<T = any> {
   /** Should the field be hidden in the form, table or everywhere? */
   isHidden?: boolean | 'table' | 'form'
   /** Should the field be disabled in the form, table or everywhere? */
-  isReadonly?: boolean | 'table' | 'form'
+  isReadonly?: boolean
 }
 
 export interface ModuleGroup {

@@ -1,7 +1,6 @@
-import { DocumentData } from 'firebase/firestore'
 import { Module, ModuleField, ModuleGroup } from './types'
 
-export interface ModuleFormGroup<T = DocumentData> extends Partial<ModuleGroup> {
+export interface ModuleFormGroup<T = any> extends Partial<ModuleGroup> {
   fields: Array<ModuleField<T> & { key: string }>
 }
 
@@ -10,8 +9,8 @@ export interface ModuleFormGroup<T = DocumentData> extends Partial<ModuleGroup> 
  * @param {Module} module The module
  * @returns {ModuleFormGroup[]} The module's form groups
  */
-export const getModuleFormGroups = <T>(module: Module<T>): ModuleFormGroup<T>[] => {
-  if (module.fields === undefined) return []
+export const getModuleFormGroups = <T>(module?: Module<T>): ModuleFormGroup<T>[] => {
+  if (!module?.fields) return []
 
   // --- Get fields as an array and apply the key to each field.
   const fields = Object.entries(module.fields)
