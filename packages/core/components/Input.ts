@@ -1,12 +1,14 @@
 /* eslint-disable unicorn/no-null */
+import { PropType, computed, defineComponent, h, mergeProps, toRefs } from 'vue-demi'
 import { useVModel } from '@vueuse/core'
-import { PropType, computed, defineComponent, h, toRefs } from 'vue-demi'
+import { IconifyIconCustomisations } from '@iconify/iconify'
+import { exposeToDevtool, resolveComponentType } from '../composables'
 
-export const Input = defineComponent({
+export const Input = /* @__PURE__ */ defineComponent({
   name: 'Input',
   inheritAttrs: true,
   props: {
-    as: String as PropType<keyof HTMLElementTagNameMap>,
+    as: { type: String as PropType<keyof HTMLElementTagNameMap>, default: 'input' },
 
     // --- State.
     modelValue: {},
@@ -19,7 +21,13 @@ export const Input = defineComponent({
     name: String,
     label: String,
     message: String,
-    error: String,
+    error: String as PropType<string>,
+
+    // --- Icon
+    icon: String,
+    iconAppend: String,
+    iconPrepend: String,
+    iconOptions: Object as PropType<IconifyIconCustomisations>,
 
     // --- Classes.
     classInput: {} as PropType<any>,
@@ -28,66 +36,79 @@ export const Input = defineComponent({
     classError: {} as PropType<any>,
     classMessage: {} as PropType<any>,
   },
-  setup: (properties, { attrs, slots, emit }) => {
-    // --- Destructure props.
-    const { as, type, name, label, classLabel, classGroup, classInput, classError, classMessage, message } = toRefs(properties)
+  setup: (props, { attrs, slots, emit }) => {
+    const { as, type, classInput } = toRefs(props)
 
     // --- Compute states variables.
-    const modelValue = useVModel(properties, 'modelValue', emit, { passive: true })
-    const modelDisabled = useVModel(properties, 'disabled', emit, { passive: true })
-    const modelReadonly = useVModel(properties, 'readonly', emit, { passive: true })
-    const modelLoading = useVModel(properties, 'loading', emit, { passive: true })
-    const modelError = useVModel(properties, 'error', emit, { passive: true })
+    const modelValue = useVModel(props, 'modelValue', emit, { passive: true })
+    const modelDisabled = useVModel(props, 'disabled', emit, { passive: true })
+    const modelReadonly = useVModel(props, 'readonly', emit, { passive: true })
+    const modelLoading = useVModel(props, 'loading', emit, { passive: true })
+    const modelError = useVModel(props, 'error', emit, { passive: true })
 
-    // --- Compute component type.
+    // --- Compute input tagname.
     const is = computed(() => {
-      if (as.value) return as.value
       if (type.value === 'select') return 'select'
       if (type.value === 'textarea') return 'textarea'
-      return 'input'
+      return as.value
     })
 
-    const $type = computed(() => {
+    // --- Compute component type.
+    const inputType = computed(() => {
       if (type.value === 'select') return null
       if (type.value === 'textarea') return null
-      return 'text'
+      return type.value
     })
 
-    const nodeLabel = () => h('label', {
-      for: name.value,
-      class: classLabel.value,
-    }, slots.label?.() ?? label.value)
-
-    const nodeInput = () => h(is.value, {
-      ...attrs,
-      name,
-      'type': $type.value,
-      'disabled': modelDisabled.value || null,
-      'readonly': modelReadonly.value || null,
-      'busy': modelLoading.value || null,
-      'aria-disabled': modelDisabled.value || null,
-      'aria-readonly': modelReadonly.value || null,
-      'aria-busy': modelLoading.value || null,
-      'class': classInput.value,
-      'value': modelValue.value || null,
-      'onInput': (v: any) => modelValue.value = v.target.value,
+    // --- Expose for debugging.
+    const slotProperties = exposeToDevtool({
+      is,
+      modelValue,
+      modelDisabled,
+      modelReadonly,
+      modelLoading,
+      modelError,
+      inputType,
     })
-
-    const nodeInputGroup = () => h('div', { class: classGroup.value }, [
-      slots.prepend?.(),
-      nodeInput(),
-      slots.append?.(),
-    ])
-
-    const nodeMessage = () => h('span', {
-      class: modelError.value ? classError.value : classMessage.value,
-    }, slots.error?.() ?? modelError.value ?? slots.message?.() ?? message.value)
 
     // --- Return virtual DOM node.
-    return () => h('div', [
-      label.value ? nodeLabel() : undefined,
-      slots.prepend || slots.append ? nodeInputGroup() : nodeInput(),
-      modelError.value || message.value ? nodeMessage() : undefined,
-    ])
+    return () => {
+      const nodeInput = h(
+        resolveComponentType<any>(is.value),
+        mergeProps({ ...attrs, class: undefined, style: undefined }, {
+          'name': props.name,
+          'type': inputType.value,
+          'disabled': modelDisabled.value || null,
+          'readonly': modelReadonly.value || null,
+          'busy': modelLoading.value || null,
+          'aria-disabled': modelDisabled.value || null,
+          'aria-readonly': modelReadonly.value || null,
+          'aria-busy': modelLoading.value || null,
+          'class': classInput.value,
+          'value': modelValue.value || null,
+          'onInput': (v: any) => modelValue.value = v.target.value,
+        }),
+      )
+
+      // --- Create label VNode
+      const nodeLabel = props.label
+        ? h('label', { for: props.name, class: props.classLabel }, slots.label?.() ?? props.label)
+        : undefined
+
+      const nodeMessage = props.message
+        ? h('span', { class: props.classMessage }, slots.message?.(slotProperties) ?? props.message)
+        : undefined
+
+      const nodeError = props.error
+        ? h('span', { class: props.classError }, slots.error?.(slotProperties) ?? props.error)
+        : undefined
+
+      const nodeInputGroup = (slots.prepend || slots.append)
+        ? h('div', { class: props.classGroup }, [slots.prepend?.(), nodeInput, slots.append?.()])
+        : nodeInput
+
+      // --- Return virtual DOM node.
+      return h('div', [nodeLabel, nodeInputGroup, nodeError ?? nodeMessage])
+    }
   },
 })

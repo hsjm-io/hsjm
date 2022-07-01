@@ -1,16 +1,17 @@
 /* eslint-disable unicorn/consistent-function-scoping */
-import { Key, MaybeArray, filter, sort } from '@hsjm/shared'
-import { PropType, computed, defineComponent, h, toRefs } from 'vue-demi'
+import { Key, filter, sortBy, values } from '@hsjm/shared'
+import { PropType, computed, defineComponent, h } from 'vue-demi'
+import { exposeToDevtool } from '../composables'
 
-interface Cell {
+export interface Cell {
   value: any
   row: any
   column: Column
   active: boolean
 }
 
-interface Column {
-  key?: string
+export interface Column {
+  key?: Key
   name?: string
   transform?: (cell: Cell) => any
   onClickCell?: (cell: Cell) => any
@@ -18,7 +19,7 @@ interface Column {
   [x: string]: any
 }
 
-export const Table = defineComponent({
+export const Table = /* @__PURE__ */ defineComponent({
   name: 'Table',
   props: {
     // --- State.
@@ -28,12 +29,12 @@ export const Table = defineComponent({
     loading: Boolean,
 
     // --- Table.
-    rows: [Object, Array] as PropType<any[] | Record<string, any>>,
-    columns: [Object, Array] as PropType<Column[] | Record<string, Column>>,
-    columnFilter: [String, Array, Function] as PropType<MaybeArray<Key> | ((column: Column) => boolean)>,
-    columnSort: [String, Array, Function] as PropType<MaybeArray<Key> | ((column: Column) => any)>,
-    sort: [String, Array, Function] as PropType<MaybeArray<Key> | ((cell: Cell) => any)>,
-    filter: [String, Array, Function] as PropType<MaybeArray<Key> | ((cell: Cell) => boolean)>,
+    rows: { type: [Object, Array] as PropType<any[] | Record<string, any>>, default: () => [] },
+    columns: { type: [Object, Array] as PropType<Column[] | Record<string, Column>>, required: true },
+    columnFilter: [String, Function] as PropType<Key | ((column: Column) => boolean)>,
+    columnSort: [String, Function] as PropType<Key | ((column: Column) => any)>,
+    sortBy: [String, Function] as PropType<Key | ((cell: Cell) => any)>,
+    filter: [String, Function] as PropType<Key | ((cell: Cell) => boolean)>,
 
     // --- Classes.
     classHeader: {} as PropType<any>,
@@ -43,82 +44,66 @@ export const Table = defineComponent({
     classCell: {} as PropType<any>,
 
     // --- Events.
-    onClickRow: Function as PropType<(cell: Cell) => any>,
+    onClickRow: Function as PropType<(row: any) => any>,
   },
-
-  setup: (properties, { slots }) => {
-    // --- Destructure props.
-    const {
-      rows, columns, columnFilter, columnSort, onClickRow,
-      classHeader, classHeaderCell, classBody, classRow, classCell,
-    } = toRefs(properties)
-
-    const $columns = computed(() => {
-      let _columns = columns.value
-      const _columnFilter = columnFilter.value
-      const _columnSort = columnSort.value
-      if (!_columns) return []
-
-      // --- Arrayify columns.
-      if (!Array.isArray(_columns)) {
-        _columns = Object.entries(_columns)
-          .map(([key, value]) => ({ key, ...value }))
-      }
-
-      // --- Filter and sort column with function or keys.
-      if (_columnFilter) _columns = filter(_columns, _columnFilter)
-      if (_columnSort) _columns = sort(_columns, _columnSort)
-
-      // --- Return columns.
-      return _columns
+  setup: (props, { slots }) => {
+    // --- Arrayify, filter and sort columns.
+    const columnsFiltered = computed(() => {
+      let result = values(props.columns, 'key')
+      if (props.columnFilter) result = filter(result, props.columnFilter as any)
+      if (props.columnSort) result = sortBy(result, props.columnSort as any)
+      return result
     })
 
-    const nodeHeadCell = (column: Column, index: number) => {
-      const type = index > 0 ? 'td' : 'th'
-      return h(type, { class: classHeaderCell.value }, column.name)
-    }
+    // --- Arrayify, filter and sort rows.
+    const rowsFiltered = computed(() => {
+      let result = values(props.rows, 'key')
+      if (props.columnFilter) result = filter(result, props.columnFilter as any)
+      if (props.columnSort) result = sortBy(result, props.columnSort as any)
+      return result
+    })
 
-    const nodeHead = () => {
-      const children = $columns.value.map(nodeHeadCell)
-      return h('thead', { class: classHeader.value }, children)
-    }
+    // --- Expose to devtool.
+    exposeToDevtool({
+      columnsFiltered,
+      rowsFiltered,
+    })
 
-    const nodeCell = (column: Column, row: any, index: number) => {
-      const type = index > 0 ? 'td' : 'th'
-      const key = column.key as string
-      const value = typeof column.transform === 'function'
-        ? column.transform(row?.[key])
-        : row?.[key]
+    // --- Render a VNode cell.
+    const nodeHeadCell = (column: Column, index: number) =>
+      h(index > 0 ? 'td' : 'th', { class: props.classHeaderCell }, column.name)
 
+    // --- Render a VNode header.
+    const nodeHead = () =>
+      h('thead', { class: props.classHeader }, columnsFiltered.value.map(nodeHeadCell))
+
+    // --- Render a VNode cell.
+    const nodeCell = (column: Column & { key: string }, row: any, index: number) => {
       // --- Compute slot vnode, default to value.
+      let value = row?.[column.key]
+      if (typeof column.transform === 'function') value = column.transform(value)
       const cell = ({ value, column, row, active: false })
-      const slot = (slots[`cell-${key}`] ?? slots.cell)?.(cell)
-      const props = {
-        class: classCell.value,
-        onClick: column.onClickCell ? () => column.onClickCell?.(cell) : undefined,
-      }
+      const slot = (slots[`cell-${column.key}`] ?? slots.cell)?.(cell)
 
       // --- Return vnode.
-      return h(type, props, slot ?? value)
+      return h(index > 0 ? 'td' : 'th', {
+        class: props.classCell,
+        onClick: column.onClickCell,
+      }, slot ?? value.toString())
     }
 
-    const nodeRow = (row: any) => {
-      const nodeCells = $columns.value.map((column, number) => nodeCell(column, row, number))
-      const props = {
-        class: classRow.value,
-        onClick: onClickRow.value ? () => onClickRow.value?.(row) : undefined,
-      }
-      return h('tr', props, nodeCells)
-    }
+    // --- Render a VNode row.
+    const nodeRow = (row: any) => h(
+      'tr',
+      { class: props.classRow, onClick: props.onClickRow?.bind(undefined, row) },
+      columnsFiltered.value.map((column, index) => nodeCell(column, row, index)),
+    )
 
-    const nodeBody = () => {
-      const nodeRows = (rows as any).value.map(nodeRow)
-      return h('tbody', { class: classBody.value }, nodeRows)
-    }
+    // --- Render the body.
+    const nodeBody = () =>
+      h('tbody', { class: props.classBody }, rowsFiltered.value.map(nodeRow))
 
-    return () => h('table', [
-      nodeHead(),
-      nodeBody(),
-    ])
+    // --- Render the table.
+    return () => h('table', [nodeHead(), nodeBody()])
   },
 })
