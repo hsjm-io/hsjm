@@ -1,16 +1,31 @@
 import { FirebaseContext, FirestoreReference } from './types'
 
 /**
- * Check if value is an id or a Reference to a Firestore user
- * @param idOrReference Value to check
+ * Check if value is a Firestore user id
+ * @param id Value to check
  * @param  _ Ignored
  * @param context Validation context
- * @returns true if value is an id or a Reference to a Firestore user
+ * @returns true if value is a Firestore user id
  */
-export const isFirestoreUser = (idOrReference: string | FirestoreReference, _: any, { admin }: FirebaseContext) => admin
+export const isFirestoreUserId = (id: string, _: any, { admin }: FirebaseContext) => admin
   .auth()
-  .getUser(typeof idOrReference === 'string' ? idOrReference : idOrReference.id)
+  .getUser(id)
   .then(user => !!user)
+
+/**
+ * Check if values are a Firestore user ids
+ * @param ids Value to check
+ * @param  _ Ignored
+ * @param context Validation context
+ * @returns true if values are a Firestore user ids
+ */
+export const isFirestoreUserIds = async(ids: string[], _: any, context: FirebaseContext) => {
+  const promises = ids
+    .filter(id => typeof id === 'string' && id.length > 0)
+    .map(id => isFirestoreUserId(id, _, context))
+  const results = await Promise.all(promises)
+  return results.every(Boolean)
+}
 
 /**
  * Convert a Firestore user id or Reference to it's user's identity Reference
