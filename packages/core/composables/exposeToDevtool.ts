@@ -1,4 +1,4 @@
-import { isProduction } from '@hsjm/shared'
+import { isProduction } from '@hsjm/shared/environment'
 import { ComponentInternalInstance, getCurrentInstance, nextTick } from 'vue-demi'
 
 /**
