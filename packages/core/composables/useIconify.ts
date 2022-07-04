@@ -13,14 +13,13 @@ const fetchIconData = memoize(async(icon: string): Promise<Required<IconifyIcon>
   const [, collectionName, iconName] = [...matches]
 
   // --- Fetch data from cache orremote.
-  return fetch(`https://api.iconify.design/${collectionName}.json?icons=${iconName}`).then(async(response) => {
-    const iconSet = await response.json()
-    if (!iconSet || !iconSet.icons[iconName]) return
+  const response = await fetch(`https://api.iconify.design/${collectionName}.json?icons=${iconName}`)
+  const iconSet = await response.json()
+  if (!iconSet || !iconSet.icons[iconName]) return
 
-    // --- Compile icon data.
-    expandIconSet(iconSet)
-    return fullIconData(iconSet.icons[iconName])
-  })
+  // --- Compile icon data.
+  expandIconSet(iconSet)
+  return fullIconData(iconSet.icons[iconName])
 })
 
 /** Fetch an icon and get it as an SVG */
