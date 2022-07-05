@@ -1,5 +1,5 @@
-import { arrayify, defaultToContext, isArray, isArrayNotEmpty, isArrayOf, isNotUndefined, isStringFirestoreId, isStringNotEmpty, isStringTimestamp, isUndefined, kebabCase, toContext, trim } from '@hsjm/shared'
-import { FirestoreReference, defineModule, isUserId, toFirestoreIdentity } from '../shared'
+import { arrayify, isArray, isArrayNotEmpty, isNil, isString, isStringFirestoreId, isStringNotEmpty, isStringTimestamp, toContext, toKebabCase, trim } from '@hsjm/shared'
+import { FirestoreReference, defineModule, isFirestoreReference, isFirestoreUserId, isFirestoreUserIds, toFirestoreIdentity } from './utils'
 import { Asset } from './coreAsset'
 import { Identity } from './coreIdentity'
 
@@ -8,7 +8,7 @@ export interface Data {
   /**
    * ID of the record.
    * @required Must be a valid Firestore ID.
-   * @readonly Cannot be changed once in the database.
+   * @readonly Once set, cannot be changed in the database.
    */
   readonly id: string
   /**
@@ -74,30 +74,32 @@ export interface Data {
   readonly updatedAt: string
 }
 
-/** Data schema. */
-export const dataSchema = defineModule({
-  collection: 'data',
-  fields: [
-    {
-      name: 'id',
-      label: 'Identifiant interne du document',
+/** Data Module. */
+export const dataModule = /* @__PURE__ */ defineModule<Data>({
+  path: 'data',
+  fields: {
+    id: {
+      name: 'Identifiant interne du document',
       group: 'internal',
       isReadonly: true,
-      rules: [[isStringFirestoreId], [isUndefined]],
+      isHidden: 'table',
+      rules: [
+        [isString, isStringNotEmpty, isStringFirestoreId],
+        [isNil],
+      ],
     },
-    {
-      name: 'name',
-      label: 'Nom du document',
-      rules: [isStringNotEmpty, trim],
+    name: {
+      name: 'Nom du document',
+      rules: [isString, isStringNotEmpty, trim],
     },
-    {
-      name: 'slug',
-      label: 'Nom interne du document',
+    slug: {
+      name: 'Nom interne du document',
       group: 'internal',
+      isHidden: 'table',
       isReadonly: true,
       rules: [
-        [isStringNotEmpty],
-        [[defaultToContext, 'name'], kebabCase],
+        [isString, isStringNotEmpty, toKebabCase],
+        [isNil, [toContext, 'name'], toKebabCase],
       ],
     },
 
@@ -109,91 +111,83 @@ export const dataSchema = defineModule({
     //   name: 'thumbnailUrl',
     // },
 
-    {
-      name: 'ownerIds',
-      label: 'Identifiant des propriétaires du document',
+    ownerIds: {
+      name: 'Identifiant des propriétaires du document',
       group: 'internal',
       isHidden: true,
       isReadonly: true,
       rules: [
-        [isArray, isArrayNotEmpty, [isArrayOf, [isUserId]]],
-        [[defaultToContext, 'updatedById'], arrayify],
+        [isArray, isFirestoreUserIds, isArrayNotEmpty],
+        [isNil, [toContext, 'value.updatedById'], arrayify],
       ],
     },
-    {
-      name: 'owners',
-      label: 'Propriétaires du document',
+    owners: {
+      name: 'Propriétaires du document',
       group: 'internal',
       isReadonly: true,
+      isHidden: 'table',
       rules: [
-        [isArrayNotEmpty],
-        [[defaultToContext, 'updatedById'], toFirestoreIdentity, arrayify],
+        [isArray, isFirestoreUserIds, isArrayNotEmpty],
+        [isNil, [toContext, 'value.updatedById'], toFirestoreIdentity, arrayify],
       ],
     },
-    {
-      name: 'createdById',
-      label: 'Identifiant du créateur du document',
+    updatedById: {
+      name: 'Identifiant du dernier éditeur',
+      group: 'internal',
+      isHidden: true,
+      isReadonly: true,
+      rules: [isString, isStringNotEmpty, isFirestoreUserId],
+    },
+    updatedBy: {
+      name: 'Dernier éditeur',
+      group: 'internal',
+      isReadonly: true,
+      isHidden: 'table',
+      rules: [[toContext, 'value.updatedById'], toFirestoreIdentity],
+    },
+    createdById: {
+      name: 'Identifiant du créateur du document',
       group: 'internal',
       isHidden: true,
       isReadonly: true,
       rules: [
-        [isUserId],
-        [[defaultToContext, 'updatedById']],
+        [isString, isStringNotEmpty, isFirestoreUserId],
+        [isNil, [toContext, 'value.updatedById']],
       ],
     },
-    {
-      name: 'createdBy',
-      label: 'Créateur du document',
+    createdBy: {
+      name: 'Créateur du document',
       group: 'internal',
       isReadonly: true,
+      isHidden: 'table',
       rules: [
-        [isNotUndefined],
-        [[defaultToContext, 'updatedById'], toFirestoreIdentity],
+        [[isFirestoreReference, 'identity']],
+        [isNil, [toContext, 'value.updatedById'], toFirestoreIdentity],
       ],
     },
-    {
-      name: 'updatedById',
-      label: 'Identifiant du dernier éditeur',
-      group: 'internal',
-      isHidden: true,
-      isReadonly: true,
-      rules: [isUserId],
-    },
-    {
-      name: 'updatedBy',
-      label: 'Dernier éditeur',
+    createdAt: {
+      name: 'Date de création du document',
       group: 'internal',
       isReadonly: true,
-      rules: [[toContext, 'updatedById'], toFirestoreIdentity],
-    },
-    {
-      name: 'createdAt',
-      label: 'Date de création du document',
-      group: 'internal',
-      isReadonly: true,
+      isHidden: 'table',
       rules: [
         [isStringTimestamp],
-        [[defaultToContext, 'context.timestamp'], isStringTimestamp],
+        [isNil, [toContext, 'context.timestamp'], isStringTimestamp],
       ],
     },
-    {
-      name: 'updatedAt',
-      label: 'Dernier éditeur',
+    updatedAt: {
+      name: 'Dernier éditeur',
       group: 'internal',
       isReadonly: true,
+      isHidden: 'table',
       rules: [[toContext, 'context.timestamp'], isStringTimestamp],
     },
-  ],
-
-  groups: [
-    {
-      name: 'informations',
-      label: 'Informations',
-    },
-    {
-      name: 'internal',
-      label: 'Champs internes',
+  },
+  groups: {
+    internal: {
+      order: 100,
+      name: 'Champs internes',
       description: 'Informations de deboggage',
     },
-  ],
+  },
 })

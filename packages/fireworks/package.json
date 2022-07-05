@@ -19,6 +19,11 @@
       "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
     },
+    "./composables": {
+      "require": "./dist/composables/index.js",
+      "import": "./dist/composables/index.mjs",
+      "types": "./dist/composables/index.d.ts"
+    },
     "./functions": {
       "require": "./dist/functions/index.js",
       "import": "./dist/functions/index.mjs",
@@ -28,11 +33,6 @@
       "require": "./dist/modules/index.js",
       "import": "./dist/modules/index.mjs",
       "types": "./dist/modules/index.d.ts"
-    },
-    "./shared": {
-      "require": "./dist/shared/index.js",
-      "import": "./dist/shared/index.mjs",
-      "types": "./dist/shared/index.d.ts"
     },
     "./package.json": "./package.json"
   },

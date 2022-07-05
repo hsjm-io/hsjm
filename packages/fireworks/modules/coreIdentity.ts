@@ -1,11 +1,9 @@
-import { createSharedFirestore, useAuth } from '@hsjm/firebase'
-import { compact, isArrayEmpty, isArrayOf, isNil, isStringEmail, isStringFirestoreId, isStringNotEmpty, isStringUrl, join, toContext, trim } from '@hsjm/shared'
-import { createSharedComposable } from '@vueuse/shared'
-import { computed } from 'vue-demi'
-import { mergeModules } from '../shared'
-import { Data, dataSchema } from './coreData'
+import { arrayify, isArrayValid, isNil, isString, isStringEmail, isStringFirestoreId, isStringNotEmpty, isStringUrl, toEmptyArray, toKebabCase, trim } from '@hsjm/shared'
+import { mergeModules } from './utils/mergeModules'
+import { Data, dataModule } from './coreData'
 
 export interface Identity extends Data {
+  image: string
   readonly name: string
   firstName?: string
   lastName?: string
@@ -23,83 +21,97 @@ export interface Identity extends Data {
   readonly userId?: string
 }
 
-/** Schema for identity documents. */
-export const identitySchema = mergeModules(dataSchema, {
-  collection: 'idenfity',
-  fields: [
-    {
-      name: 'name',
-      label: 'Nom complet',
-      isReadonly: true,
-      rules: [[toContext, ['firstName', 'lastName']], compact, [join, ' '], trim],
-    },
-    {
-      name: 'firstName',
-      label: 'Prénom',
-      rules: [isStringNotEmpty, trim],
-    },
-    {
-      name: 'lastName',
-      label: 'Nom de famille',
-      rules: [[isNil], [isStringNotEmpty, trim]],
-    },
-    {
-      name: 'title',
-      label: 'Titre / Profession',
-      rules: [[isNil], [isStringNotEmpty, trim]],
-    },
-    {
-      name: 'image',
-      label: 'Avatar',
-      rules: [[isNil], [isStringUrl]],
-    },
-    {
-      name: 'contactEmails',
-      label: 'Adresse(s) email de contact',
-      rules: [
-        [isNil],
-        [isArrayEmpty],
-        [[isArrayOf, [isStringEmail]]],
-      ],
-    },
-    {
-      name: 'contactSocials',
-      label: 'Liens sociaux',
-      rules: [
-        [isNil],
-        [isArrayEmpty],
-        [[isArrayOf, [isStringUrl]]],
-      ],
-    },
-    {
-      name: 'contactPhones',
-      label: 'Numero(s) de téléphone de contact',
-      rules: [
-        [isNil],
-        [isArrayEmpty],
-        [[isArrayOf, [isStringNotEmpty]]],
-      ],
-    },
-    {
-      name: 'userId',
-      label: 'Identifiant de l\'utilisateur',
-      rules: [
-        [isStringFirestoreId],
-        [isNil],
-      ],
-    },
-  ],
-})
+const toFullname = (_value: any, _: any, { value }: { value: Identity }) =>
+  [value.firstName, value.lastName].filter(Boolean).join(' ').trim()
 
-export const useIdentities = createSharedFirestore<Identity>(identitySchema.collection)
-export const useUserIdentity = createSharedComposable(() => {
-  const { user } = useAuth()
-  const { get } = useIdentities()
-  const query = computed(() => ({ userId: user.value?.uid }))
-  return get(query, {
-    sync: true,
-    pickFirst: true,
-    keepAlive: true,
-    initialValue: query.value,
-  })
+/** Module for `Identity` documents. */
+export const identityModule = /* @__PURE__ */ mergeModules<Identity>(dataModule, {
+  path: 'identity',
+  fields: {
+    image: {
+      name: 'Avatar',
+      group: 'informations',
+      rules: [
+        [isNil],
+        [isStringUrl],
+      ],
+    },
+    name: {
+      name: 'Nom complet',
+      group: 'informations',
+      isReadonly: true,
+      isHidden: 'table',
+      rules: [toFullname],
+    },
+    slug: {
+      name: 'URL du profil',
+      group: 'internal',
+      isReadonly: true,
+      isHidden: true,
+      rules: [toFullname, toKebabCase],
+    },
+    firstName: {
+      name: 'Prénom',
+      group: 'informations',
+      rules: [isString, isStringNotEmpty, trim],
+    },
+    lastName: {
+      name: 'Nom de famille',
+      group: 'informations',
+      rules: [
+        [isString, isStringNotEmpty, trim],
+        [isNil],
+      ],
+    },
+    title: {
+      name: 'Titre / Profession',
+      group: 'informations',
+      rules: [
+        [isString, isStringNotEmpty, trim],
+        [isNil],
+      ],
+    },
+    contactEmails: {
+      name: 'Adresse(s) email de contact',
+      group: 'informations',
+      rules: [
+        [arrayify, [isArrayValid, [isStringEmail], 'isStringEmail']],
+        [isNil, toEmptyArray],
+      ],
+    },
+    contactSocials: {
+      name: 'Liens sociaux',
+      group: 'informations',
+      rules: [
+        [arrayify, [isArrayValid, [isStringUrl], 'isStringUrl']],
+        [isNil, toEmptyArray],
+      ],
+    },
+    contactPhones: {
+      name: 'Numero(s) de téléphone de contact',
+      group: 'informations',
+      rules: [
+        [arrayify, [isArrayValid, [isStringNotEmpty], 'isStringNotEmpty']],
+        [isNil, toEmptyArray],
+      ],
+    },
+    userId: {
+      name: 'Identifiant de l\'utilisateur',
+      group: 'internal',
+      rules: [
+        [isString, isStringFirestoreId],
+        [isNil],
+      ],
+    },
+  },
+  groups: {
+    informations: {
+      name: 'Mes informations',
+      description: 'Informations sur mon profil et mon identité',
+    },
+  },
+  presets: {
+    default: {},
+    currentUser: { filter: (userId: string) => ({ userId }) },
+  },
 })

@@ -1,8 +1,8 @@
-import { createSharedFirestore } from '@hsjm/firebase'
-import { isNumberPositive, isStringFirestoreId, isStringNotEmpty, isStringUrl, isUndefined } from '@hsjm/shared'
-import { FirestoreReference, mergeModules } from '../shared'
+import { isNil, isNumberPositive, isStringFirestoreId, isStringNotEmpty, isStringUrl } from '@hsjm/shared'
+import { mergeModules } from './utils/mergeModules'
 import { Asset } from './coreAsset'
-import { Data, dataSchema } from './coreData'
+import { Data, dataModule } from './coreData'
+import { FirestoreReference } from './types'
 
 export interface Content extends Data {
   /**
@@ -41,49 +41,40 @@ export interface Content extends Data {
   order: number
 }
 
-export const contentSchema = mergeModules(dataSchema, {
-  collection: 'content',
-  fields: [
-    {
-      name: 'cover',
-      label: 'Couverture',
-      rules: [[isUndefined], [isStringUrl]],
+export const contentModule = /* @__PURE__ */ mergeModules<Content>(dataModule, {
+  path: 'content',
+  fields: {
+    cover: {
+      name: 'Couverture',
+      rules: [[isNil], [isStringUrl]],
     },
-    {
-      name: 'coverUrl',
-      label: 'URL de la couverture',
-      // rules: [[isUndefined], [isStringUrl]],
+    coverUrl: {
+      name: 'URL de la couverture',
+      // rules: [[isNil], [isStringUrl]],
     },
-    {
-      name: 'content',
-      label: 'Contenu',
+    content: {
+      name: 'Contenu',
       rules: [isStringNotEmpty],
     },
-    {
-      name: 'description',
-      label: 'Description du contenu',
+    description: {
+      name: 'Description du contenu',
       type: 'markdown',
-      rules: [[isUndefined], [isStringNotEmpty]],
+      rules: [[isNil], [isStringNotEmpty]],
     },
-    {
-      name: 'categoryId',
-      label: 'Description du contenu',
+    categoryId: {
+      name: 'ID de la catégorie du contenu',
       type: 'reference:contentCategory',
       isHidden: true,
-      rules: [[isUndefined], [isStringFirestoreId]],
+      rules: [[isNil], [isStringFirestoreId]],
     },
-    {
-      name: 'category',
-      label: 'Description du contenu',
+    category: {
+      name: 'Catégorie du contenu',
       type: 'reference:contentCategory',
-      // rules: [[isUndefined], [isStringFirestoreId]],
+      // rules: [[isNil], [isStringFirestoreId]],
     },
-    {
-      name: 'order',
-      label: 'Ordre du contenu',
-      rules: [[isUndefined], [isNumberPositive]],
+    order: {
+      name: 'Ordre du contenu',
+      rules: [[isNil], [isNumberPositive]],
     },
-  ],
+  },
 })
-
-export const useContent = createSharedFirestore<Content>(contentSchema.collection)

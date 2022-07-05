@@ -1,103 +1,133 @@
-import { createSharedFirestore } from '@hsjm/firebase'
-import { defaultToContext, isArrayOf, isStringEmail, isStringNotEmpty, isStringShorterOrEq, isStringUrl, isUndefined, trim } from '@hsjm/shared'
-import { createSharedComposable } from '@vueuse/shared'
-import { mergeModules } from '../shared'
-import { Data, dataSchema } from './coreData'
+import { isArray, isArrayValid, isNil, isString, isStringEmail, isStringNotEmpty, isStringShorterOrEq, isStringUrl, map, toContext, toKebabCase, trim } from '@hsjm/shared'
+import { mergeModules } from './utils'
+import { Data, dataModule } from './coreData'
 
+/** Module for the website's parameters. */
 export interface Website extends Data {
+  /** The url of the website. */
   cannonicalUrl: string
+  /** OG:The name of the website. */
   metaTitle: string
-  metaDescription: string
+  /** OG:The description of the website.  */
+  metaDescription?: string
+  /** OG:image URL. */
   metaImage?: string
+  /** OG:meta tags. */
   metaTags?: string[]
-  legalId?: string
+  /** Legal identifier of the company owning the website. */
+  legalIdentifier?: string
+  /** Legal name of the website's owner. */
   legalName?: string
+  /** Legal address of the website's owner. */
   legalAddress?: string
+  /** Contact email. */
   contactEmail?: string
+  /** Contact phone number. */
   contactPhone?: string
+  /** Social media links. */
   contactSocials?: string[]
+  /** Banner text. */
   bannerText?: string
-  bannerHref?: string
+  /** URL to navigate to when the user clicks on the banner. */
+  bannerTo?: string
 }
 
-export const websiteSchema = mergeModules(dataSchema, {
-  collection: 'website',
-  fields: [
-    {
+/** Module for `Website` documents. */
+export const websiteModule = /* @__PURE__ */ mergeModules<Website>(dataModule, {
+  path: 'website',
+  fields: {
+    cannonicalUrl: {
       name: 'cannonicalUrl',
-      label: 'URL du site',
-      rules: [[isUndefined], [isStringUrl]],
+      rules: [
+        [isString, trim, isStringUrl],
+        [isNil],
+      ],
     },
-    {
-      name: 'metaTitle',
-      label: 'Titre de la page (balise meta)',
-      rules: [isStringNotEmpty, [isStringShorterOrEq, 60]],
+    metaTitle: {
+      name: 'Titre de la page (balise meta)',
+      rules: [
+        [isString, [isStringShorterOrEq, 60]],
+        [isNil],
+      ],
     },
-    {
-      name: 'metaDescription',
-      label: 'Description de la page (balise meta)',
+    metaDescription: {
+      name: 'Description de la page (balise meta)',
       rules: [isStringNotEmpty, [isStringShorterOrEq, 160], trim],
     },
-    {
-      name: 'metaImage',
-      label: 'Image de la page (balise meta)',
-      rules: [[isUndefined], [isStringUrl]],
+    metaImage: {
+      name: 'Image de la page (balise meta)',
+      rules: [
+        [isStringUrl],
+        [isNil],
+      ],
     },
-    {
-      name: 'metaTags',
-      label: 'Mots clés de la page (balise meta)',
-      rules: [[isUndefined], [[isArrayOf, [isStringNotEmpty]], trim]],
+    metaTags: {
+      name: 'Mots clés de la page (balise meta)',
+      rules: [
+        [
+          isArray,
+          [isArrayValid, [isStringNotEmpty]],
+          [map, [trim]],
+          [map, [toKebabCase]],
+        ],
+        [isNil],
+      ],
     },
-    {
-      name: 'legalId',
-      label: 'Identifiant légal de l\'entreprise',
-      rules: [[isUndefined], [isStringNotEmpty]],
+    legalId: {
+      name: 'Identifiant légal de l\'entreprise',
+      rules: [
+        [isStringNotEmpty],
+        [isNil],
+      ],
     },
-    {
-      name: 'legalName',
-      label: 'Nom légal de l\'entreprise',
-      rules: [[isStringNotEmpty], [[defaultToContext, 'metaTitle'], trim]],
+    legalName: {
+      name: 'Nom légal de l\'entreprise',
+      rules: [
+        [isStringNotEmpty],
+        [isNil, [toContext, 'metaTitle'], trim],
+      ],
     },
-    {
-      name: 'legalAddress',
-      label: 'Adresse postale du site',
-      rules: [[isUndefined], [isStringNotEmpty]],
+    legalAddress: {
+      name: 'Adresse postale du site',
+      rules: [
+        [isStringNotEmpty],
+        [isNil],
+      ],
     },
-    {
-      name: 'contactEmail',
-      label: 'Adresse e-mail de contact',
-      rules: [[isUndefined], [isStringEmail]],
+    contactEmail: {
+      name: 'Adresse e-mail de contact',
+      rules: [
+        [isStringEmail],
+        [isNil],
+      ],
     },
-    {
-      name: 'contactPhone',
-      label: 'Numéro de téléphone de contact',
-      rules: [[isUndefined], [isStringNotEmpty]],
+    contactPhone: {
+      name: 'Numéro de téléphone de contact',
+      rules: [
+        [isStringNotEmpty],
+        [isNil],
+      ],
     },
-    {
-      name: 'contactSocials',
-      label: 'Comptes de réseaux sociaux du site',
-      rules: [[isUndefined], [[isArrayOf, [isStringUrl]]]],
+    contactSocials: {
+      name: 'Comptes de réseaux sociaux du site',
+      rules: [
+        [[isArrayValid, [isStringUrl]]],
+        [isNil],
+      ],
     },
-    {
-      name: 'bannerText',
-      label: 'Texte du bandeau en haut de la page (max 60 caractères)',
-      rules: [[isUndefined], [isStringNotEmpty, [isStringShorterOrEq, 60]]],
+    bannerText: {
+      name: 'Texte du bandeau en haut de la page (max 60 caractères)',
+      rules: [
+        [isStringNotEmpty, [isStringShorterOrEq, 60]],
+        [isNil],
+      ],
     },
-    {
-      name: 'bannerHref',
-      label: 'Lien du bandeau en haut de la page',
-      rules: [[isUndefined], [isStringUrl]],
+    bannerHref: {
+      name: 'Lien du bandeau en haut de la page',
+      rules: [
+        [isStringUrl],
+        [isNil],
+      ],
     },
-  ],
-})
-
-export const useWebsites = createSharedFirestore<Website>(websiteSchema.collection)
-export const useWebsite = createSharedComposable(() => {
-  const { get } = useWebsites()
-  return get('default', {
-    sync: true,
-    pickFirst: true,
-    keepAlive: true,
-    initialValue: { id: 'default' },
-  })
+  },
 })

@@ -25,10 +25,16 @@ module.exports = {
       script: 'pnpm dev'
     },
 
+    // Firebase emulator.
+    {
+      name: 'hsjm-firebase',
+      cwd: 'playground',
+      script: 'pnpm dev:firebase'
+    },
+
     // Vitest UI
     {
       name: 'hsjm-test',
-      cwd: 'playground',
       script: 'pnpm test:ui'
     }
   ]

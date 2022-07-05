@@ -1,6 +1,6 @@
 import { isStringNotEmpty, isStringUrl } from '@hsjm/shared'
-import { mergeModules } from '../shared'
-import { Data, dataSchema } from './coreData'
+import { mergeModules } from './utils/mergeModules'
+import { Data, dataModule } from './coreData'
 
 export interface Asset extends Data {
   /**
@@ -24,18 +24,19 @@ export interface Asset extends Data {
   description?: string
 }
 
-export const assetSchema = mergeModules(dataSchema, {
-  collection: 'assets',
-  fields: [
-    {
-      name: 'url',
-      label: 'URL du fichier',
-      rules: [[isStringUrl], [isStringNotEmpty]],
+export const assetModule = /* @__PURE__ */ mergeModules<Asset>(dataModule, {
+  path: 'assets',
+  fields: {
+    url: {
+      name: 'URL du fichier',
+      rules: [
+        [isStringUrl],
+        [isStringNotEmpty],
+      ],
     },
-    {
-      name: 'description',
-      label: 'Description du fichier',
+    description: {
+      name: 'Description du fichier',
       rules: [isStringNotEmpty],
     },
-  ],
+  },
 })

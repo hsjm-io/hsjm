@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "main": "dist/index.mjs",
+  "scripts": {
+    "dev": "tsup --watch ./index.ts",
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@firebase/app-compat": "^0.1.28",
+    "@firebase/app-types": "^0.7.0",
+    "firebase-admin": "^10.3.0",
+    "firebase-functions": "^3.22.0"
+  },
+  "devDependencies": {
+    "tsup": "^6.1.2"
+  },
+  "engines": {
+    "node": "16",
+    "pnpm": ">=6"
+  }
+}

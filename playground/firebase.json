@@ -1,0 +1,41 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "functions": {
+    "source": "functions"
+  },
+  "runtime": "nodejs16",
+  "emulators": {
+    "hub": {
+      "port": 15000
+    },
+    "ui": {
+      "port": 15001
+    },
+    "auth": {
+      "port": 15002
+    },
+    "functions": {
+      "port": 15003
+    },
+    "firestore": {
+      "port": 15004
+    },
+    "database": {
+      "port": 15005
+    },
+    "hosting": {
+      "port": 15006
+    },
+    "storage": {
+      "port": 15007
+    }
+  }
+}

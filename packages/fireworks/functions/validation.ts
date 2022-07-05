@@ -1,9 +1,11 @@
-import { isNotNil, mapValues, pick, validateSchema } from '@hsjm/shared'
-import { FirebaseContext, Module, getModuleValidationSchema } from '../shared'
+import { isNotNil, pick, validateSchema } from '@hsjm/shared'
+import { Change, CloudFunction } from 'firebase-functions/v1'
+import { DocumentSnapshot } from 'firebase/firestore'
+import { FirebaseContext, Module, getModuleValidationSchema } from '../modules/utils'
 
 export interface ValidateOnWriteOptions extends FirebaseContext {
-  onCreateError?: 'delete' | 'transform' | 'rollback'
-  onUpdateError?: 'delete' | 'transform' | 'rollback'
+  onCreateError?: 'rollback' | 'delete'
+  onUpdateError?: 'rollback' | 'delete'
 }
 
 /**
@@ -12,15 +14,14 @@ export interface ValidateOnWriteOptions extends FirebaseContext {
  * @param {ValidateOnWriteOptions} options Options for the function
  * @returns {CloudFunction<Change<DocumentSnapshot>>}
  */
-export const validateOnWrite = (module: Module, options: ValidateOnWriteOptions) => {
+export const validateOnWrite = <T = DocumentSnapshot>(module: Module, options: ValidateOnWriteOptions): CloudFunction<Change<T>> => {
   // --- Initialize variables.
   const { admin, functions, onCreateError, onUpdateError } = options
-  const collection = module.collection
   const schema = getModuleValidationSchema(module)
 
   // --- Instantiate Firebase `onWrite` function.
   return functions.firestore
-    .document(`${collection}/{id}`)
+    .document(`${module.path}/{id}`)
     .onWrite(async(changes, context) => {
       // --- Destructure arguments & options.
       const { after, before } = changes
@@ -28,30 +29,36 @@ export const validateOnWrite = (module: Module, options: ValidateOnWriteOptions)
       const valueBefore = after.data()
 
       // --- Abort on deletion & avoid infinite-loops.
-      if (valueAfter?.origin === 'server') return
+      if (valueAfter?.__origin === 'server') return
       if (after.isEqual(before)) return
       if (!after.exists) return
 
       // --- Validate data.
-      const { isInvalid, results, value } = await validateSchema(valueAfter, schema, { context, admin, functions, changes })
-      const valueTransformed = pick({ ...value, _error: undefined }, isNotNil)
-
-      // --- Collect errors.
-      const _errors = mapValues(
-        pick(results, 'isInvalid'),
-        x => x.results.map(x => x.errorMessage),
-      )
+      const { isValid, errors, value } = await validateSchema(valueAfter, schema, {
+        context,
+        admin,
+        functions,
+        changes,
+        value: valueAfter,
+        before: valueBefore,
+      })
+      const valueTransformed = pick(value, isNotNil)
 
       // --- Handle invalid.
       const onError = before.exists ? onUpdateError : onCreateError
-      if (isInvalid) {
-        if (onError === 'delete') return after.ref.delete()
-        if (onError === 'rollback') return after.ref.set({ ...valueBefore, origin: 'server', _errors })
-        if (onError === 'transform') return after.ref.set({ ...valueTransformed, origin: 'server', _errors })
-        return after.ref.set({ ...valueAfter, origin: 'server', _errors })
+      if (!isValid) {
+        const __errors = pick(errors, x => x.length > 0)
+        switch (onError) {
+          case 'delete': return after.ref.delete()
+          case 'rollback': return after.ref.set({ ...valueBefore, __origin: 'server', __errors })
+          default: return after.ref.set({ ...valueAfter, __origin: 'server', __errors })
+        }
       }
 
+      // --- Delete __error property.
+      else if (valueTransformed.__error) { delete valueTransformed.__error }
+
       // --- Apply transformations.
-      after.ref.set({ ...valueTransformed, origin: 'server' })
-    })
+      after.ref.set({ ...valueTransformed, __origin: 'server' })
+    }) as unknown as CloudFunction<Change<T>>
 }
