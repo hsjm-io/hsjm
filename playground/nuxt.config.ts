@@ -1,8 +1,6 @@
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineNuxtConfig } from 'nuxt'
-import presetUno from '@unocss/preset-uno'
-import { presetHsjm } from '../packages/unocss-preset/index'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default defineNuxtConfig({
@@ -11,8 +9,8 @@ export default defineNuxtConfig({
     '@unocss/nuxt',
   ],
   alias: {
-    '@hsjm/core': resolve(__dirname, '../packages/core/index.ts'),
-    '@hsjm/shared': resolve(__dirname, '../packages/shared/index.ts'),
+    '@hsjm/core': resolve(__dirname, '../packages/core'),
+    '@hsjm/shared': resolve(__dirname, '../packages/shared'),
   },
   vueuse: {
     ssrHandlers: true,
@@ -22,10 +20,6 @@ export default defineNuxtConfig({
   ],
   unocss: {
     preflight: true,
-    presets: [
-      presetUno(),
-      // @ts-expect-error: ignore
-      presetHsjm(),
-    ],
+    configFile: './unocss.config.ts',
   },
 })
