@@ -4,19 +4,19 @@ import { doc, endAt, endBefore, limit, limitToLast, orderBy, query, startAfter, 
 import { collectionReference } from './fixtures'
 import { createQuery } from './createQuery'
 
-it('creates a query for a document given a path and an ID', () => {
+it('should create a query for a document given a path and an ID', () => {
   const reference = doc(collectionReference)
   const result = createQuery('mock', reference.id)
   expect(result).toEqual(doc(collectionReference, reference.id))
 })
 
-it('creates   a query for a collection given a path and no options', () => {
+it('should create a query for a collection given a path and no options', () => {
   const reference = doc(collectionReference)
   const result = createQuery('mock')
   expect(result.type).toEqual(reference.type)
 })
 
-it('creates a query for a document given a path and a query filter', () => {
+it('should create a query for a document given a path and a query filter', () => {
   const result = createQuery('mock', {
     $orderBy: [
       'foo',
@@ -54,7 +54,7 @@ it.each([
   ['in', '_in', ['foo', 'bar']],
   ['array-contains', '_ac', ['foo', 'bar']],
   ['array-contains-any', '_aca', ['foo', 'bar']],
-])('creates a "where" query of type "%s" when using the suffix "%s"', (filterOp, suffix, data) => {
+])('should create a "where" query of type "%s" when using the suffix "%s"', (filterOp, suffix, data) => {
   const result = createQuery('mock', { [`foo${suffix}`]: data })
   expect(result).toEqual(query(collectionReference, where('foo', filterOp as any, data)))
 })

@@ -5,11 +5,8 @@ import { useFirebase } from './useFirebase'
 it('should return the firestore instances', async() => {
   const result = useFirebase({
     name: 'test',
-    apiKey: 'test',
-    authDomain: 'test',
-    storageBucket: 'test',
-    databaseURL: 'https://test.firebaseio.com',
     appCheckDebugToken: 'test',
+    emulatorHost: 'localhost',
   })
   // @ts-expect-error: Missing `globalThis` definition.
   expect(globalThis.FIREBASE_APPCHECK_DEBUG_TOKEN).toEqual('test')

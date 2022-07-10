@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 /* eslint-disable array-callback-return */
 import { FirebaseOptions, getApp, initializeApp } from 'firebase/app'
-import { FirestoreSettings, connectFirestoreEmulator } from 'firebase/firestore'
+import { FirestoreSettings, connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore'
 import { AppCheckOptions, CustomProvider, ReCaptchaEnterpriseProvider, ReCaptchaV3Provider, initializeAppCheck } from 'firebase/app-check'
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions'
 import { connectDatabaseEmulator, getDatabase } from 'firebase/database'
 import { connectStorageEmulator, getStorage } from 'firebase/storage'
-import { Persistence, PopupRedirectResolver, browserLocalPersistence, browserPopupRedirectResolver, browserSessionPersistence, connectAuthEmulator, inMemoryPersistence, indexedDBLocalPersistence, useDeviceLanguage } from 'firebase/auth'
-import { getVariable, isDevelopment, isNotNil, pick, requireSafe } from '@hsjm/shared'
+import { Persistence, PopupRedirectResolver, browserLocalPersistence, browserPopupRedirectResolver, browserSessionPersistence, connectAuthEmulator, inMemoryPersistence, indexedDBLocalPersistence, initializeAuth, useDeviceLanguage } from 'firebase/auth'
+import { getVariable, isDevelopment, isNotNil, pick } from '@hsjm/shared'
 
 interface UseFirebaseOptions extends FirebaseOptions, FirestoreSettings {
   /** Local application instance identifier. */
@@ -64,7 +64,7 @@ export const useFirebase = (options: UseFirebaseOptions = {}) => {
     cacheSizeBytes = getVariable('FIREBASE_FIRESTORE_CACHE_SIZE_BYTES', Number),
     experimentalAutoDetectLongPolling = getVariable('FIREBASE_FIRESTORE_EXPERIMENTAL_AUTO_DETECT_LONG_POLLING', Boolean),
     experimentalForceLongPolling = getVariable('FIREBASE_FIRESTORE_EXPERIMENTAL_FORCE_LONG_POLLING', Boolean),
-    emulatorHost = 'localhost' ?? getVariable('FIREBASE_EMULATOR_HOST'),
+    emulatorHost = getVariable('FIREBASE_EMULATOR_HOST'),
     emulatorAuthPort = getVariable('FIREBASE_EMULATOR_AUTH_PORT'),
     emulatorFunctionsPort = getVariable('FIREBASE_EMULATOR_FUNCTIONS_PORT'),
     emulatorFirestorePort = getVariable('FIREBASE_EMULATOR_FIRESTORE_PORT'),
@@ -93,12 +93,12 @@ export const useFirebase = (options: UseFirebaseOptions = {}) => {
 
   // --- Initialize auth.
   const authOptions = pick({ popupRedirectResolver, persistence: _persistence }, isNotNil)
-  const auth = apiKey ? requireSafe<typeof import('firebase/auth')>('firebase/auth').initializeAuth(app, authOptions) : undefined
+  const auth = apiKey ? initializeAuth(app, authOptions) : undefined
   if (auth) useDeviceLanguage(auth)
 
   // --- Initialize firestore.
   const firestoreOptions = pick({ cacheSizeBytes, experimentalForceLongPolling, experimentalAutoDetectLongPolling, host, ssl, ignoreUndefinedProperties }, isNotNil)
-  const firestore = requireSafe<typeof import('firebase/firestore')>('firebase/firestore').initializeFirestore(app, firestoreOptions)
+  const firestore = initializeFirestore(app, firestoreOptions)
 
   // --- Initialize RTDB.
   const database = (authDomain && databaseURL) ? getDatabase(app) : undefined
@@ -113,7 +113,7 @@ export const useFirebase = (options: UseFirebaseOptions = {}) => {
     if (appCheckDebugToken) globalThis.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken
     if (emulatorAuthPort && auth) connectAuthEmulator(auth, `http://${emulatorHost}:${emulatorAuthPort}`)
     if (emulatorStoragePort && storage) connectStorageEmulator(storage, emulatorHost, emulatorStoragePort)
-    if (emulatorFirestorePort) connectFirestoreEmulator(firestore, emulatorHost, emulatorFirestorePort)
+    if (emulatorFirestorePort && firestore) connectFirestoreEmulator(firestore, emulatorHost, emulatorFirestorePort)
     if (emulatorFunctionsPort) connectFunctionsEmulator(functions, emulatorHost, emulatorFunctionsPort)
     if (emulatorDatabasePort && database) connectDatabaseEmulator(database, emulatorHost, emulatorDatabasePort)
   }

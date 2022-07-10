@@ -20,7 +20,7 @@ import {
   startAt,
   where,
 } from 'firebase/firestore'
-import { Key, MaybeArray, arrayify, isNil } from '@hsjm/shared'
+import { Key, MaybeArray, arrayify } from '@hsjm/shared'
 import { FirebaseApp } from 'firebase/app'
 
 // --- Field filters suffixes
@@ -97,7 +97,7 @@ export const createQuery: CreateQuery = (path: string, filter?: string | Record<
     else if (key.endsWith('_nin')) constraints.push(where(key.replace('_nin', ''), 'not-in', value))
     else if (key.endsWith('_ac')) constraints.push(where(key.replace('_ac', ''), 'array-contains', value))
     else if (key.endsWith('_aca')) constraints.push(where(key.replace('_aca', ''), 'array-contains-any', value))
-    else if (key.trim().length > 0 && !isNil(value)) constraints.push(where(key, '==', value))
+    else if (key.trim().length > 0 && typeof value !== 'undefined') constraints.push(where(key, '==', value))
   }
 
   // --- Return query.
