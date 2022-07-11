@@ -15,7 +15,7 @@ export const useMilsymbol = (sidc: MaybeRef<string>, options: MaybeRef<SymbolOpt
   const svg = ref<string | undefined>()
 
   // --- Require 'milsymbol'
-  const MilSymbol = requireSafe<typeof import('milsymbol') | undefined>('milsymbol')
+  const MilSymbol = requireSafe<typeof import('milsymbol')>('milsymbol')
   if (!MilSymbol) throw new Error('Milsymbol dependency not found')
 
   // --- Declare function to get the svg.

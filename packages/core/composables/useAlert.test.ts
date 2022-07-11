@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { delay } from '../../shared/index'
+import { delay } from '../../shared/misc/delay'
 import { useAlert } from './useAlert'
 
 it('should register a new error', () => {

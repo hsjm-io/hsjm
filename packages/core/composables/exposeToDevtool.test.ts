@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 // @vitest-environment happy-dom
 import { expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'

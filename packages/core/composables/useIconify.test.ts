@@ -8,6 +8,7 @@ it('returns an svg ref', async() => {
   const icon = useIconify('carbon:arrow-right')
   expect(icon.value).toBeUndefined()
   await until(icon).not.toBeUndefined({ timeout: 1000 })
+  expect(icon.value).toBeDefined()
   expect(icon.value).toMatch('<svg xmlns=')
 })
 
