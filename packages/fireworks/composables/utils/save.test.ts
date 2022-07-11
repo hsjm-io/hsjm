@@ -1,50 +1,48 @@
 /* eslint-disable unicorn/no-null */
-import { expect, it } from 'vitest'
-import { mockData, mockFirestoreGet } from './fixtures'
+import { expect, it, vi } from 'vitest'
+import { collection, doc, getDoc } from 'firebase/firestore'
 import { save } from './save'
 
-it.concurrent('should add a new document in Firestore and return its ID', async() => {
-  const data = { ...mockData(), isUndefined: undefined, isNull: null }
-  const result = await save('users', data)
-  const [remote] = mockFirestoreGet(result)
-  expect(result).toBeTypeOf('string')
-  expect(remote?.age).toEqual(data.age)
-  expect(remote).not.toHaveProperty('isNull')
-  expect(remote).not.toHaveProperty('isUndefined')
+// --- Create and save data references
+vi.mock('firebase/auth')
+vi.mock('firebase/firestore')
+const mockData = () => ({ foo: 'bar', random: Math.random(), _undefined: undefined, _null: null })
+
+it('should add a new document in Firestore and return its ID', async() => {
+  const data = mockData()
+  const result = await save('saved', data)
+  const remote = await getDoc(doc(collection(<any>undefined, 'saved'), result))
+  const remoteData = remote.data()
+  expect(result).toEqual(remote.id)
+  expect(remoteData?.foo).toEqual(data.foo)
+  expect(remoteData?.random).toEqual(data.random)
+  expect(remoteData).not.toHaveProperty('_null')
+  expect(remoteData).not.toHaveProperty('_undefined')
 })
 
-it.concurrent('should update a document in Firestore and return its ID', async() => {
+it('should update a document in Firestore and return its ID', async() => {
   const data = mockData()
-  const result = await save('users', data)
+  const result = await save('saved', data)
   const updatedData = { id: result, ...data, name: 'Jane Doe' }
-  const updatedResult = await save('users', updatedData)
-  const [updatedRemote] = mockFirestoreGet(updatedResult)
+  const updatedResult = await save('saved', updatedData)
+  const updatedRemote = await getDoc(doc(collection(<any>undefined, 'saved'), updatedResult))
+  const updatedRemotData = updatedRemote.data()
   expect(updatedResult).toEqual(result)
-  expect(updatedRemote?.name).toEqual(updatedData.name)
+  expect(updatedRemotData?.name).toEqual(updatedData.name)
 })
 
 it.concurrent('should add multiple documents to Firestore', async() => {
-  const data = [mockData(), mockData()]
-  const result = await save('users', data)
-  const remote = mockFirestoreGet(result)
-  expect(result?.length).toEqual(data.length)
-  expect(remote[0]?.age).toEqual(data[0].age)
-  expect(remote[1]?.age).toEqual(data[1].age)
-})
-
-it.concurrent('should save more than 500 documents in Firestore', async() => {
-  const uniqueId = Math.random().toString()
-  const data = Array.from({ length: 600 }).fill(0).map(() => ({ ...mockData(), uniqueId }))
-  const result = await save('users', data)
-  const remote = mockFirestoreGet(result)
-  expect(result?.length).toEqual(data.length)
-  expect(remote.every(x => x?.uniqueId === uniqueId)).toEqual(true)
+  const data = Array.from({ length: 600 }).map(mockData)
+  const results = await save('saved600', data)
+  const remotes = await Promise.all(results.map(result => getDoc(doc(collection(<any>undefined, 'saved600'), result))))
+  expect(remotes?.length).toEqual(data.length)
+  expect(remotes?.every(x => typeof x.id === 'string')).toEqual(true)
 })
 
 it.concurrent('should return undefined/[] if no data is provided', async() => {
-  const result = await save('users')
-  const resultNull = await save('users', null)
-  const resultEmpty = await save('users', [])
+  const result = await save('saved')
+  const resultNull = await save('saved', null)
+  const resultEmpty = await save('saved', [])
   expect(result).toBeUndefined()
   expect(resultNull).toBeUndefined()
   expect(resultEmpty).toEqual([])

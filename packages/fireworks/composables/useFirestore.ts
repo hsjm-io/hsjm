@@ -5,7 +5,7 @@ import { MaybeRef, isClient, tryOnScopeDispose, until } from '@vueuse/shared'
 import { DocumentData, FirestoreError, SetOptions, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { EraseOptions, QueryFilter, createQuery, erase, getSnapshotData, isDocumentReference, save } from './utils'
 
-export interface UseFirestoreOptions<T> extends SnapshotListenOptions {
+export interface UseFirestoreOptions<T = any> extends SnapshotListenOptions {
   /** Sync the data using `onSnapshot` method. */
   sync?: boolean
   /** Prevent `onSnapshot` unsubscription and cache deletion on scope dispose. */
@@ -20,7 +20,7 @@ export interface UseFirestoreOptions<T> extends SnapshotListenOptions {
   onError?: (error: FirestoreError) => void
 }
 
-export interface UseFirestoreReturnType<T> {
+export interface UseFirestoreReturnType<T = any> {
   data: Ref<T>
   loading: Ref<boolean>
   update: () => Promise<void>

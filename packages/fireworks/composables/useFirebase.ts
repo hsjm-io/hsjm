@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports */
-/* eslint-disable array-callback-return */
-import { FirebaseOptions, getApp, initializeApp } from 'firebase/app'
+import { FirebaseOptions, initializeApp } from 'firebase/app'
 import { FirestoreSettings, connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore'
 import { AppCheckOptions, CustomProvider, ReCaptchaEnterpriseProvider, ReCaptchaV3Provider, initializeAppCheck } from 'firebase/app-check'
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions'
@@ -8,6 +6,7 @@ import { connectDatabaseEmulator, getDatabase } from 'firebase/database'
 import { connectStorageEmulator, getStorage } from 'firebase/storage'
 import { Persistence, PopupRedirectResolver, browserLocalPersistence, browserPopupRedirectResolver, browserSessionPersistence, connectAuthEmulator, inMemoryPersistence, indexedDBLocalPersistence, initializeAuth, useDeviceLanguage } from 'firebase/auth'
 import { getVariable, isDevelopment, isNotNil, pick } from '@hsjm/shared'
+import { createSharedComposable } from '@vueuse/shared'
 
 interface UseFirebaseOptions extends FirebaseOptions, FirestoreSettings {
   /** Local application instance identifier. */
@@ -43,10 +42,7 @@ interface UseFirebaseOptions extends FirebaseOptions, FirestoreSettings {
  * Get the default one if it already exists.
  * @param {UseFirebaseOptions} [options] Options to configure the app's services.
  */
-export const useFirebase = (options: UseFirebaseOptions = {}) => {
-  // --- Get app if already initialized.
-  if (!options) return getApp()
-
+export const useFirebase = createSharedComposable((options: UseFirebaseOptions) => {
   // --- Destructure and defaults options.
   const {
     name = '[DEFAULT]',
@@ -80,11 +76,11 @@ export const useFirebase = (options: UseFirebaseOptions = {}) => {
 
   // --- Prepare auth persistence.
   const _persistence = persistence.map((x) => {
-    if (typeof x !== 'string') return x
     if (x === 'local') return browserLocalPersistence
     if (x === 'session') return browserSessionPersistence
     if (x === 'indexedDb') return indexedDBLocalPersistence
     if (x === 'memory') return inMemoryPersistence
+    return x
   }).filter(Boolean) as Persistence[]
 
   // --- Initialize app.
@@ -126,4 +122,4 @@ export const useFirebase = (options: UseFirebaseOptions = {}) => {
 
   // --- Return instances.
   return app
-}
+})

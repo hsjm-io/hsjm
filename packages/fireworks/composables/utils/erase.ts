@@ -1,6 +1,5 @@
 /* eslint-disable unicorn/consistent-destructuring */
-/* eslint-disable array-callback-return */
-import { DocumentData, Firestore, deleteDoc, doc, getFirestore, writeBatch } from 'firebase/firestore'
+import { DocumentData, Firestore, collection, deleteDoc, doc, getFirestore, writeBatch } from 'firebase/firestore'
 import { MaybeArray, arrayify, chunk, delay } from '@hsjm/shared'
 import { FirebaseApp } from 'firebase/app'
 
@@ -26,10 +25,11 @@ export const erase = async<T = DocumentData>(path: string, data: MaybeArray<stri
   const { batchSize = 500, batchDelay = 0, firestore = getFirestore(options.app) } = options
 
   // --- Map input to document references.
+  const collectionReference = collection(firestore, path)
   const documentReferences = arrayify(data)
     .map((x: any) => x.id ?? x)
     .filter(Boolean)
-    .map(id => doc(firestore, path, id))
+    .map(id => doc(collectionReference, id))
 
   // --- Delete single document or abort if empty.
   if (documentReferences.length === 0) return

@@ -1,26 +1,7 @@
 /* eslint-disable unicorn/consistent-destructuring */
 /* eslint-disable unicorn/prefer-switch */
-import {
-  DocumentData,
-  DocumentReference,
-  Firestore,
-  OrderByDirection,
-  Query,
-  QueryConstraint,
-  collection,
-  doc,
-  endAt,
-  endBefore,
-  getFirestore,
-  limit,
-  limitToLast,
-  orderBy,
-  query,
-  startAfter,
-  startAt,
-  where,
-} from 'firebase/firestore'
-import { Key, MaybeArray, arrayify } from '@hsjm/shared'
+import { DocumentData, DocumentReference, Firestore, OrderByDirection, Query, QueryConstraint, collection, doc, endAt, endBefore, getFirestore, limit, limitToLast, orderBy, query, startAfter, startAt, where } from 'firebase/firestore'
+import { Key, MaybeArray, arrayify, isNotNil } from '@hsjm/shared'
 import { FirebaseApp } from 'firebase/app'
 
 // --- Field filters suffixes
@@ -97,7 +78,7 @@ export const createQuery: CreateQuery = (path: string, filter?: string | Record<
     else if (key.endsWith('_nin')) constraints.push(where(key.replace('_nin', ''), 'not-in', value))
     else if (key.endsWith('_ac')) constraints.push(where(key.replace('_ac', ''), 'array-contains', value))
     else if (key.endsWith('_aca')) constraints.push(where(key.replace('_aca', ''), 'array-contains-any', value))
-    else if (key.trim().length > 0 && typeof value !== 'undefined') constraints.push(where(key, '==', value))
+    else if (key.trim().length > 0 && isNotNil(value)) constraints.push(where(key, '==', value))
   }
 
   // --- Return query.

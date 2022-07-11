@@ -15,7 +15,7 @@ export interface useFunctionOptions extends HttpsCallableOptions {
  * @param {UseFunctionsOptions} options The options to pass to the function.
  * @returns {HttpsCallable} An callable function calling the Firebase function.
  */
-export const useFunction = /* @__PURE__ */ <T1, T2>(functionName: string, options: useFunctionOptions = {}): HttpsCallable<T1, T2> => {
+export const useFunction = <T1, T2>(functionName: string, options: useFunctionOptions = {}): HttpsCallable<T1, T2> => {
   // --- Get app context.
   const functions = getFunctions(undefined, options.regionOrCustomDomain)
   if (!functions) throw new Error('Firebase Functions client not found')

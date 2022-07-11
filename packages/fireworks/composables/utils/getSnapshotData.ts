@@ -31,17 +31,23 @@ export interface GetSnapshotData {
  */
 export const getSnapshotData: GetSnapshotData = (snapshot?: DocumentSnapshot | QuerySnapshot, pickFirst?: any): any => {
   if (!snapshot) return undefined
-  const isDocument = isDocumentSnapshot(snapshot)
-
-  // --- If the data doesn't exist, return undefined.
-  if (isDocument ? !snapshot.exists() : snapshot.empty) return undefined
 
   // --- If the data is a document, return the data.
-  if (isDocument) return { id: snapshot.id, ...snapshot.data() }
+  if (isDocumentSnapshot(snapshot)) {
+    return snapshot.exists()
+      ? { id: snapshot.id, ...snapshot.data() }
+      : undefined
+  }
 
   // --- If the data is a query, and the pickFirst option is true, return the first item.
-  if (pickFirst) return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() }
+  if (pickFirst) {
+    return !snapshot.empty
+      ? { id: snapshot.docs[0].id, ...snapshot.docs[0].data() }
+      : undefined
+  }
 
   // --- If the data is a query, return the data.
-  return snapshot.docs.map(document_ => ({ id: document_.id, ...document_.data() }))
+  return !snapshot.empty
+    ? snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
+    : []
 }

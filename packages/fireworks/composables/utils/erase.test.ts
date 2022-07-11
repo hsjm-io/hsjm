@@ -1,31 +1,36 @@
-import { expect, it } from 'vitest'
-import { firestore, mockData, mockFirestoreGet, mockFirestoreSet } from './fixtures'
+import { expect, it, vi } from 'vitest'
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore'
 import { erase } from './erase'
 
+// --- Create and save data references
+vi.mock('firebase/firestore')
+const references = Array.from({ length: 600 }).map(() => doc(collection(<any>undefined, 'erased')))
+await Promise.all(references.map(async reference => await setDoc(reference, { foo: 'bar' })))
+
 it('should remove a firestore document from the database', async() => {
-  const data = mockData()
-  const [id] = mockFirestoreSet(data)
-  const result = await erase('users', id, { firestore })
-  const deleted = mockFirestoreGet(id)
-  expect(deleted).toEqual([undefined])
+  const reference = references[0]
+
+  // --- Get state before/after erasing
+  const existing = await getDoc(reference)
+  const result = await erase('erased', reference)
+  const deleted = await getDoc(reference)
+
+  // --- Assert.
   expect(result).toEqual(undefined)
+  expect(existing.exists()).toEqual(true)
+  expect(deleted.exists()).toEqual(false)
 })
 
 it('should remove multiple firestore documents from the database', async() => {
-  const data = [mockData(), mockData()]
-  const ids = mockFirestoreSet(data)
-  const result = await erase('users', ids, { firestore })
-  const deleted = mockFirestoreGet(ids)
-  expect(deleted).toEqual([undefined, undefined])
-  expect(result).toEqual(undefined)
-})
+  const references100 = references.slice(1)
 
-it('should remove more than 500 firestore documents from the database', async() => {
-  const uniqueId = Math.random().toString()
-  const data = Array.from({ length: 600 }).fill(0).map(() => ({ ...mockData(), uniqueId }))
-  const ids = mockFirestoreSet(data)
-  const result = await erase('users', ids)
-  const deleted = mockFirestoreGet(ids)
-  expect(deleted).toEqual(Array.from({ length: 600 }))
+  // --- Get state before/after erasing
+  const existing = await Promise.all(references100.map(getDoc))
+  const result = await erase('erased', references100)
+  const deleted = await Promise.all(references100.map(getDoc))
+
+  // --- Assert.
   expect(result).toEqual(undefined)
+  expect(existing.every(x => x.exists())).toEqual(true)
+  expect(deleted.every(x => !x.exists())).toEqual(true)
 })
