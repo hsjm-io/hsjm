@@ -13,7 +13,7 @@ export interface UseFirestoreOptions<T = any> extends SnapshotListenOptions {
   /** If true, the data will have to be fetched manually. */
   manual?: boolean
   /** Initial value. */
-  initialValue?: T
+  initialValue?: Partial<T>
   /** Pick the first item of the result if it's an array of documents. */
   pickFirst?: boolean
   /** Error handler. */
@@ -30,9 +30,11 @@ export interface UseFirestoreReturnType<T = any> {
 
 // --- Overloads.
 export interface UseFirestore {
-  <T = DocumentData>(path: MaybeRef<string>, filter?: QueryFilter<T>, options?: UseFirestoreOptions<T> & { pickFirst: true }): UseFirestoreReturnType<T>
-  <T = DocumentData>(path: MaybeRef<string>, filter?: QueryFilter<T>, options?: UseFirestoreOptions<T[]>): UseFirestoreReturnType<T[]>
-  <T = DocumentData>(path: MaybeRef<string>, filter?: MaybeRef<string | undefined>, options?: UseFirestoreOptions<T>): UseFirestoreReturnType<T>
+  <T = DocumentData>(path: MaybeRef<string>, filter: QueryFilter<T>, options?: UseFirestoreOptions<T> & { pickFirst: true }): UseFirestoreReturnType<T>
+  <T = DocumentData>(path: MaybeRef<string>, filter: QueryFilter<T>, options?: UseFirestoreOptions<T[]>): UseFirestoreReturnType<T[]>
+  <T = DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string>, options?: UseFirestoreOptions<T>): UseFirestoreReturnType<T>
+  <T = DocumentData>(path: MaybeRef<string>, filter?: QueryFilter<T> | MaybeRef<string | undefined>, options?: UseFirestoreOptions<T> & { pickFirst: true }): UseFirestoreReturnType<T>
+  <T = DocumentData>(path: MaybeRef<string>, filter?: QueryFilter<T> | MaybeRef<string | undefined>, options?: UseFirestoreOptions<T>): UseFirestoreReturnType<T | T[]>
 }
 
 /**

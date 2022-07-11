@@ -1,19 +1,14 @@
 /* eslint-disable unicorn/consistent-destructuring */
 /* eslint-disable unicorn/prefer-switch */
 import { DocumentData, DocumentReference, Firestore, OrderByDirection, Query, QueryConstraint, collection, doc, endAt, endBefore, getFirestore, limit, limitToLast, orderBy, query, startAfter, startAt, where } from 'firebase/firestore'
-import { Key, MaybeArray, arrayify, isNotNil } from '@hsjm/shared'
+import { Key, MaybeArray, Value, arrayify, isNotNil } from '@hsjm/shared'
 import { FirebaseApp } from 'firebase/app'
 
 // --- Field filters suffixes
 export type QueryFilterSuffix = '_lt' | '_lte' | '_ne' | '_gt' | '_gte' | '_in' | '_nin' | '_ac' | '_aca'
 
-// --- Fields filters
-export type QueryFilterTyped<T = DocumentData> = T extends Record<string, any>
-  ? { [ K in `${Key<T>}${QueryFilterSuffix}`]?: T[K] }
-  : Record<string, any>
-
 // --- Base query filter
-export interface QueryFilterBase<T> {
+export type QueryFilter<T> = {
   $limit?: number
   $limitToLast?: number
   $startAt?: number
@@ -22,10 +17,9 @@ export interface QueryFilterBase<T> {
   $endBefore?: number
   $orderBy?: MaybeArray<keyof T | [keyof T, OrderByDirection]>
   [key: string]: any
+} & {
+  [ K in `${Key<T>}${QueryFilterSuffix}`]?: Value<T, K>
 }
-
-// --- Query filters
-export type QueryFilter<T = DocumentData> = Partial<QueryFilterBase<T> & QueryFilterTyped<T>>
 
 // --- Query options.
 export interface CreateQueryOptions {
