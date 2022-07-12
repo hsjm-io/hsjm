@@ -3,5 +3,7 @@
   "prettier.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
   "unocss.root": "./playground",
-  "vitest.commandLine": "pnpm test:dev --"
+  "vitest.commandLine": "pnpm test:dev --",
+  "liveServer.settings.root": "./playground/dist"
+  
 }
