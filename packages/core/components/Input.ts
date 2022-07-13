@@ -90,7 +90,7 @@ export const Input = /* @__PURE__ */ defineComponent({
     })
 
     // --- Validate the input.
-    const validate = async(event: Event) => {
+    const validate = async() => {
       // --- Handle missing rules.
       if (!props.rules) return console.warn('Could not validate input: No validation rules provided.', inputElement.value)
       modelLoading.value = true
