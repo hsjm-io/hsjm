@@ -1,6 +1,6 @@
 
 import { ActionCodeSettings, AuthError, AuthProvider, ConfirmationResult, CustomParameters, GithubAuthProvider, GoogleAuthProvider, OAuthProvider, RecaptchaVerifier, UserCredential, browserPopupRedirectResolver, createUserWithEmailAndPassword, getAuth, getRedirectResult, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signInWithPhoneNumber, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth'
-import { createSharedComposable, tryOnMounted, tryOnScopeDispose } from '@vueuse/shared'
+import { tryOnMounted, tryOnScopeDispose } from '@vueuse/shared'
 import { isBrowser } from '@hsjm/shared'
 import { ref } from 'vue-demi'
 
@@ -22,7 +22,7 @@ export interface LoginWithProviderOptions extends CustomParameters {
  * @param {UseAuthOptions} [options] Auth options.
  * @return {Auth} A shared Firebase Auth composition.
  */
-export const useAuth = createSharedComposable((options = {} as UseAuthOptions) => {
+export const useAuth = (options = {} as UseAuthOptions) => {
   // --- Destructure and default options.
   const { onError = console.error, onLogin, onLogout } = options
   const auth = getAuth()
@@ -129,4 +129,4 @@ export const useAuth = createSharedComposable((options = {} as UseAuthOptions) =
     loginWithProvider,
     logout,
   }
-})
+}
