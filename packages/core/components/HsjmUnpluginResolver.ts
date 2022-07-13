@@ -9,6 +9,7 @@ const components = new Set([
   'InputList',
   'InputText',
   'Leaflet',
+  'Markdown',
   // 'MilSymbol',
   'Switch',
   'Table',
