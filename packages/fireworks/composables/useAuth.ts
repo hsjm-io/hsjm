@@ -1,8 +1,10 @@
+/* eslint-disable unicorn/consistent-destructuring */
 
-import { ActionCodeSettings, AuthError, AuthProvider, ConfirmationResult, CustomParameters, GithubAuthProvider, GoogleAuthProvider, OAuthProvider, RecaptchaVerifier, UserCredential, browserPopupRedirectResolver, createUserWithEmailAndPassword, getAuth, getRedirectResult, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signInWithPhoneNumber, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth'
+import { ActionCodeSettings, Auth, AuthError, AuthProvider, ConfirmationResult, CustomParameters, GithubAuthProvider, GoogleAuthProvider, OAuthProvider, RecaptchaVerifier, User, UserCredential, browserPopupRedirectResolver, createUserWithEmailAndPassword, getAuth, getRedirectResult, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signInWithPhoneNumber, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth'
 import { tryOnMounted, tryOnScopeDispose } from '@vueuse/shared'
 import { isBrowser } from '@hsjm/shared'
 import { ref } from 'vue-demi'
+import { FirebaseApp } from 'firebase/app'
 
 export interface UseAuthOptions extends Partial<ActionCodeSettings> {
   onError?: (error: AuthError) => void
@@ -10,6 +12,10 @@ export interface UseAuthOptions extends Partial<ActionCodeSettings> {
   onLogin?: (userCredential: UserCredential) => void
   /** On auth logout. */
   onLogout?: () => void
+  /** Firebase auth instance. */
+  auth?: Auth
+  /** Firebase app instance. */
+  app?: FirebaseApp
 }
 
 export interface LoginWithProviderOptions extends CustomParameters {
@@ -20,12 +26,11 @@ export interface LoginWithProviderOptions extends CustomParameters {
 /**
  * Create a shared Firebase Auth composition.
  * @param {UseAuthOptions} [options] Auth options.
- * @return {Auth} A shared Firebase Auth composition.
+ * @return A shared Firebase Auth composition.
  */
-export const useAuth = (options = {} as UseAuthOptions) => {
+export const useAuth = (options: UseAuthOptions = {}) => {
   // --- Destructure and default options.
-  const { onError = console.error, onLogin, onLogout } = options
-  const auth = getAuth()
+  const { onError = console.error, onLogin, onLogout, auth = getAuth(options.app) } = options
   if (!auth) throw new Error('No auth instance found')
 
   // --- Initialize variables.
@@ -33,20 +38,14 @@ export const useAuth = (options = {} as UseAuthOptions) => {
   let recaptchaVerifier: RecaptchaVerifier | undefined
 
   // --- Restore & watch user.
-  const user = ref(auth.currentUser)
+  const user = ref<User | null>()
   const unsubscribe = onAuthStateChanged(auth, state => user.value = state, onError)
   tryOnScopeDispose(unsubscribe)
 
   // --- Create a RecaptchaVerifier on mount
   if (isBrowser) {
     tryOnMounted(() => {
-      const auth = getAuth()
-      const recaptchaElement = document?.createElement('div')
-
-      // --- Handle errors.
-      if (!recaptchaElement) throw new Error('Could not create Recaptcha element.')
-
-      // --- Create a RecaptchaVerifierss
+      const recaptchaElement = document.createElement('div')
       recaptchaVerifier = new RecaptchaVerifier(recaptchaElement, { size: 'invisible' }, auth)
     }, false)
   }
