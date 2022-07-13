@@ -4,6 +4,6 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "unocss.root": "./playground",
   "vitest.commandLine": "pnpm test:dev --",
-  "liveServer.settings.root": "./playground/dist"
+  "liveServer.settings.root": "./playground/.output/public"
   
 }
