@@ -1,7 +1,6 @@
 import { tryOnMounted } from '@vueuse/shared'
 import { PropType, computed, defineComponent, h, mergeProps } from 'vue-demi'
 import { SymbolOptions } from 'milsymbol'
-import { isNode } from '@hsjm/shared'
 import { useMilsymbol } from '../composables/useMilsymbol'
 import { exposeToDevtool } from '../utils'
 
@@ -32,11 +31,11 @@ export const Milsymbol = /* @__PURE__ */ defineComponent({
     }))
 
     // --- If prerendering, await the icon's SVG.
-    if (props.prerender && isNode)
-      return update().then(() => functionalComponent)
-
     // --- Otherwise return the functional component directly.
-    tryOnMounted(update)
+    if (props.prerender) update()
+    else tryOnMounted(update)
+
+    // --- Return the functional component.
     return functionalComponent
   },
 })
