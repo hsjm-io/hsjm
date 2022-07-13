@@ -1,6 +1,7 @@
 import { isNode } from '@hsjm/shared'
 import { PropType, computed, defineComponent, h, mergeProps } from 'vue-demi'
 import { IconifyIconCustomisations } from '@iconify/iconify'
+import { tryOnMounted } from '@vueuse/shared'
 import { useIconify } from '../composables'
 import { exposeToDevtool } from '../utils'
 
@@ -33,7 +34,7 @@ export const Icon = /* @__PURE__ */ defineComponent({
       return update().then(() => functionalComponent)
 
     // --- Otherwise return the functional component directly.
-    update()
+    tryOnMounted(update)
     return functionalComponent
   },
 })
