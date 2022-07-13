@@ -1,7 +1,8 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-null */
 import { useVModel } from '@vueuse/core'
-import { PropType, computed, defineComponent, h, toRefs } from 'vue-demi'
-import { exposeToDevtool } from '../composables'
+import { PropType, computed, defineComponent, h, mergeProps, toRefs } from 'vue-demi'
+import { exposeToDevtool } from '../utils'
 
 export const Switch = /* @__PURE__ */ defineComponent({
   name: 'Switch',
@@ -24,19 +25,18 @@ export const Switch = /* @__PURE__ */ defineComponent({
     // --- Events.
     onClick: Function,
   },
-
-  setup: (properties, { emit, slots }) => {
+  setup: (props, { attrs, slots, emit }) => {
     // --- Destructure props.
-    const { value, multiple, classActive, onClick } = toRefs(properties)
+    const { value, multiple, classActive } = toRefs(props)
 
     // --- Compute states variables.
-    const model = useVModel(properties, 'modelValue')
-    const modelDisabled = useVModel(properties, 'disabled', emit, { passive: true })
-    const modelReadonly = useVModel(properties, 'readonly', emit, { passive: true })
-    const modelLoading = useVModel(properties, 'loading', emit, { passive: true })
+    const model = useVModel(props, 'modelValue')
+    const modelDisabled = useVModel(props, 'disabled', emit, { passive: true })
+    const modelReadonly = useVModel(props, 'readonly', emit, { passive: true })
+    const modelLoading = useVModel(props, 'loading', emit, { passive: true })
 
-    // --- Compute reactive `active` state.
-    const active = computed(() => {
+    // --- Compute reactive `isActive` state.
+    const isActive = computed(() => {
       if (multiple.value && Array.isArray(model.value)) return model.value.includes(value.value)
       if (multiple.value && !Array.isArray(model.value)) return false
       return model.value === value.value
@@ -51,37 +51,26 @@ export const Switch = /* @__PURE__ */ defineComponent({
 
       // --- If `multiple`, add or remove value.
       else if (multiple.value && Array.isArray(model.value)) {
-        model.value = active.value
+        model.value = isActive.value
           ? [...model.value].filter(x => x !== value.value)
           : [...model.value, value.value]
       }
 
       // --- If not, set value.
-      else if (typeof value.value === 'boolean') {
-        model.value = !model.value
-      }
+      else if (typeof value.value === 'boolean') { model.value = !model.value }
 
-      else if (model.value !== value.value) {
-        model.value = value.value
-      }
-
-      // --- Execute `onClick` handler.
-      if (typeof onClick.value === 'function') {
-        modelLoading.value = true
-        await onClick.value(model.value)
-        modelLoading.value = false
-      }
+      else if (model.value !== value.value) { model.value = value.value }
     }
 
     const classes = computed(() => (
-      active.value
+      isActive.value
         ? classActive.value
         : undefined
     ))
 
-    // --- Expose for debugging.
-    const slotProperties = exposeToDevtool({
-      active,
+    // --- Expose to Vue Devtools for debugging.
+    const slotProps = exposeToDevtool({
+      isActive,
       modelDisabled,
       modelLoading,
       modelReadonly,
@@ -90,7 +79,7 @@ export const Switch = /* @__PURE__ */ defineComponent({
     })
 
     // --- Return virtual DOM node.
-    return () => h(properties.as, {
+    return () => h(props.as, mergeProps(attrs, {
       'disabled': modelDisabled.value || null,
       'readonly': modelReadonly.value || null,
       'aria-disabled': modelDisabled.value || null,
@@ -98,6 +87,6 @@ export const Switch = /* @__PURE__ */ defineComponent({
       'aria-busy': modelLoading.value || null,
       'class': classes.value,
       'onClick': toggle,
-    }, slots.default?.(slotProperties))
+    }), slots.default?.(slotProps))
   },
 })
