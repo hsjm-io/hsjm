@@ -1,14 +1,10 @@
 import L from 'leaflet'
 import { PropType, computed, defineComponent, h, render, watch } from 'vue-demi'
-import { TileLayerOptions, UseLeafletOptions, useLeaflet } from '../composables'
+import { UseLeafletOptions, useLeaflet } from '../composables'
 
 export const Map = /* @__PURE__ */ defineComponent({
   name: 'Leaflet',
   props: {
-    lat: { type: Number, default: 0 },
-    lng: { type: Number, default: 0 },
-    zoom: { type: Number, default: 8 },
-    layers: { type: [Array, Object] as PropType<TileLayerOptions | TileLayerOptions[]>, default: [] },
     options: { type: Object as PropType<UseLeafletOptions>, default: {} },
   },
   emits: [
@@ -38,11 +34,7 @@ export const Map = /* @__PURE__ */ defineComponent({
     )
 
     // --- Initialize Leaflet.
-    const { lat, lng, zoom } = useLeaflet('map', {
-      initialLat: props.lat,
-      initialLng: props.lng,
-      tileLayers: props.layers,
-    }, markers)
+    const { lat, lng, zoom } = useLeaflet('map', props.options, markers)
 
     // --- Watch view.
     watch([lat, lng, zoom], ([lat, lng, zoom]) => {
