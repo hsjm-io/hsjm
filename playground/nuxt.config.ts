@@ -1,16 +1,22 @@
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { defineNuxtConfig } from 'nuxt'
-const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default defineNuxtConfig({
+  ssr: true,
+  target: 'static',
   modules: [
     '@vueuse/nuxt',
     '@unocss/nuxt',
   ],
-  alias: {
-    '@hsjm/core': resolve(__dirname, '../packages/core'),
-    '@hsjm/shared': resolve(__dirname, '../packages/shared'),
+  vite: {
+    build: {
+      minify: false,
+    },
+    optimizeDeps: {
+      exclude: [
+        '@hsjm/shared',
+        '@hsjm/core',
+      ],
+    },
   },
   vueuse: {
     ssrHandlers: true,
