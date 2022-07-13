@@ -157,7 +157,6 @@ export const InputList = /* @__PURE__ */ defineComponent({
       // --- Focus on search input if exists
       const handleFocus = (event: Event) => {
         const target = event.target as HTMLElement
-        console.log(target)
         const inputSearch = target.querySelector('input')
         inputSearch?.focus()
       }

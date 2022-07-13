@@ -95,7 +95,6 @@ export const Input = /* @__PURE__ */ defineComponent({
       if (!props.rules) return console.warn('Could not validate input: No validation rules provided.', inputElement.value)
       modelLoading.value = true
       await nextTick()
-      console.log(event.type)
 
       // --- Validate and transform the value.
       const value = inputElement.value?.modelValue.value
