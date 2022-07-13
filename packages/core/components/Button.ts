@@ -1,17 +1,18 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-null */
-import { PropType, computed, defineComponent, h, mergeProps } from 'vue-demi'
+import { PropType, computed, defineComponent, h, mergeProps, resolveComponent } from 'vue-demi'
 import { useVModel } from '@vueuse/core'
 import { RouteLocationRaw } from 'vue-router'
 import { debounce, noop, throttle } from '@hsjm/shared'
 import { IconifyIconCustomisations } from '@iconify/iconify'
-import { exposeToDevtool, resolveComponentType } from '../composables'
+import { exposeToDevtool, resolveComponentType } from '../utils'
 import { Icon } from './Icon'
 
 export const Button = /* @__PURE__ */ defineComponent({
   name: 'Button',
   inheritAttrs: false,
   props: {
+    // --- Options.
     as: { type: String as PropType<keyof HTMLElementTagNameMap>, default: 'button' },
     label: String,
 
@@ -40,6 +41,7 @@ export const Button = /* @__PURE__ */ defineComponent({
     // --- Classes.
     classActive: {} as PropType<unknown>,
     classActiveExact: {} as PropType<unknown>,
+    classIcon: {} as PropType<any>,
   },
   emits: [
     'update:disabled',
@@ -49,8 +51,6 @@ export const Button = /* @__PURE__ */ defineComponent({
   ],
   setup: (props, { attrs, emit, slots }) => {
     // --- Compute states variables.
-    const modelDisabled = useVModel(props, 'disabled', emit, { passive: true })
-    const modelReadonly = useVModel(props, 'readonly', emit, { passive: true })
     const modelLoading = useVModel(props, 'loading', emit, { passive: true })
     const modelError = useVModel(props, 'error', emit, { passive: true })
 
@@ -61,9 +61,9 @@ export const Button = /* @__PURE__ */ defineComponent({
 
     // --- Compute component type.
     const is = computed(() => {
-      if (isInternalLink.value) return 'RouterLink'
+      if (isInternalLink.value) return resolveComponent('RouterLink')
       if (isExternalLink.value) return 'a'
-      return props.as
+      return resolveComponentType<any>(props.as)
     })
 
     // --- Wrap function to handle loading state & catch error.
@@ -84,68 +84,58 @@ export const Button = /* @__PURE__ */ defineComponent({
       return onClick
     })
 
-    // --- Expose for debugging.
-    const slotProps = exposeToDevtool({
-      is,
-      isExternalLink,
-      isInternalLink,
-      isLink,
-      modelDisabled,
-      modelError,
-      modelLoading,
-      modelReadonly,
-      onClickWrapped,
-    })
-
-    // --- Declare render icon method.
-    const createIconVNode = (icon?: string) => (icon ? h(Icon, { icon, options: props.iconOptions }) : undefined)
+    // --- Expose to Vue Devtools for debugging.
+    const slotProps = exposeToDevtool({ is, isExternalLink, isInternalLink, isLink, modelError, modelLoading, onClickWrapped })
 
     // --- Return virtual DOM node.
-    return () => h(
+    return () => {
+      // --- Decompose icon props.
+      const iconAppend = props.iconAppend
+      const iconPrepend = props.icon ?? props.iconPrepend
+      const iconProps = { options: props.iconOptions, class: props.classIcon }
 
-      // --- VNode type.
-      resolveComponentType<any>(is.value),
+      // --- Create child nodes.
+      const nodeDefault = slots.default?.(slotProps) ?? (props.label && h('span', props.label))
+      const nodeAppend = slots.append?.(slotProps) ?? (iconAppend && h(Icon, { icon: iconAppend, ...iconProps }))
+      const nodePrepend = slots.prepend?.(slotProps) ?? (iconPrepend && h(Icon, { icon: iconPrepend, ...iconProps }))
 
-      // --- VNode props.
-      mergeProps(attrs, {
-        'disabled': modelDisabled.value || null,
-        'readonly': modelReadonly.value || null,
-        'aria-disabled': modelDisabled.value || null,
-        'aria-readonly': modelReadonly.value || null,
+      // --- Compute internal link props.
+      const isInternalLinkProps = isInternalLink.value && {
+        'to': props.to,
+        'active-class': props.classActive,
+        'exact-active-class': props.classActiveExact,
+      }
+
+      // --- Compute external link props.
+      const isExternalLinkProps = isExternalLink.value && {
+        href: props.to,
+        rel: props.newtab ? 'noreferrer' : attrs.rel,
+      }
+
+      // --- Compute button props.
+      const isLinkProps = isLink.value && {
+        target: props.newtab ? '_blank' : attrs.target,
+      }
+
+      const buttonProps = mergeProps(attrs, {
+        'disabled': props.disabled || null,
+        'readonly': props.readonly || null,
+        'aria-disabled': props.disabled || null,
+        'aria-readonly': props.readonly || null,
         'aria-busy': modelLoading.value || null,
         'aria-labelledby': props.label,
         'onClick': onClickWrapped.value,
+        ...isInternalLinkProps,
+        ...isExternalLinkProps,
+        ...isLinkProps,
+      })
 
-        ...(isInternalLink.value
-          ? {
-            'to': props.to,
-            'active-class': props.classActive,
-            'exact-active-class': props.classActiveExact,
-          }
-          : {}),
-
-        ...(isExternalLink.value
-          ? {
-            href: props.to,
-            rel: props.newtab ? 'noreferrer' : attrs.rel,
-          }
-          : {}),
-
-        ...(isLink.value
-          ? {
-            target: props.newtab ? '_blank' : attrs.target,
-          }
-          : {}),
-      }),
-
-      // --- VNode slots.
-      {
-        default: () => [
-          slots.prepend?.(slotProps) ?? createIconVNode(props.icon ?? props.iconPrepend),
-          slots.default?.(slotProps) ?? (props.label ? h('span', props.label) : undefined),
-          slots.append?.(slotProps) ?? createIconVNode(props.iconAppend),
-        ],
-      },
-    )
+      // --- Create and return VNode.
+      return h(
+        is.value,
+        buttonProps,
+        { default: () => [nodePrepend, nodeDefault, nodeAppend] },
+      )
+    }
   },
 })
