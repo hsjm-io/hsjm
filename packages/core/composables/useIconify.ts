@@ -63,8 +63,8 @@ export const useIconify = (icon: MaybeRef<string>, options: IconifyIconCustomisa
     .then(svgResult => svg.value = svgResult)
 
   // --- Update on prop changes.
-  if (isRef(icon)) watch(icon, update)
-  if (isReactive(options)) watch(options, update)
+  const toWatch = [icon, options].filter(isReactive)
+  if (toWatch.length > 0) watch(toWatch, update)
 
   // --- Return SVG ref.
   return { svg, update }

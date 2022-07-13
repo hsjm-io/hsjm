@@ -1,6 +1,6 @@
+import { Ref, isReactive, ref, unref, watch } from 'vue-demi'
 /* eslint-disable unicorn/consistent-function-scoping */
 import { noop } from '@hsjm/shared'
-import { Ref, ref, unref, watch } from 'vue-demi'
 import { MaybeRef, isClient, tryOnScopeDispose, until } from '@vueuse/shared'
 import { DocumentData, FirestoreError, SetOptions, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { EraseOptions, QueryFilter, createQuery, erase, getSnapshotData, isDocumentReference, save } from './utils'
@@ -77,7 +77,8 @@ export const useFirestore: UseFirestore = (path: any, filter: any, options: any 
     }
 
   // --- Start `filter` watcher.
-  if (!manual) watch([path, filter], update, { immediate: true })
+  const toWatch = [path, filter].filter(isReactive)
+  if (!manual && toWatch.length > 0) watch(toWatch, update, { immediate: true })
   if (!keepAlive) tryOnScopeDispose(unsubscribe)
 
   // --- Return readonly data ref.

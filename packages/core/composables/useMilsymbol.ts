@@ -22,8 +22,8 @@ export const useMilsymbol = /*@__PURE__*/ (sidc: MaybeRef<string>, options: Symb
   }
 
   // --- Update on server init if not SSR & on prop changes.
-  if (isRef(sidc)) watch(sidc, update)
-  if (isReactive(options)) watch(options, update)
+  const toWatch = [sidc, options].filter(isReactive)
+  if (toWatch.length > 0) watch(toWatch, update)
   if (isNode || isDevelopment) nextTick().then(update)
 
   // --- Return SVG ref.
