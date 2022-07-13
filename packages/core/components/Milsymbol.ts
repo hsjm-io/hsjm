@@ -5,6 +5,8 @@ import { isNode } from '@hsjm/shared'
 import { useMilsymbol } from '../composables'
 import { exposeToDevtool } from '../utils'
 
+// TODO: Improve tree shaking.
+
 export const Milsymbol = /* @__PURE__ */ defineComponent({
   name: 'Milsymbol',
   props: {

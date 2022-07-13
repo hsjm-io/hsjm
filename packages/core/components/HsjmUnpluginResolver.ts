@@ -8,7 +8,7 @@ const components = new Set([
   'InputList',
   'InputText',
   'Leaflet',
-  'MilSymbol',
+  // 'MilSymbol',
   'Switch',
   'Table',
 ])
