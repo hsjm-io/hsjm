@@ -1,18 +1,21 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-null */
 import { PropType, computed, defineComponent, getCurrentInstance, h, mergeProps } from 'vue-demi'
-import { get, isNil, omit } from '@hsjm/shared'
+import { isTruthy, pick } from '@hsjm/shared'
 import { useVModel } from '@vueuse/core'
-import { exposeToDevtool } from '../composables'
+import { UseListItemsOptions, useListItems } from '../composables'
+import { exposeToDevtool } from '../utils'
 
 export const InputText = /* @__PURE__ */ defineComponent({
   name: 'InputText',
   inheritAttrs: true,
   props: {
-    as: { type: String as PropType<keyof HTMLElementTagNameMap>, default: 'input' },
-    type: { type: String as PropType<HTMLInputElement['type']>, default: 'text' },
+    // --- Options.
+    type: { type: String as PropType<HTMLInputElement['type'] | 'select' | 'list'>, default: 'text' },
+    autocomplete: String as PropType<HTMLInputElement['autocomplete']>,
     name: String,
     required: Boolean,
+    multiple: Boolean,
 
     // --- State
     modelValue: {} as PropType<any>,
@@ -20,154 +23,105 @@ export const InputText = /* @__PURE__ */ defineComponent({
     readonly: Boolean,
     loading: Boolean,
 
-    // --- Select/Datalist
-    items: { type: [Array, Object] as PropType<any[] | Record<string, any>>, default: () => [] },
-    itemKey: [String, Function],
-    itemLabel: [String, Function],
-    itemValue: [String, Function],
-    itemDisabled: [String, Function],
+    // --- List
+    items: { type: [Array, Object] as PropType<UseListItemsOptions['items']>, default: () => ({}) },
+    itemText: [String, Function] as PropType<UseListItemsOptions['itemText']>,
+    itemValue: [String, Function] as PropType<UseListItemsOptions['itemValue']>,
+    itemDisabled: [String, Function] as PropType<UseListItemsOptions['itemDisabled']>,
 
     // --- Classes
     classOption: String,
   },
   emits: [
-    'input',
     'update:modelValue',
   ],
   setup: (props, { attrs, slots, emit }) => {
-    // --- Two-way bindings.
+    // --- Initialize two-way bindings and items.
     const modelValue = useVModel(props, 'modelValue', emit, { passive: true })
-
-    // --- Computed items.
-    const items = computed(() => {
-      const itemEntries = Object.entries(props.items)
-
-      // --- Map entries to objects.
-      const itemObjects = itemEntries.map(([itemKey, item]) => {
-        const key = get(item, props.itemKey, itemKey.toString())
-        const value = get(item, props.itemValue, key)
-        const label = get(item, props.itemLabel, key)
-        const disabled = get(item, props.itemDisabled, false)
-        const selected = Array.isArray(modelValue.value)
-          ? modelValue.value.includes(value)
-          : modelValue.value === value
-
-        // --- Computed item props.
-        return { item, key, value, selected, label, disabled }
-      })
-
-      // --- If value is undefined, push an empty item.
-      if (modelValue.value === undefined) {
-        itemObjects.push({
-          item: undefined,
-          key: 'undefined',
-          value: undefined,
-          selected: true,
-          label: '',
-          disabled: false,
-        })
-      }
-
-      // --- Return items.
-      return itemObjects
-    })
-
-    // --- Computed name and list.
-    const inputName = computed(() => props.name ?? getCurrentInstance()?.uid.toString())
-    const inputList = computed(() => `${inputName.value}-list`)
+    const { items } = useListItems(modelValue, props)
 
     // --- Computed input tagname.
-    const inputIs = computed(() => {
-      if (props.type === 'select') return 'select'
-      if (props.type === 'textarea') return 'textarea'
-      return props.as
+    const is = computed(() => {
+      switch (props.type) {
+        case 'select': return 'select'
+        case 'textarea': return 'textarea'
+        default: return 'input'
+      }
     })
 
     // --- Computed component type.
-    const inputType = computed(() => {
-      if (props.type === 'list') return null
-      if (props.type === 'select') return null
-      if (props.type === 'textarea') return null
-      return props.type
+    const type = computed(() => {
+      switch (props.type) {
+        case 'list': return null
+        case 'select': return null
+        case 'textarea': return null
+        default: return props.type
+      }
     })
+
+    // --- Expose to Vue Devtools for debugging.
+    const slotProps = exposeToDevtool({ is, type, items, modelValue })
 
     // --- Handler input change.
     const handleInput = (e: Event) => {
       const target = e.target as any
 
       // --- If input is a <select>, get selected item values.
-      if (target.tagName === 'SELECT') {
-        modelValue.value = target.multiple === true
-
-          // --- If input is a <select multiple>, get selected item value.
-          ? [...target.options]
-            .filter(option => option.selected)
-            .map(option => items.value.find(x => x.key === option.value)?.value)
-
-          // --- If input is a <select>, get selected item value.
-          : items.value.find(x => x.key === target.value)?.value
-      }
-
-      // --- If input is a <input/textarea>, get value.
-      else { modelValue.value = target.value }
-
-      // --- Emit input event.
-      emit('input', modelValue.value)
+      modelValue.value = target.tagName === 'SELECT' && target.multiple === true
+        ? [...target.options].filter(option => option.selected).map(option => option.value)
+        : target.value
     }
-
-    // --- Expose for debugging.
-    const slotProps = exposeToDevtool({
-      modelValue,
-      inputIs,
-      inputType,
-      inputName,
-      inputList,
-      items,
-    })
 
     // --- Return virtual DOM node.
     return () => {
       // --- Get input props.
       const nodeProps = mergeProps(attrs, {
-        'name': inputName.value,
-        'type': inputType.value,
+        'name': props.name,
+        'type': type.value,
         'disabled': props.disabled || null,
         'readonly': props.readonly || null,
         'aria-disabled': props.disabled || null,
         'aria-readonly': props.readonly || null,
         'aria-busy': props.loading || null,
         'aria-required': props.required || null,
-        'list': props.type === 'list' ? inputList.value : null,
+        'multiple': props.multiple || null,
         'onInput': handleInput,
       })
 
       // --- Create and return <input/textarea> node.
       if (props.type !== 'list' && props.type !== 'select')
-        return h(inputIs.value, nodeProps)
+        return h(is.value, nodeProps)
 
       // --- Create <option> nodes.
       const nodeOptions = slots.options?.(slotProps) ?? items.value.map((item) => {
-        const { key, label, disabled, selected } = item
-        return h('option', omit({
-          'value': key,
-          'disabled': disabled || null,
+        // --- Overwrite with option slot if provided.
+        if (slots.option) return slots.option(item)
+
+        // --- Default with option node.
+        const selected = item.isSelected()
+        return h('option', pick({
+          'value': item.value,
+          'disabled': item.disabled || null,
           'selected': selected || null,
-          'aria-disabled': disabled || null,
+          'aria-disabled': item.disabled || null,
           'aria-selected': selected || null,
           'class': props.classOption || null,
-        }, isNil), label)
+        }, isTruthy), item.text)
       })
 
       // --- Create and return <input> and <datalist> nodes.
       if (props.type === 'list') {
+        const inputName = props.name ?? getCurrentInstance()?.uid.toString()
+        const listName = `${inputName}-list`
         return [
-          h('input', nodeProps),
-          h('datalist', { id: inputList.value }, nodeOptions),
+          h('input', { ...nodeProps, list: listName }),
+          h('datalist', { id: listName }, nodeOptions),
         ]
       }
 
       // --- Create and return <select> nodes.
-      if (props.type === 'select') return h('select', nodeProps, nodeOptions)
+      if (props.type === 'select')
+        return h('select', nodeProps, nodeOptions)
     }
   },
 })
