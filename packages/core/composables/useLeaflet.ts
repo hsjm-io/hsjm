@@ -1,29 +1,24 @@
-import { createUnrefFn } from '@vueuse/core'
 /* eslint-disable unicorn/no-array-method-this-argument */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { isReactive, ref, unref, watch } from 'vue-demi'
-import { Map, MapOptions, Marker } from 'leaflet'
+import { MaybeRef, createUnrefFn } from '@vueuse/core'
+import { Map, MapOptions, Marker, TileLayerOptions } from 'leaflet'
 import { requireSafe } from '@hsjm/shared'
-import { MaybeRef } from '@vueuse/shared'
 // import 'leaflet/dist/leaflet.css'
 
-export type TileLayerOptions = L.TileLayerOptions & { urlTemplate: string }
+export type LeafletTileLayerOptions = TileLayerOptions & { urlTemplate: string }
 
 export interface UseLeafletOptions extends MapOptions {
-  tileLayers: TileLayerOptions[] | TileLayerOptions
+  tileLayers: LeafletTileLayerOptions[] | LeafletTileLayerOptions
   initialLat?: number
   initialLng?: number
   initialZoom?: number
 }
 
-export const useLeaflet = (
-  element: string | HTMLElement,
-  options: MaybeRef<UseLeafletOptions>,
-  markers: MaybeRef<Marker[]> = [],
-) => {
+export const useLeaflet = (element: string | HTMLElement, options: MaybeRef<UseLeafletOptions>, markers: MaybeRef<Marker[]> = []) => {
   // --- Destructure and defaults options
   const {
-    tileLayers,
+    tileLayers = [],
     initialLat = 0,
     initialLng = 0,
     initialZoom = 8,
