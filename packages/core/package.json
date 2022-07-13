@@ -29,6 +29,11 @@
       "import": "./dist/composables/index.mjs",
       "types": "./dist/composables/index.d.ts"
     },
+    "./utils": {
+      "require": "./dist/utils/index.js",
+      "import": "./dist/utils/index.mjs",
+      "types": "./dist/utils/index.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -44,7 +49,6 @@
   },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-rc.1",
-    "vee-validate": "^4.0.0",
     "vue": "^2.0.0 || >=3.0.0",
     "vue-router": "^3.0.0 || >=4.0.0"
   },
@@ -71,7 +75,7 @@
     "vue-demi": "*"
   },
   "devDependencies": {
-    "vee-validate": "^4.5.11",
+    "@types/leaflet": "^1.7.11",
     "vue": "^3.2.37",
     "vue-router": "^4.0.16"
   }
