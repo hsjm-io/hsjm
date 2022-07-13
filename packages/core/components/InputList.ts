@@ -1,10 +1,11 @@
+/* eslint-disable unicorn/consistent-function-scoping */
 
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-null */
 import { useVModel } from '@vueuse/core'
 import { PropType, TransitionProps, VNode, defineComponent, h, mergeProps, ref } from 'vue-demi'
 import { MaybeArray, arrayify, isTruthy, pick, toCamelCase } from '@hsjm/shared'
-import { UseListItemsOptions, useListItems, useOutsideEvent } from '../composables'
+import { UseInputListOptions, useInputList, useOutsideEvent } from '../composables'
 import { exposeToDevtool, wrapTransition } from '../utils'
 
 export const InputList = /* @__PURE__ */ defineComponent({
@@ -18,7 +19,7 @@ export const InputList = /* @__PURE__ */ defineComponent({
 
     openOn: {
       type: [String, Array] as PropType<MaybeArray<keyof HTMLElementEventMap>>,
-      default: ['focus', 'click'],
+      default: ['focusin', 'click'],
     },
 
     closeOn: {
@@ -37,11 +38,11 @@ export const InputList = /* @__PURE__ */ defineComponent({
     transitionItems: Object as PropType<TransitionProps>,
 
     // --- List
-    items: { type: [Array, Object] as PropType<UseListItemsOptions['items']>, default: () => ({}) },
-    itemText: [String, Function] as PropType<UseListItemsOptions['itemText']>,
-    itemValue: [String, Function] as PropType<UseListItemsOptions['itemValue']>,
-    itemDisabled: [String, Function] as PropType<UseListItemsOptions['itemDisabled']>,
-    itemSearch: [String, Function] as PropType<UseListItemsOptions['itemSearch']>,
+    items: { type: [Array, Object] as PropType<UseInputListOptions['items']>, default: () => ({}) },
+    itemText: [String, Function] as PropType<UseInputListOptions['itemText']>,
+    itemValue: [String, Function] as PropType<UseInputListOptions['itemValue']>,
+    itemDisabled: [String, Function] as PropType<UseInputListOptions['itemDisabled']>,
+    itemSearch: [String, Function] as PropType<UseInputListOptions['itemSearch']>,
 
     // --- Classes
     classItem: {} as PropType<any>,
@@ -51,12 +52,14 @@ export const InputList = /* @__PURE__ */ defineComponent({
     classListBox: {} as PropType<any>,
   },
   emits: [
+    'input',
+    'change',
     'update:modelValue',
   ],
   setup: (props, { attrs, slots, emit }) => {
     // --- Initialize state.
     const modelValue = useVModel(props, 'modelValue', emit, { passive: true })
-    const { items, itemsSelected } = useListItems(modelValue, props)
+    const { items, itemsSelected } = useInputList(modelValue, props)
     const searchQuery = ref('')
     const searchKey = Symbol('search')
     const listOpen = ref(false)
@@ -64,8 +67,11 @@ export const InputList = /* @__PURE__ */ defineComponent({
     const close = () => listOpen.value = false
     const open = () => listOpen.value = true
 
-    // --- Handle evebts outside of the element.
+    // --- Initialize refs.
     const inputElement = ref<HTMLDivElement | VNode | undefined>()
+    const inputSearchElement = ref<HTMLDivElement | VNode | undefined>()
+
+    // --- Handle evebts outside of the element.
     arrayify(props.closeOn)
       .filter(eventName => eventName.endsWith('-outside'))
       .forEach(eventName => useOutsideEvent(eventName.replace(/-outside$/, ''), close, inputElement))
@@ -100,7 +106,11 @@ export const InputList = /* @__PURE__ */ defineComponent({
             'aria-disabled': item.disabled,
             'aria-selected': selected,
             'class': props.classListItem,
-            'onClick': item.toggle,
+            'onClick': () => {
+              item.toggle()
+              emit('input', new InputEvent('input', { bubbles: true }))
+              emit('change', new InputEvent('change', { bubbles: true }))
+            },
           }, isTruthy),
           slots.item?.(item) ?? item.text)
       })
@@ -123,27 +133,43 @@ export const InputList = /* @__PURE__ */ defineComponent({
       ))
 
       // --- Create automplete input if searchQueryable is enabled.
-      const vNodeitemInput = props.searchable && h('input', pick({
+      const vNodeSearchInput = props.searchable && h('input', pick({
         key: searchKey,
         type: 'text',
-        tabindex: -1,
+        ref: inputSearchElement,
         placeholder: props.placeholder,
         class: props.classSearch,
         disabled: props.disabled,
         readonly: props.readonly,
         value: searchQuery.value,
-        onInput: (event: InputEvent) => { searchQuery.value = (event.target as HTMLInputElement).value },
+        onInput: (event: InputEvent & { target: HTMLInputElement }) => {
+          event.preventDefault()
+          event.stopPropagation()
+          searchQuery.value = event.target.value
+        },
       }, isTruthy))
 
       // --- Build props
       const onOpenEvents = arrayify(props.openOn).map(eventName => [toCamelCase(`on-${eventName}`), open])
       const onCloseEvents = arrayify(props.closeOn).map(eventName => [toCamelCase(`on-${eventName}`), close])
       const inputEventHandlers = Object.fromEntries([...onOpenEvents, ...onCloseEvents])
-      const inputProps = pick({ tabIndex: 1, ref: inputElement, ...inputEventHandlers }, isTruthy)
+
+      // --- Focus on search input if exists
+      const handleFocus = (event: Event) => {
+        const target = event.target as HTMLElement
+        console.log(target)
+        const inputSearch = target.querySelector('input')
+        inputSearch?.focus()
+      }
 
       // --- Return item group node.
-      return h('div', mergeProps(attrs, inputProps), [
-        wrapTransition([vNodeItems, vNodeitemInput], props.transitionItems),
+      return h('div', mergeProps(
+        attrs,
+        inputEventHandlers,
+        pick({ tabIndex: -1, ref: inputElement, onFocus: handleFocus }, isTruthy),
+      ),
+      [
+        wrapTransition([vNodeItems, vNodeSearchInput], props.transitionItems),
         wrapTransition(listOpen.value && createVNodeList(), props.transitionList),
       ])
     }

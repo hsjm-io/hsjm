@@ -3,7 +3,7 @@
 import { PropType, computed, defineComponent, getCurrentInstance, h, mergeProps } from 'vue-demi'
 import { isTruthy, pick } from '@hsjm/shared'
 import { useVModel } from '@vueuse/core'
-import { UseListItemsOptions, useListItems } from '../composables'
+import { UseInputListOptions, useInputList } from '../composables'
 import { exposeToDevtool } from '../utils'
 
 export const InputText = /* @__PURE__ */ defineComponent({
@@ -24,10 +24,10 @@ export const InputText = /* @__PURE__ */ defineComponent({
     loading: Boolean,
 
     // --- List
-    items: { type: [Array, Object] as PropType<UseListItemsOptions['items']>, default: () => ({}) },
-    itemText: [String, Function] as PropType<UseListItemsOptions['itemText']>,
-    itemValue: [String, Function] as PropType<UseListItemsOptions['itemValue']>,
-    itemDisabled: [String, Function] as PropType<UseListItemsOptions['itemDisabled']>,
+    items: { type: [Array, Object] as PropType<UseInputListOptions['items']>, default: () => ({}) },
+    itemText: [String, Function] as PropType<UseInputListOptions['itemText']>,
+    itemValue: [String, Function] as PropType<UseInputListOptions['itemValue']>,
+    itemDisabled: [String, Function] as PropType<UseInputListOptions['itemDisabled']>,
 
     // --- Classes
     classOption: String,
@@ -38,7 +38,7 @@ export const InputText = /* @__PURE__ */ defineComponent({
   setup: (props, { attrs, slots, emit }) => {
     // --- Initialize two-way bindings and items.
     const modelValue = useVModel(props, 'modelValue', emit, { passive: true })
-    const { items } = useListItems(modelValue, props)
+    const { items } = useInputList(modelValue, props)
 
     // --- Computed input tagname.
     const is = computed(() => {
@@ -63,10 +63,8 @@ export const InputText = /* @__PURE__ */ defineComponent({
     const slotProps = exposeToDevtool({ is, type, items, modelValue })
 
     // --- Handler input change.
-    const handleInput = (e: Event) => {
-      const target = e.target as any
-
-      // --- If input is a <select>, get selected item values.
+    // --- If input is a <select>, get selected item values.
+    const handleInput = ({ target }: { target: any }) => {
       modelValue.value = target.tagName === 'SELECT' && target.multiple === true
         ? [...target.options].filter(option => option.selected).map(option => option.value)
         : target.value
@@ -75,18 +73,19 @@ export const InputText = /* @__PURE__ */ defineComponent({
     // --- Return virtual DOM node.
     return () => {
       // --- Get input props.
-      const nodeProps = mergeProps(attrs, {
+      const nodeProps = mergeProps(attrs, pick({
         'name': props.name,
         'type': type.value,
-        'disabled': props.disabled || null,
-        'readonly': props.readonly || null,
-        'aria-disabled': props.disabled || null,
-        'aria-readonly': props.readonly || null,
-        'aria-busy': props.loading || null,
-        'aria-required': props.required || null,
-        'multiple': props.multiple || null,
+        'disabled': props.disabled,
+        'readonly': props.readonly,
+        'aria-disabled': props.disabled,
+        'aria-readonly': props.readonly,
+        'aria-busy': props.loading,
+        'aria-required': props.required,
+        'multiple': props.multiple,
         'onInput': handleInput,
-      })
+        'value': modelValue.value,
+      }, isTruthy))
 
       // --- Create and return <input/textarea> node.
       if (props.type !== 'list' && props.type !== 'select')
@@ -94,18 +93,17 @@ export const InputText = /* @__PURE__ */ defineComponent({
 
       // --- Create <option> nodes.
       const nodeOptions = slots.options?.(slotProps) ?? items.value.map((item) => {
-        // --- Overwrite with option slot if provided.
         if (slots.option) return slots.option(item)
 
         // --- Default with option node.
         const selected = item.isSelected()
         return h('option', pick({
           'value': item.value,
-          'disabled': item.disabled || null,
-          'selected': selected || null,
-          'aria-disabled': item.disabled || null,
-          'aria-selected': selected || null,
-          'class': props.classOption || null,
+          'disabled': item.disabled,
+          'selected': selected,
+          'aria-disabled': item.disabled,
+          'aria-selected': selected,
+          'class': props.classOption,
         }, isTruthy), item.text)
       })
 

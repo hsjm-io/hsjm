@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-null */
-import { ValidateRuleSetResult, ValidationRule, ValidationRulePipe, ValidationRuleSet, capitalize, debounce, isTruthy, omit, pick, throttle, validateRuleSet } from '@hsjm/shared'
-import { PropType, computed, defineComponent, h, markRaw, mergeProps, ref } from 'vue-demi'
+import { PropType, computed, defineComponent, h, markRaw, mergeProps, nextTick, ref } from 'vue-demi'
+import { MaybeArray, ValidateRuleSetResult, ValidationRule, ValidationRulePipe, ValidationRuleSet, arrayify, debounce, isTruthy, omit, pick, throttle, toCamelCase, validateRuleSet } from '@hsjm/shared'
 import { useVModel } from '@vueuse/core'
 import { IconifyIconCustomisations } from '@iconify/iconify'
 import { exposeToDevtool } from '../utils'
@@ -34,7 +34,7 @@ export const Input = /* @__PURE__ */ defineComponent({
 
     // --- Validation.
     rules: [Object, Array, Function] as PropType<ValidationRule | ValidationRulePipe | ValidationRuleSet>,
-    validateOn: String as PropType<keyof GlobalEventHandlersEventMap>,
+    validateOn: String as PropType<MaybeArray<keyof GlobalEventHandlersEventMap>>,
     validateThrottle: { type: [Number, String] as PropType<number | `${number}`>, default: 0 },
     validateDebounce: { type: [Number, String] as PropType<number | `${number}`>, default: 0 },
     validationContext: { type: Object as PropType<any>, default: () => ({}) },
@@ -62,20 +62,20 @@ export const Input = /* @__PURE__ */ defineComponent({
     onClickPrepend: Function,
   },
   setup: (props, { attrs, slots, emit }) => {
-    // --- Two-way bindings.
+    // --- Initialize state.
     const modelValue = useVModel(props, 'modelValue', emit, { passive: true })
     const modelDisabled = useVModel(props, 'disabled', emit, { passive: true })
     const modelReadonly = useVModel(props, 'readonly', emit, { passive: true })
     const modelLoading = useVModel(props, 'loading', emit, { passive: true })
     const modelError = useVModel(props, 'error', emit, { passive: true })
-
-    // --- Declare internal refs
     const validationResults = ref<ValidateRuleSetResult>()
-    const lastValidatedValue = ref<any>(modelValue.value)
-
-    // --- Computed component type.
     const inputComponent = markRaw(computed(() => (props.type === 'listbox' ? InputList : InputText)))
     const inputPropKeys = markRaw(computed(() => Object.keys(inputComponent.value.props)))
+    const inputElement = ref()
+
+    // --- Methods to manage input cursor.
+    const getCursor = (): number | undefined => inputElement.value?.$el?.selectionStart
+    const setCursor = (cursor: number | undefined) => cursor && inputElement.value?.$el?.setSelectionRange?.(cursor, cursor)
 
     // --- Expose to Vue Devtools for debugging.
     const slotProps = exposeToDevtool({
@@ -89,64 +89,60 @@ export const Input = /* @__PURE__ */ defineComponent({
       modelError,
     })
 
-    // --- Computed function to validate the value.
-    // --- This function can be debounced or throttled.
-    const validateWithEffect = computed(() => {
-      const validate = async(event: InputEvent & { target: HTMLInputElement }) => {
-        // --- Handle missing rules.
-        if (!props.rules) return console.warn('Could not validate input: No validation rules provided.', event.target)
+    // --- Validate the input.
+    const validate = async(event: Event) => {
+      // --- Handle missing rules.
+      if (!props.rules) return console.warn('Could not validate input: No validation rules provided.', inputElement.value)
+      modelLoading.value = true
+      await nextTick()
+      console.log(event.type)
 
-        // --- Validate and transform the value.
-        modelLoading.value = true
-        lastValidatedValue.value = event.target.value
-        validationResults.value = await validateRuleSet(event.target.value, props.rules, props.validationContext)
-        modelError.value = validationResults.value.error?.message
+      // --- Validate and transform the value.
+      const value = inputElement.value?.modelValue.value
+      validationResults.value = await validateRuleSet(value, props.rules, props.validationContext)
+      modelError.value = validationResults.value.error?.message
 
-        // --- Set the transformed value if the value is valid and is the same as the last validated value.
-        if (validationResults.value.isValid && lastValidatedValue.value === event.target.value) {
-          const cursor = event.target.selectionStart
-          event.target.value = validationResults.value.value
-          if (cursor) event.target.setSelectionRange(cursor, cursor)
-        }
-
-        // --- Emit the `validate` event.
-        emit('validate', validationResults.value)
-        modelLoading.value = false
+      // --- If the value was transformed, update the model.
+      if (validationResults.value.isValid && value !== validationResults.value.value) {
+        const cursor = getCursor()
+        modelValue.value = validationResults.value.value
+        setCursor(cursor)
       }
 
-      // --- Throttle or debounce and return function.
+      // --- Emit the `validate` event.
+      emit('validate', validationResults.value)
+      modelLoading.value = false
+    }
+
+    // --- Validate debounced or throttled.
+    const validateWithEffect = computed(() => {
       if (+props.validateThrottle > 0) return throttle(validate, +props.validateThrottle)
       if (+props.validateDebounce > 0) return debounce(validate, +props.validateDebounce)
       return validate
     })
 
-    // --- Wrap events.
-    const createEvent = (eventName: string, setValue?: boolean) => async(event: any) => {
-      // --- Prevent default, set value and emit event.
-      event.preventDefault()
-      const value = event?.target?.value ?? event
-
-      // --- Validate.
-      if (props.validateOn === eventName) validateWithEffect.value(event)
-
-      // --- Callback.
-      modelLoading.value = true
-      const callbackName = `on${capitalize(eventName)}`
-      const callback = (<any>props)[callbackName]
-      if (typeof callback === 'function') await callback(value)
-      modelLoading.value = false
-
-      // --- Set the new value.
-      if (setValue) {
-        const cursor = event.target.selectionStart
-        modelValue.value = value
-        emit(eventName, value)
-        if (cursor) event.target.setSelectionRange(cursor, cursor)
-      }
-    }
-
     // --- Return virtual DOM node.
     return () => {
+      const validateOnEvents = arrayify(props.validateOn).map(eventName => [toCamelCase(`on-${eventName}`), validateWithEffect.value])
+      const inputEventHandlers = Object.fromEntries(validateOnEvents)
+
+      // --- Create input/textarea/select.
+      const vNodeinput = slots.input?.(slotProps) ?? h(inputComponent.value,
+        mergeProps(
+          omit(attrs, ['class', 'style']),
+          pick(props, inputPropKeys.value),
+          pick({
+            'ref': inputElement,
+            'role': 'input',
+            'class': props.classInput,
+            'modelValue': modelValue.value,
+            'onUpdate:modelValue': (value: any) => modelValue.value = value,
+          }, isTruthy),
+          inputEventHandlers,
+        ),
+        slots,
+      )
+
       // --- Decompose icon props.
       const iconAppend = props.iconAppend
       const iconPrepend = props.icon ?? props.iconPrepend
@@ -156,33 +152,19 @@ export const Input = /* @__PURE__ */ defineComponent({
       const vNodeAppend = slots.append?.(slotProps) ?? (iconAppend && h(Icon, { icon: iconAppend, ...iconProps }))
       const vNodePrepend = slots.prepend?.(slotProps) ?? (iconPrepend && h(Icon, { icon: iconPrepend, ...iconProps }))
       const vNodeMessage = slots.message?.(slotProps) ?? (props.message && h('span', { class: props.classMessage }, props.message))
-      const vNodeError = slots.error?.(slotProps) ?? (props.error && h('span', { class: props.classError }, props.error))
+      const vNodeError = slots.error?.(slotProps) ?? (modelError.value && h('span', { class: props.classError }, modelError.value))
       const vNodeLabel = slots.label?.(slotProps) ?? (props.label && h('label', { class: props.classLabel, for: props.name }, props.label))
-
-      // --- Build input props.
-      const inputProps = mergeProps(
-        omit(attrs, ['class', 'style']),
-        pick(props, inputPropKeys.value),
-        pick({
-          ref: 'input',
-          role: 'input',
-          class: props.classInput,
-          onInput: createEvent('input', true),
-          onBlur: createEvent('blur'),
-          onFocus: createEvent('focus'),
-          onChange: createEvent('change'),
-          onClick: createEvent('click'),
-        }, isTruthy),
-      )
-
-      // --- Create input/textarea/select.
-      const vNodeinput = slots.input?.(slotProps) ?? h(inputComponent.value, inputProps, slots)
       const vNodeinputGroup = h('div', { class: props.classGroup }, [vNodePrepend, vNodeinput, vNodeAppend])
-      return h('div', {
-        'aria-invalid': !!modelValue.value,
-        'aria-readonly': !!modelReadonly.value,
-        'aria-disabled': !!modelDisabled.value,
-      }, [vNodeLabel, vNodeinputGroup, vNodeError ?? vNodeMessage])
+
+      return h('div', pick({
+        'aria-invalid': !!modelError.value,
+        'aria-readonly': modelReadonly.value,
+        'aria-disabled': modelDisabled.value,
+      }, isTruthy), [
+        vNodeLabel,
+        vNodeinputGroup,
+        vNodeError ?? vNodeMessage,
+      ])
     }
   },
 })
