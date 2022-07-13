@@ -1,9 +1,9 @@
-import { Ref, isReactive, isRef, ref, unref, watch } from 'vue-demi'
+import { isReactive, isRef, ref, unref, watch } from 'vue-demi'
 import { MaybeRef } from '@vueuse/shared'
 import { IconifyIcon, IconifyIconCustomisations } from '@iconify/iconify'
 import { expandIconSet, fullIconData, iconToSVG, replaceIDs } from '@iconify/utils'
 import { defaults } from '@iconify/utils/lib/customisations'
-import { isDevelopment, isNode, memoize } from '@hsjm/shared'
+import { memoize } from '@hsjm/shared'
 
 /** Fetch an icon data from cache or remote */
 const fetchIconData = memoize(async(icon: string): Promise<Required<IconifyIcon> | undefined> => {
@@ -52,23 +52,20 @@ const fetchIconSvg = async(icon: string, options: IconifyIconCustomisations): Pr
  * Resolve the SVG for a given icon with `@iconify`.
  * @param {MaybeRef<string>} icon Name of the icon. (Example: `mdi:user` )
  * @param {MaybeRef<IconifyIconCustomisations>} [options] Customisation options.
- * @returns {Ref<string | undefined>} The SVG as a `Ref<string>`
+ * @returns The composable object containing the SVG.
  */
-export const useIconify = (icon: MaybeRef<string>, options: MaybeRef<IconifyIconCustomisations> = {}): Ref<string | undefined> => {
+export const useIconify = (icon: MaybeRef<string>, options: IconifyIconCustomisations = {}) => {
   // --- Initalize state.
   const svg = ref<string>()
 
   // --- Declare function to get the svg.
-  const update = async() => {
-    svg.value = undefined
-    svg.value = await fetchIconSvg(unref(icon), unref(options))
-  }
+  const update = () => fetchIconSvg(unref(icon), options)
+    .then(svgResult => svg.value = svgResult)
 
-  // --- Update on server init & prop changes.
+  // --- Update on prop changes.
   if (isRef(icon)) watch(icon, update)
-  if (isRef(options) || isReactive(options)) watch(options, update)
-  if (isNode || isDevelopment) update()
+  if (isReactive(options)) watch(options, update)
 
   // --- Return SVG ref.
-  return svg
+  return { svg, update }
 }
