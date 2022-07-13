@@ -92,9 +92,9 @@ export const shortcuts: Shortcut[] = [
   ['contain', 'md:container mx-auto px-8'],
   ['overlay', 'absolute top-0 left-0 bottom-0 right-0 inner-content'],
 
-  ...shortcutButton,
-  ...shortcutBadge,
-  ...shortcutNavItem,
-  ...shortcutLink,
-  ...shortcutInput,
+  // ...shortcutButton,
+  // ...shortcutBadge,
+  // ...shortcutNavItem,
+  // ...shortcutLink,
+  // ...shortcutInput,
 ]
