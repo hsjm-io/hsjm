@@ -1,1 +1,1 @@
-export * from './mapbox'
+export * from './openai'
