@@ -1,3 +1,4 @@
+/* eslint-disable spaced-comment */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { isReactive, isRef, nextTick, ref, unref, watch } from 'vue-demi'
 import { MaybeRef } from '@vueuse/shared'
@@ -7,10 +8,10 @@ import Milsymbol, { SymbolOptions } from 'milsymbol'
 /**
  * Resolve the SVG for a given sidc with `milsymbol`.
  * @param {MaybeRef<string>} sidc SIDH of the icon. (Example: `SFG-UCI----D` )
- * @param {MaybeRef<IconifyIconCustomisations>} [options] Customisation options.
+ * @param {SymbolOptions} [options] Customisation options.
  * @returns The SVG as a `Ref<string>`
  */
-export const useMilsymbol = (sidc: MaybeRef<string>, options: SymbolOptions = {}) => {
+export const useMilsymbol = /*@__PURE__*/ (sidc: MaybeRef<string>, options: SymbolOptions = {}) => {
   // --- Initalize state.
   const svg = ref<string>()
 
