@@ -69,7 +69,6 @@
   },
   "dependencies": {
     "@faker-js/faker": "^6.3.1",
-    "@hsjm/firebase": "workspace:*",
     "@hsjm/shared": "workspace:*",
     "@vueuse/shared": "^8.7.5",
     "vue-demi": "*"
