@@ -2,7 +2,7 @@ import { tryOnMounted } from '@vueuse/shared'
 import { PropType, computed, defineComponent, h, mergeProps } from 'vue-demi'
 import { SymbolOptions } from 'milsymbol'
 import { isNode } from '@hsjm/shared'
-import { useMilsymbol } from '../composables'
+import { useMilsymbol } from '../composables/useMilsymbol'
 import { exposeToDevtool } from '../utils'
 
 // TODO: Improve tree shaking.
