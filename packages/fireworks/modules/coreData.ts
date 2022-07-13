@@ -1,5 +1,5 @@
-import { arrayify, isArray, isArrayNotEmpty, isNil, isString, isStringFirestoreId, isStringNotEmpty, isStringTimestamp, toContext, toKebabCase, trim } from '@hsjm/shared'
-import { FirestoreReference, defineModule, isFirestoreReference, isFirestoreUserId, isFirestoreUserIds, toFirestoreIdentity } from './utils'
+import { arrayify, isArray, isArrayNotEmpty, isNil, isString, isStringNotEmpty, isStringTimestamp, toContext, toKebabCase, trim } from '@hsjm/shared'
+import { FirestoreReference, defineModule, isFirestoreId, isFirestoreReference, isFirestoreUserId, isFirestoreUserIds, toFirestoreIdentity } from './utils'
 import { Asset } from './coreAsset'
 import { Identity } from './coreIdentity'
 
@@ -84,7 +84,7 @@ export const dataModule = /* @__PURE__ */ defineModule<Data>({
       isReadonly: true,
       isHidden: 'table',
       rules: [
-        [isString, isStringNotEmpty, isStringFirestoreId],
+        [isString, isStringNotEmpty, isFirestoreId],
         [isNil],
       ],
     },

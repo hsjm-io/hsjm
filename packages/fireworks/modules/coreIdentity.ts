@@ -1,5 +1,5 @@
-import { arrayify, isArrayValid, isNil, isString, isStringEmail, isStringFirestoreId, isStringNotEmpty, isStringUrl, toEmptyArray, toKebabCase, trim } from '@hsjm/shared'
-import { mergeModules } from './utils/mergeModules'
+import { arrayify, isArrayValid, isNil, isString, isStringEmail, isStringNotEmpty, isStringUrl, toEmptyArray, toKebabCase, trim } from '@hsjm/shared'
+import { isFirestoreUserId, mergeModules } from './utils'
 import { Data, dataModule } from './coreData'
 
 export interface Identity extends Data {
@@ -99,7 +99,7 @@ export const identityModule = /* @__PURE__ */ mergeModules<Identity>(dataModule,
       name: 'Identifiant de l\'utilisateur',
       group: 'internal',
       rules: [
-        [isString, isStringFirestoreId],
+        [isString, isFirestoreUserId],
         [isNil],
       ],
     },

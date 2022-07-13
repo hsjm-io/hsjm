@@ -1,8 +1,9 @@
-import { isNil, isNumberPositive, isStringFirestoreId, isStringNotEmpty, isStringUrl } from '@hsjm/shared'
+import { isNil, isNumberPositive, isStringNotEmpty, isStringUrl } from '@hsjm/shared'
 import { mergeModules } from './utils/mergeModules'
 import { Asset } from './coreAsset'
 import { Data, dataModule } from './coreData'
 import { FirestoreReference } from './types'
+import { isFirestoreId } from './utils'
 
 export interface Content extends Data {
   /**
@@ -65,12 +66,12 @@ export const contentModule = /* @__PURE__ */ mergeModules<Content>(dataModule, {
       name: 'ID de la catégorie du contenu',
       type: 'reference:contentCategory',
       isHidden: true,
-      rules: [[isNil], [isStringFirestoreId]],
+      rules: [[isNil], [isFirestoreId]],
     },
     category: {
       name: 'Catégorie du contenu',
       type: 'reference:contentCategory',
-      // rules: [[isNil], [isStringFirestoreId]],
+      // rules: [[isNil], [isFirestoreId]],
     },
     order: {
       name: 'Ordre du contenu',

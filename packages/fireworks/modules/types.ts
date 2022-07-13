@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports */
-import { Key, ValidationRuleSet } from '@hsjm/shared'
+import { Key, ValidationRule, ValidationRulePipe, ValidationRuleSet } from '@hsjm/shared'
 import { QueryFilter } from '../composables/utils/createQuery'
 
 /** Firestore Document Reference */
@@ -34,7 +34,7 @@ export interface ModuleField<T = unknown> {
   /** The group name of the field. */
   group?: string
   /** Rules set used to validate the field. */
-  rules?: ValidationRuleSet
+  rules?: ValidationRuleSet | ValidationRulePipe | ValidationRule
   /** The type of the field. */
   type?: ModuleFieldType
   /** A `@faker-js/faker` template or function to use to mock the field. */

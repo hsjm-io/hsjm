@@ -1,4 +1,4 @@
-import { isNotNil, pick, validateSchema } from '@hsjm/shared'
+import { isNotNil, isNotUndefined, mapValues, pick, validateSchema } from '@hsjm/shared'
 import { Change, CloudFunction } from 'firebase-functions/v1'
 import { DocumentSnapshot } from 'firebase/firestore'
 import { FirebaseContext, Module, getModuleValidationSchema } from '../modules/utils'
@@ -47,7 +47,7 @@ export const validateOnWrite = <T = DocumentSnapshot>(module: Module, options: V
       // --- Handle invalid.
       const onError = before.exists ? onUpdateError : onCreateError
       if (!isValid) {
-        const __errors = pick(errors, x => x.length > 0)
+        const __errors = mapValues(pick(errors, isNotUndefined) as Record<string, Error>, 'message')
         switch (onError) {
           case 'delete': return after.ref.delete()
           case 'rollback': return after.ref.set({ ...valueBefore, __origin: 'server', __errors })
