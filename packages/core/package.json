@@ -64,11 +64,14 @@
     }
   },
   "dependencies": {
+    "@codemirror/lang-markdown": "^6.0.0",
+    "@codemirror/theme-one-dark": "^6.0.0",
     "@hsjm/shared": "workspace:*",
     "@iconify/iconify": "^2.2.1",
     "@iconify/utils": "^1.0.33",
     "@vueuse/core": "^8.7.5",
     "@vueuse/shared": "^8.7.5",
+    "codemirror": "^6.0.1",
     "leaflet": "^1.8.0",
     "milsymbol": "^2.0.0",
     "unplugin-vue-components": "^0.19.9",
