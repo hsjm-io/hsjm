@@ -18,15 +18,19 @@ const createVariant = (keyword: string, query: string | string[]) => ({
 /** Variant for selector `&[aria-current="page"]`. */
 export const variantCurrentPage: Variant = createVariant('current', '[aria-current="page"]')
 
-/** Variant for selector `&[aria-busy="true"]`. */
-export const variantLoading: Variant = createVariant('loading', '[aria-busy="true"]')
-
 /** Variant for selected &[selected="true"] */
 export const variantSelected: Variant = createVariant('selected', ['[selected="true"]', '[aria-selected="true"]'])
+
+/** Variant for selected &[aria-invalid="true"] */
+export const variantInvalid: Variant = createVariant('invalid', '[aria-invalid="true"]')
+
+/** Variant for selector `&[aria-busy="true"]`. */
+export const variantLoading: Variant = createVariant('loading', '[aria-busy="true"]')
 
 /** All variants. */
 export const variants: Variant[] = [
   variantCurrentPage,
   variantSelected,
+  variantInvalid,
   variantLoading,
 ]
