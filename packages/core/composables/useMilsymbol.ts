@@ -1,6 +1,6 @@
 /* eslint-disable spaced-comment */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
-import { isReactive, isRef, nextTick, ref, unref, watch } from 'vue-demi'
+import { isReactive, nextTick, ref, unref, watch } from 'vue-demi'
 import { MaybeRef } from '@vueuse/shared'
 import { isDevelopment, isNode } from '@hsjm/shared'
 import Milsymbol, { SymbolOptions } from 'milsymbol'

@@ -1,4 +1,4 @@
-import { isReactive, isRef, ref, unref, watch } from 'vue-demi'
+import { isReactive, ref, unref, watch } from 'vue-demi'
 import { MaybeRef } from '@vueuse/shared'
 import { IconifyIcon, IconifyIconCustomisations } from '@iconify/iconify'
 import { expandIconSet, fullIconData, iconToSVG, replaceIDs } from '@iconify/utils'

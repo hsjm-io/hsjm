@@ -1,4 +1,3 @@
-import { Preset } from 'unocss'
 import { rules } from './rules'
 import { theme } from './theme'
 import { variants } from './variants'
