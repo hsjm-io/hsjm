@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 import { Key, filter, sortBy, values } from '@hsjm/shared'
 import { PropType, computed, defineComponent, h } from 'vue-demi'
-import { exposeToDevtool } from '../composables'
+import { exposeToDevtool } from '../utils'
 
 export interface Cell {
   value: any

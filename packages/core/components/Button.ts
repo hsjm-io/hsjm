@@ -95,9 +95,9 @@ export const Button = /* @__PURE__ */ defineComponent({
       const iconProps = { options: props.iconOptions, class: props.classIcon }
 
       // --- Create child nodes.
-      const nodeDefault = slots.default?.(slotProps) ?? (props.label && h('span', props.label))
-      const nodeAppend = slots.append?.(slotProps) ?? (iconAppend && h(Icon, { icon: iconAppend, ...iconProps }))
-      const nodePrepend = slots.prepend?.(slotProps) ?? (iconPrepend && h(Icon, { icon: iconPrepend, ...iconProps }))
+      const vNodeContent = slots.default?.(slotProps) ?? (props.label && h('span', props.label))
+      const vNodeAppend = slots.append?.(slotProps) ?? (iconAppend && h(Icon, { icon: iconAppend, ...iconProps }))
+      const vNodePrepend = slots.prepend?.(slotProps) ?? (iconPrepend && h(Icon, { icon: iconPrepend, ...iconProps }))
 
       // --- Compute internal link props.
       const isInternalLinkProps = isInternalLink.value && {
@@ -134,7 +134,7 @@ export const Button = /* @__PURE__ */ defineComponent({
       return h(
         is.value,
         buttonProps,
-        { default: () => [nodePrepend, nodeDefault, nodeAppend] },
+        { default: () => [vNodePrepend, vNodeContent, vNodeAppend] },
       )
     }
   },
