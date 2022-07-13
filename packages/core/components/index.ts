@@ -1,4 +1,5 @@
 export * from './Button'
+export * from './Editor'
 export * from './HsjmUnpluginResolver'
 export * from './Input'
 export * from './InputText'
