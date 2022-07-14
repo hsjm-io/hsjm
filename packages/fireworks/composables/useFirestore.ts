@@ -66,7 +66,7 @@ export const useFirestore: UseFirestore = <T = any>(
     if (!query) return console.warn('[useFirestore] Invalid path or filter.')
 
     const unrefOptions = unref(options)
-    const { sync, pickFirst, initialValue, onError, manual } = unrefOptions
+    const { sync, pickFirst, initialValue, onError } = unrefOptions
 
     // --- Initialize onSnapshot watcher.
     loading.value = true
@@ -87,14 +87,14 @@ export const useFirestore: UseFirestore = <T = any>(
       loading.value = false
     }
 
-    // --- Start `filter` watcher.
-    const toWatch = [path, filter].filter(x => isReactive(x) || isRef(x))
-    if (!manual && toWatch.length > 0) unwatch = watch(toWatch, update, { immediate: true })
-
     // --- Await until the data is loaded.
     await until(loading).toBe(false)
     return data.value
   }
+
+  // --- Start `filter` watcher.
+  const toWatch = [path, filter, options].filter(x => isReactive(x) || isRef(x))
+  if (!unref(options).manual && toWatch.length > 0) unwatch = watch(toWatch, update)
 
   // --- Stop the watchers/listeners on scope dispose.
   tryOnScopeDispose(() => {
