@@ -1,5 +1,6 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-null */
+import { isTruthy, pick } from '@hsjm/shared'
 import { useVModel } from '@vueuse/core'
 import { PropType, computed, defineComponent, h, mergeProps, toRefs } from 'vue-demi'
 import { exposeToDevtool } from '../utils'
@@ -42,7 +43,7 @@ export const Switch = /* @__PURE__ */ defineComponent({
       return model.value === value.value
     })
 
-    // --- Define `toggle` method.
+    // --- Declar `toggle` method.
     const toggle = async() => {
       // --- If `multiple`, but value invalid, initialize array.
       if (multiple.value && !Array.isArray(model.value)) {
@@ -56,17 +57,10 @@ export const Switch = /* @__PURE__ */ defineComponent({
           : [...model.value, value.value]
       }
 
-      // --- If not, set value.
+      // --- If not, toggle or set value.
       else if (typeof value.value === 'boolean') { model.value = !model.value }
-
       else if (model.value !== value.value) { model.value = value.value }
     }
-
-    const classes = computed(() => (
-      isActive.value
-        ? classActive.value
-        : undefined
-    ))
 
     // --- Expose to Vue Devtools for debugging.
     const slotProps = exposeToDevtool({
@@ -74,19 +68,17 @@ export const Switch = /* @__PURE__ */ defineComponent({
       modelDisabled,
       modelLoading,
       modelReadonly,
-      classes,
-      toggle,
     })
 
     // --- Return virtual DOM node.
-    return () => h(props.as, mergeProps(attrs, {
-      'disabled': modelDisabled.value || null,
-      'readonly': modelReadonly.value || null,
-      'aria-disabled': modelDisabled.value || null,
-      'aria-readonly': modelReadonly.value || null,
-      'aria-busy': modelLoading.value || null,
-      'class': classes.value,
+    return () => h(props.as, mergeProps(attrs, pick({
+      'disabled': modelDisabled.value,
+      'readonly': modelReadonly.value,
+      'aria-disabled': modelDisabled.value,
+      'aria-readonly': modelReadonly.value,
+      'aria-busy': modelLoading.value,
+      'class': isActive.value && classActive.value,
       'onClick': toggle,
-    }), slots.default?.(slotProps))
+    }, isTruthy)), () => slots.default?.(slotProps))
   },
 })
