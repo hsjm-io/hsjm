@@ -21,8 +21,9 @@ export interface Identity extends Data {
   readonly userId?: string
 }
 
-const toFullname = (_value: any, _: any, { value }: { value: Identity }) =>
-  [value.firstName, value.lastName].filter(Boolean).join(' ').trim()
+const toFullname = function(this: any) {
+  return [this.value.firstName, this.value.lastName].filter(Boolean).join(' ').trim()
+}
 
 /** Module for `Identity` documents. */
 export const identityModule = /* @__PURE__ */ mergeModules<Identity>(dataModule, {

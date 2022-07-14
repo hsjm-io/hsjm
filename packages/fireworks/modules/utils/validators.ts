@@ -2,77 +2,71 @@ import { FirebaseContext, FirestoreReference } from '../types'
 
 /**
  * Check if value is a Firestore user id
- * @param id Value to check
- * @param  _ Ignored
- * @param context Validation context
+ * @param this Validation context
+ * @param id User id to check
  * @returns true if value is a Firestore user id
  */
-export const isFirestoreUserId = (id: string, _: any, { admin }: FirebaseContext) => admin
-  .auth()
-  .getUser(id)
-  .then(user => !!user)
+export const isFirestoreUserId = async function(this: FirebaseContext, id: string) {
+  const user = await this.admin.auth().getUser(id)
+  return !!user
+}
 
 /**
  * Check if values are a Firestore user ids
- * @param ids Value to check
- * @param  _ Ignored
- * @param context Validation context
+ * @param this Validation context
+ * @param ids User ids to check
  * @returns true if values are a Firestore user ids
  */
-export const isFirestoreUserIds = async(ids: string[], _: any, context: FirebaseContext) => {
+export const isFirestoreUserIds = async function(this: FirebaseContext, ids: string[]) {
   const promises = ids
     .filter(id => typeof id === 'string' && id.length > 0)
-    .map(id => isFirestoreUserId(id, _, context))
+    .map(id => isFirestoreUserId.bind(this)(id))
   const results = await Promise.all(promises)
   return results.every(Boolean)
 }
 
 /**
  * Convert a Firestore user id or Reference to it's user's identity Reference
+ * @param this Validation context
  * @param idOrReference Id or Reference to a Firestore user
- * @param  _ Ignored
- * @param context Validation context
  * @returns Reference to the user's identity
  */
-export const toFirestoreIdentity = (idOrReference: string | FirestoreReference, _: any, { admin }: FirebaseContext) => admin
-  .firestore()
-  .collection('identity')
-  .where('userId', '==', typeof idOrReference === 'string' ? idOrReference : idOrReference.id)
-  .get()
-  .then(snapshot => snapshot.docs[0].ref)
+export const toFirestoreIdentity = async function(this: FirebaseContext, idOrReference: string | FirestoreReference) {
+  const idString = typeof idOrReference === 'string' ? idOrReference : idOrReference.id
+  const snapshot = await this.admin.firestore().collection('identity').where('userId', '==', idString).get()
+  return snapshot.docs[0].ref
+}
 
 /**
  * Convert a Firestore id to it's Reference given a collection path.
+ * @param this Validation context
  * @param id Id to convert
  * @param path Path to the collection
- * @param context Validation context
  * @returns Document Reference
  */
-export const toFirestoreReference = (id: string, path: string, { admin }: FirebaseContext) => admin
-  .firestore()
-  .collection(path)
-  .doc(id)
+export const toFirestoreReference = function(this: FirebaseContext, id: string, path: string) {
+  return this.admin.firestore().collection(path).doc(id)
+}
 
 /**
  * Check if id exists in Firestore
+ * @param this Validation context
  * @param id Id to check
  * @param path Path to the collection
- * @param context Validation context
  * @returns true if id or Reference exists in Firestore
  */
-export const isFirestoreId = (id: string, path: string, { admin }: FirebaseContext) => admin
-  .firestore()
-  .collection(path)
-  .doc(id)
-  .get()
-  .then(snapshot => snapshot.exists)
+export const isFirestoreId = async function(this: FirebaseContext, id: string, path: string) {
+  const snapshot = await this.admin.firestore().collection(path).doc(id).get()
+  return snapshot.exists
+}
 
 /**
  * Check if Reference exists in Firestore
+ * @param this Validation context
  * @param reference Reference to check
  * @param path Path to the collection
- * @param context Validation context
  * @returns true if id or Reference exists in Firestore
  */
-export const isFirestoreReference = (reference: FirestoreReference, path: string, context: FirebaseContext) =>
-  isFirestoreId(reference?.id, path, context)
+export const isFirestoreReference = function(this: FirebaseContext, reference: FirestoreReference, path: string) {
+  return isFirestoreId.bind(this)(reference?.id, path)
+}
