@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 import { Ref, isReactive, isRef, ref, unref, watch } from 'vue-demi'
-import { isBrowser, noop } from '@hsjm/shared'
+import { isBrowser } from '@hsjm/shared'
 import { MaybeRef, tryOnScopeDispose, until } from '@vueuse/shared'
 import { FirestoreError, SetOptions, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { EraseOptions, QueryFilter, SaveOptions, createQuery, erase, getSnapshotData, isDocumentReference, save } from './utils'
@@ -52,14 +52,14 @@ export const useFirestore: UseFirestore = <T = any>(
   options: MaybeRef<UseFirestoreOptions<T | T[]>> = {},
 ): UseFirestoreReturnType<T | T[]> => {
   // --- Init variables.
-  let unwatch = noop
-  let unsubscribe = noop
+  let unwatch: () => void | undefined
+  let unsubscribe: () => void | undefined
   const data = ref<any>(unref(options).initialValue)
   const loading = ref(false)
 
   // --- Declare update method.
   const update = async() => {
-    unsubscribe()
+    unsubscribe?.()
     const unrefPath = unref(path)
     const unrefFilter = unref(filter)
     const query = createQuery(unrefPath, unrefFilter)
@@ -94,13 +94,13 @@ export const useFirestore: UseFirestore = <T = any>(
 
   // --- Start `filter` watcher.
   const toWatch = [path, filter, options].filter(x => isReactive(x) || isRef(x))
-  if (!unref(options).manual && toWatch.length > 0) unwatch = watch(toWatch, update)
+  if (!unref(options).manual && toWatch.length > 0) unwatch = watch(toWatch, update, { immediate: true })
 
   // --- Stop the watchers/listeners on scope dispose.
   tryOnScopeDispose(() => {
     if (unref(options).keepAlive) {
-      unwatch()
-      unsubscribe()
+      unwatch?.()
+      unsubscribe?.()
     }
   })
 
