@@ -8,7 +8,7 @@ import { FirebaseApp } from 'firebase/app'
 export type QueryFilterSuffix = '_lt' | '_lte' | '_ne' | '_gt' | '_gte' | '_in' | '_nin' | '_ac' | '_aca'
 
 // --- Base query filter
-export type QueryFilter<T> = {
+export type QueryFilter<T = any> = {
   $limit?: number
   $limitToLast?: number
   $startAt?: number
