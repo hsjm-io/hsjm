@@ -31,9 +31,9 @@ export interface CreateQueryOptions {
 
 // --- Overloads.
 export interface CreateQuery {
-  <T = DocumentData>(path: string, id?: string): DocumentReference<T>
-  <T = DocumentData>(path: string, filter: QueryFilter<T>): Query<T>
-  <T = DocumentData>(path: string, idOrFilter?: string | QueryFilter<T>): DocumentReference<T> | Query<T>
+  <T = DocumentData>(path: string, id: string, options?: CreateQueryOptions): DocumentReference<T>
+  <T = DocumentData>(path: string, filter: QueryFilter<T>, options?: CreateQueryOptions): Query<T>
+  <T = DocumentData>(path?: string, idOrFilter?: string | QueryFilter<T>, options?: CreateQueryOptions): DocumentReference<T> | Query<T> | undefined
 }
 
 /**
@@ -43,9 +43,12 @@ export interface CreateQuery {
  * @param options The options to use.
  * @returns The query or document reference.
  */
-export const createQuery: CreateQuery = (path: string, filter?: string | Record<string, any>, options: CreateQueryOptions = {}): any => {
+export const createQuery: CreateQuery = (path?: string, filter?: string | QueryFilter, options: CreateQueryOptions = {}): any => {
   // --- Destructure and default options.
   const { firestore = getFirestore(options.app) } = options
+
+  // --- Handle edge cases.
+  if (!path) return console.warn('[createQuery] Path is not defined.')
 
   // --- Resolve collection or document reference.
   const colReference = collection(firestore, path)

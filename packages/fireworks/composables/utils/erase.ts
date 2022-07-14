@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/consistent-destructuring */
 import { DocumentData, Firestore, collection, deleteDoc, doc, getFirestore, writeBatch } from 'firebase/firestore'
 import { MaybeArray, arrayify, chunk, delay } from '@hsjm/shared'
@@ -17,12 +18,17 @@ export interface EraseOptions {
 /**
  * Erase document(s) from Firestore.
  * @param {string} path The path of the collection
- * @param {string | T | Array<string | T>} [data] The ID of the document to delete, or an object with an ID
- * @returns {Promise<void>}
+ * @param {string | T | Array<string | T>} [data] The ID(s) of the document(s) to delete, or the object(s) with `id` property.
+ * @returns {Promise<void>} A promise that resolves when the operation is complete.
  */
-export const erase = async<T = DocumentData>(path: string, data: MaybeArray<string | T>, options: EraseOptions = {}): Promise<void> => {
+export const erase = async<T = DocumentData>(path?: string, data?: MaybeArray<string | T>, options: EraseOptions = {}): Promise<void> => {
   // --- Destructure and default options.
   const { batchSize = 500, batchDelay = 0, firestore = getFirestore(options.app) } = options
+
+  // --- Handle edge cases.
+  if (!data || (Array.isArray(data) && data.length === 0)) return
+  if (!firestore) return console.warn('[erase] Firestore is not defined.')
+  if (!path) return console.warn('[erase] Path is not defined.')
 
   // --- Map input to document references.
   const collectionReference = collection(firestore, path)
@@ -39,8 +45,8 @@ export const erase = async<T = DocumentData>(path: string, data: MaybeArray<stri
   const chunks = chunk(documentReferences, batchSize)
   await Promise.all(chunks.map(async(chunk) => {
     const batch = writeBatch(firestore)
-    for (const reference of chunk) batch.delete(reference)
-    if (batchDelay) await delay(batchDelay)
+    for (const ref of chunk) batch.delete(ref)
+    if (batchDelay > 0) await delay(batchDelay)
     await batch.commit()
   }))
 }

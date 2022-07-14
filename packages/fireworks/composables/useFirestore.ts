@@ -1,11 +1,14 @@
-import { Ref, isReactive, ref, unref, watch } from 'vue-demi'
 /* eslint-disable unicorn/consistent-function-scoping */
-import { noop } from '@hsjm/shared'
-import { MaybeRef, isClient, tryOnScopeDispose, until } from '@vueuse/shared'
-import { DocumentData, FirestoreError, SetOptions, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
-import { EraseOptions, QueryFilter, createQuery, erase, getSnapshotData, isDocumentReference, save } from './utils'
+import { Ref, isReactive, isRef, ref, unref, watch } from 'vue-demi'
+import { isBrowser, noop } from '@hsjm/shared'
+import { MaybeRef, tryOnScopeDispose, until } from '@vueuse/shared'
+import { FirestoreError, SetOptions, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
+import { EraseOptions, QueryFilter, SaveOptions, createQuery, erase, getSnapshotData, isDocumentReference, save } from './utils'
 
-export interface UseFirestoreOptions<T = any> extends SnapshotListenOptions {
+export interface UseFirestoreOptions<T = any> extends
+  SaveOptions,
+  EraseOptions,
+  SnapshotListenOptions {
   /** Sync the data using `onSnapshot` method. */
   sync?: boolean
   /** Prevent `onSnapshot` unsubscription and cache deletion on scope dispose. */
@@ -13,7 +16,7 @@ export interface UseFirestoreOptions<T = any> extends SnapshotListenOptions {
   /** If true, the data will have to be fetched manually. */
   manual?: boolean
   /** Initial value. */
-  initialValue?: Partial<T>
+  initialValue?: T extends any[] ? Partial<T>[] : Partial<T>
   /** Pick the first item of the result if it's an array of documents. */
   pickFirst?: boolean
   /** Error handler. */
@@ -30,11 +33,11 @@ export interface UseFirestoreReturnType<T = any> {
 
 // --- Overloads.
 export interface UseFirestore {
-  <T = DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string>, options?: UseFirestoreOptions<T>): UseFirestoreReturnType<T>
-  <T = DocumentData>(path: MaybeRef<string>, filter: MaybeRef<QueryFilter<T>>, options?: UseFirestoreOptions<T> & { pickFirst: true }): UseFirestoreReturnType<T>
-  <T = DocumentData>(path: MaybeRef<string>, filter: MaybeRef<QueryFilter<T>>, options?: UseFirestoreOptions<T[]>): UseFirestoreReturnType<T[]>
-  <T = DocumentData>(path: MaybeRef<string>, filter?: MaybeRef<string | QueryFilter<T> | undefined>, options?: UseFirestoreOptions<T> & { pickFirst: true }): UseFirestoreReturnType<T>
-  <T = DocumentData>(path: MaybeRef<string>, filter?: MaybeRef<string | QueryFilter<T> | undefined>, options?: UseFirestoreOptions<T>): UseFirestoreReturnType<T | T[]>
+  <T>(path: MaybeRef<string | undefined>, filter: MaybeRef<string>, options?: MaybeRef<UseFirestoreOptions<T>>): UseFirestoreReturnType<T>
+  <T>(path: MaybeRef<string | undefined>, filter: MaybeRef<QueryFilter<T>>, options?: MaybeRef<UseFirestoreOptions<T>> & { pickFirst: true }): UseFirestoreReturnType<T>
+  <T>(path: MaybeRef<string | undefined>, filter: MaybeRef<QueryFilter<T>>, options?: MaybeRef<UseFirestoreOptions<T[]>>): UseFirestoreReturnType<T[]>
+  <T>(path: MaybeRef<string | undefined>, filter?: MaybeRef<string | QueryFilter<T> | undefined>, options?: MaybeRef<UseFirestoreOptions<T>> & { pickFirst: true }): UseFirestoreReturnType<T>
+  <T>(path: MaybeRef<string | undefined>, filter?: MaybeRef<string | QueryFilter<T> | undefined>, options?: MaybeRef<UseFirestoreOptions<T | T[]>>): UseFirestoreReturnType<T | T[]>
 }
 
 /**
@@ -43,43 +46,63 @@ export interface UseFirestore {
  * @param filter ID or filter parameters.
  * @param options Custom parameters of the method.
  */
-export const useFirestore: UseFirestore = (path: any, filter: any, options: any = {}): any => {
-  // --- Destructure options.
-  const { initialValue, onError, sync, keepAlive, pickFirst, manual } = options
-
+export const useFirestore: UseFirestore = <T = any>(
+  path: MaybeRef<string | undefined>,
+  filter: MaybeRef<string | QueryFilter<T> | undefined>,
+  options: MaybeRef<UseFirestoreOptions<T | T[]>> = {},
+): UseFirestoreReturnType<T | T[]> => {
   // --- Init variables.
+  let unwatch = noop
   let unsubscribe = noop
-  const data = ref(initialValue)
+  const data = ref<any>(unref(options).initialValue)
   const loading = ref(false)
-  const update = sync && isClient
 
-    // --- Get on snapshot.
-    ? async() => {
-      loading.value = true
-      const query = createQuery(unref(path), unref(filter))
-      unsubscribe()
-      unsubscribe = onSnapshot<any>(<any>query, options, {
+  // --- Declare update method.
+  const update = async() => {
+    unsubscribe()
+    const unrefPath = unref(path)
+    const unrefFilter = unref(filter)
+    const query = createQuery(unrefPath, unrefFilter)
+    if (!query) return console.warn('[useFirestore] Invalid path or filter.')
+
+    const unrefOptions = unref(options)
+    const { sync, pickFirst, initialValue, onError, manual } = unrefOptions
+
+    // --- Initialize onSnapshot watcher.
+    loading.value = true
+
+    if (sync && isBrowser) {
+      unsubscribe = onSnapshot<any>(<any>query, unrefOptions, {
         next: (snapshot) => { data.value = snapshot ? getSnapshotData(snapshot, pickFirst) : initialValue },
         complete: () => { loading.value = false },
         error: onError,
       })
-      await until(loading).toBe(false)
     }
 
-    // --- Get once.
-    : async() => {
-      loading.value = true
-      const query = createQuery(unref(path), unref(filter))
+    // --- Fetch data once.
+    else {
       const snapshotPromise = isDocumentReference(query) ? getDoc(query) : getDocs(query)
       const snapshot = await snapshotPromise.catch(onError)
-      data.value = snapshot ? getSnapshotData(snapshot, pickFirst) : initialValue
+      data.value = snapshot ? getSnapshotData(snapshot, pickFirst) : <any>initialValue
       loading.value = false
     }
 
-  // --- Start `filter` watcher.
-  const toWatch = [path, filter].filter(isReactive)
-  if (!manual && toWatch.length > 0) watch(toWatch, update, { immediate: true })
-  if (!keepAlive) tryOnScopeDispose(unsubscribe)
+    // --- Start `filter` watcher.
+    const toWatch = [path, filter].filter(x => isReactive(x) || isRef(x))
+    if (!manual && toWatch.length > 0) unwatch = watch(toWatch, update, { immediate: true })
+
+    // --- Await until the data is loaded.
+    await until(loading).toBe(false)
+    return data.value
+  }
+
+  // --- Stop the watchers/listeners on scope dispose.
+  tryOnScopeDispose(() => {
+    if (unref(options).keepAlive) {
+      unwatch()
+      unsubscribe()
+    }
+  })
 
   // --- Return readonly data ref.
   return {
@@ -88,5 +111,5 @@ export const useFirestore: UseFirestore = (path: any, filter: any, options: any 
     update,
     save: (options: SetOptions) => save(unref(path), unref(data), options),
     erase: (options: EraseOptions) => erase(unref(path), unref(data), options),
-  }
+  } as UseFirestoreReturnType<T | T[]>
 }
