@@ -30,11 +30,11 @@ export interface UseFirestoreReturnType<T = any> {
 
 // --- Overloads.
 export interface UseFirestore {
-  <T = DocumentData>(path: MaybeRef<string>, filter: QueryFilter<T>, options?: UseFirestoreOptions<T> & { pickFirst: true }): UseFirestoreReturnType<T>
-  <T = DocumentData>(path: MaybeRef<string>, filter: QueryFilter<T>, options?: UseFirestoreOptions<T[]>): UseFirestoreReturnType<T[]>
   <T = DocumentData>(path: MaybeRef<string>, filter: MaybeRef<string>, options?: UseFirestoreOptions<T>): UseFirestoreReturnType<T>
-  <T = DocumentData>(path: MaybeRef<string>, filter?: QueryFilter<T> | MaybeRef<string | undefined>, options?: UseFirestoreOptions<T> & { pickFirst: true }): UseFirestoreReturnType<T>
-  <T = DocumentData>(path: MaybeRef<string>, filter?: QueryFilter<T> | MaybeRef<string | undefined>, options?: UseFirestoreOptions<T>): UseFirestoreReturnType<T | T[]>
+  <T = DocumentData>(path: MaybeRef<string>, filter: MaybeRef<QueryFilter<T>>, options?: UseFirestoreOptions<T> & { pickFirst: true }): UseFirestoreReturnType<T>
+  <T = DocumentData>(path: MaybeRef<string>, filter: MaybeRef<QueryFilter<T>>, options?: UseFirestoreOptions<T[]>): UseFirestoreReturnType<T[]>
+  <T = DocumentData>(path: MaybeRef<string>, filter?: MaybeRef<string | QueryFilter<T> | undefined>, options?: UseFirestoreOptions<T> & { pickFirst: true }): UseFirestoreReturnType<T>
+  <T = DocumentData>(path: MaybeRef<string>, filter?: MaybeRef<string | QueryFilter<T> | undefined>, options?: UseFirestoreOptions<T>): UseFirestoreReturnType<T | T[]>
 }
 
 /**
