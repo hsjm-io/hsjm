@@ -1,11 +1,15 @@
-import { isNil, isNumberPositive, isStringNotEmpty, isStringUrl } from '@hsjm/shared'
+import { isNil, isNumber, isNumberPositive, isString, isStringNotEmpty, isStringNumberPositive, toContext, toKebabCase } from '@hsjm/shared'
 import { mergeModules } from './utils/mergeModules'
 import { Asset } from './coreAsset'
 import { Data, dataModule } from './coreData'
 import { FirestoreReference } from './types'
-import { isFirestoreId } from './utils'
 
 export interface Content extends Data {
+  /**
+   * Type slug of the content.
+   * @optionnal
+   */
+  type?: string
   /**
    * Reference of a cover image.
    * @optionnal
@@ -26,15 +30,15 @@ export interface Content extends Data {
    */
   description?: string
   /**
-   * ID of the category of the content.
+   * Name of the content's group.
    * @optionnal
    */
-  categoryId?: string
+  group?: string
   /**
-   * Reference of the category of the content.
-   * @readonly Computed from the `categoryId` field.
+   * Icon of the content.
+   * @see https://icones.js.org/ for a list of icons.
    */
-  category?: FirestoreReference<Asset>
+  icon: string
   /**
    * Reference of the category of the content.
    * @optionnal Automatically set by default.
@@ -45,37 +49,81 @@ export interface Content extends Data {
 export const contentModule = /* @__PURE__ */ mergeModules<Content>(dataModule, {
   path: 'content',
   fields: {
-    cover: {
-      name: 'Couverture',
-      rules: [[isNil], [isStringUrl]],
+    type: {
+      name: 'Type du contenu',
+      rules: [isString, isStringNotEmpty],
+      type: {
+        type: 'listbox',
+        itemText: 'label',
+        itemValue: 'value',
+        items: [
+          { label: 'Page du site', value: 'page' },
+          { label: 'Article de blog', value: 'post' },
+          { label: 'Terme & conditions', value: 'terms' },
+        ],
+      },
     },
-    coverUrl: {
-      name: 'URL de la couverture',
-      // rules: [[isNil], [isStringUrl]],
-    },
-    content: {
-      name: 'Contenu',
-      rules: [isStringNotEmpty],
+    name: {
+      name: 'Titre du contenu',
+      rules: [isString, isStringNotEmpty],
     },
     description: {
       name: 'Description du contenu',
-      type: 'markdown',
-      rules: [[isNil], [isStringNotEmpty]],
+      rules: [
+        [isNil],
+        [isStringNotEmpty],
+      ],
     },
-    categoryId: {
-      name: 'ID de la catégorie du contenu',
-      type: 'reference:contentCategory',
-      isHidden: true,
-      rules: [[isNil], [isFirestoreId]],
+    // cover: {
+    //   name: 'Couverture',
+    //   rules: [[isNil], [isStringUrl]],
+    // },
+    // coverUrl: {
+    //   name: 'URL de la couverture',
+    //   // rules: [[isNil], [isStringUrl]],
+    // },
+    group: {
+      name: 'Groupe du contenu',
+      rules: [
+        [isNil],
+        [isString, isStringNotEmpty],
+      ],
     },
-    category: {
-      name: 'Catégorie du contenu',
-      type: 'reference:contentCategory',
-      // rules: [[isNil], [isFirestoreId]],
+    icon: {
+      name: 'Icone du contenu',
+      rules: [
+        [isNil],
+        [isString],
+      ],
     },
     order: {
       name: 'Ordre du contenu',
-      rules: [[isNil], [isNumberPositive]],
+      rules: [
+        [isNil],
+        [isString, isStringNumberPositive, Number.parseInt],
+        [isNumber, isNumberPositive, Math.round],
+      ],
+    },
+    content: {
+      name: 'Contenu',
+      group: 'content',
+      isHidden: 'table',
+      type: 'Editor',
+      rules: [isString, isStringNotEmpty],
+    },
+    slug: {
+      name: 'Nom interne du contenu',
+      group: 'content',
+      isReadonly: true,
+      isHidden: 'table',
+      rules: [[toContext, 'value.name'], toKebabCase],
+    },
+  },
+  groups: {
+    content: {
+      name: 'Contenu',
+      description: 'Contenu du document',
+      order: 1,
     },
   },
 })

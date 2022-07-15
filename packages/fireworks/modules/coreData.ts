@@ -91,15 +91,16 @@ export const dataModule = /* @__PURE__ */ defineModule<Data>({
     name: {
       name: 'Nom du document',
       rules: [isString, isStringNotEmpty, trim],
+      order: 0,
     },
     slug: {
       name: 'Nom interne du document',
       group: 'internal',
-      isHidden: 'table',
       isReadonly: true,
+      isHidden: 'table',
       rules: [
         [isString, isStringNotEmpty, toKebabCase],
-        [isNil, [toContext, 'name'], toKebabCase],
+        [isNil, [toContext, 'value.name'], toKebabCase],
       ],
     },
 
@@ -176,7 +177,7 @@ export const dataModule = /* @__PURE__ */ defineModule<Data>({
       ],
     },
     updatedAt: {
-      name: 'Dernier éditeur',
+      name: 'Date de la dernière modification du document',
       group: 'internal',
       isReadonly: true,
       isHidden: 'table',

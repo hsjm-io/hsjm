@@ -29,19 +29,19 @@ const toFullname = function(this: any) {
 export const identityModule = /* @__PURE__ */ mergeModules<Identity>(dataModule, {
   path: 'identity',
   fields: {
-    image: {
-      name: 'Avatar',
-      group: 'informations',
-      rules: [
-        [isNil],
-        [isStringUrl],
-      ],
-    },
+    // image: {
+    //   name: 'Avatar',
+    //   group: 'informations',
+    //   rules: [
+    //     [isNil],
+    //     [isStringUrl],
+    //   ],
+    // },
     name: {
       name: 'Nom complet',
       group: 'informations',
       isReadonly: true,
-      isHidden: 'table',
+      isHidden: 'form',
       rules: [toFullname],
     },
     slug: {
@@ -54,11 +54,13 @@ export const identityModule = /* @__PURE__ */ mergeModules<Identity>(dataModule,
     firstName: {
       name: 'Prénom',
       group: 'informations',
+      isHidden: 'table',
       rules: [isString, isStringNotEmpty, trim],
     },
     lastName: {
       name: 'Nom de famille',
       group: 'informations',
+      isHidden: 'table',
       rules: [
         [isString, isStringNotEmpty, trim],
         [isNil],
@@ -76,15 +78,7 @@ export const identityModule = /* @__PURE__ */ mergeModules<Identity>(dataModule,
       name: 'Adresse(s) email de contact',
       group: 'informations',
       rules: [
-        [arrayify, [isArrayValid, [isStringEmail], 'isStringEmail']],
-        [isNil, toEmptyArray],
-      ],
-    },
-    contactSocials: {
-      name: 'Liens sociaux',
-      group: 'informations',
-      rules: [
-        [arrayify, [isArrayValid, [isStringUrl], 'isStringUrl']],
+        [arrayify, [isArrayValid, [isStringEmail]]],
         [isNil, toEmptyArray],
       ],
     },
@@ -92,13 +86,23 @@ export const identityModule = /* @__PURE__ */ mergeModules<Identity>(dataModule,
       name: 'Numero(s) de téléphone de contact',
       group: 'informations',
       rules: [
-        [arrayify, [isArrayValid, [isStringNotEmpty], 'isStringNotEmpty']],
+        [arrayify, [isArrayValid, [isStringNotEmpty]]],
+        [isNil, toEmptyArray],
+      ],
+    },
+    contactSocials: {
+      name: 'Liens sociaux',
+      group: 'informations',
+      isHidden: 'table',
+      rules: [
+        [arrayify, [isArrayValid, [isStringUrl]]],
         [isNil, toEmptyArray],
       ],
     },
     userId: {
       name: 'Identifiant de l\'utilisateur',
       group: 'internal',
+      isHidden: 'table',
       rules: [
         [isString, isFirestoreUserId],
         [isNil],
