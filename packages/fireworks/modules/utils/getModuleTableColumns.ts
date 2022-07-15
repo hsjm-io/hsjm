@@ -12,6 +12,7 @@ export const getModuleTableColumns = <T>(module?: Module<T>): ModuleField<T>[] =
   // --- Get fields as an array and apply the key to each field
   const fields = Object.entries(module.fields)
     .map(([key, field]) => ({ key, ...field }))
+    .filter(({ isHidden }) => isHidden !== true && isHidden !== 'table')
 
   // --- Return fields sorted by order.
   return fields.sort((a, b) => (a.order ?? 1) - (b.order ?? 1)) as ModuleField<T>[]
