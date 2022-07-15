@@ -54,19 +54,20 @@ export const save: Save = async(path?: string, data?: any | any[], options: Save
   if (!path) return console.warn('[save] Path is not defined.')
 
   // --- Map input to document references.
+  const updatedById = getAuth(options.app).currentUser?.uid
   const collectionReference = collection(firestore, path)
   const documentReferences = arrayify(data)
     .filter(Boolean)
     .map((x: any) => ({
       ref: x.id ? doc(collectionReference, x.id) : doc(collectionReference),
-      data: pick({ id: undefined, ...x, updatedById: getAuth().currentUser?.uid }, isNotNil),
+      data: pick({ id: undefined, ...x, updatedById }, isNotNil),
     }))
 
   // --- Save chunks in bulk.
   const chunks = chunk(documentReferences, batchSize)
   await Promise.all(chunks.map(async(chunk) => {
     const batch = writeBatch(firestore)
-    for (const { ref } of chunk) batch.set(ref, data, options)
+    for (const { data, ref } of chunk) batch.set(ref, data, options)
     if (batchDelay > 0) await delay(batchDelay)
     await batch.commit()
   }))
