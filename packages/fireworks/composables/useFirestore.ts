@@ -2,7 +2,7 @@
 import { Ref, isReactive, isRef, ref, unref, watch } from 'vue-demi'
 import { isBrowser } from '@hsjm/shared'
 import { MaybeRef, tryOnScopeDispose, until } from '@vueuse/shared'
-import { FirestoreError, SetOptions, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
+import { FirestoreError, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { EraseOptions, QueryFilter, SaveOptions, createQuery, erase, getSnapshotData, isDocumentReference, save } from './utils'
 
 export interface UseFirestoreOptions<T = any> extends
@@ -46,15 +46,16 @@ export interface UseFirestore {
  * @param filter ID or filter parameters.
  * @param options Custom parameters of the method.
  */
-export const useFirestore: UseFirestore = <T = any>(
+export const useFirestore: UseFirestore = (
   path: MaybeRef<string | undefined>,
-  filter: MaybeRef<string | QueryFilter<T> | undefined>,
-  options: MaybeRef<UseFirestoreOptions<T | T[]>> = {},
-): UseFirestoreReturnType<T | T[]> => {
+  filter: MaybeRef<string | QueryFilter | undefined>,
+  options: MaybeRef<UseFirestoreOptions> = {},
+): UseFirestoreReturnType => {
   // --- Init variables.
   let unwatch: () => void | undefined
   let unsubscribe: () => void | undefined
-  const data = ref<any>(unref(options).initialValue)
+  const defaultValue = typeof unref(filter) !== 'object' ? {} : []
+  const data = ref<any>(unref(options).initialValue ?? defaultValue)
   const loading = ref(false)
 
   // --- Declare update method.
@@ -62,18 +63,22 @@ export const useFirestore: UseFirestore = <T = any>(
     unsubscribe?.()
     const unrefPath = unref(path)
     const unrefFilter = unref(filter)
-    const query = createQuery(unrefPath, unrefFilter)
-    if (!query) return console.warn('[useFirestore] Invalid path or filter.')
+    if (!unrefPath) return console.warn('[useFirestore] Invalid path or filter.')
+    if (!unrefFilter) return
+    const query: any = createQuery(unrefPath, unrefFilter)
 
     const unrefOptions = unref(options)
-    const { sync, pickFirst, initialValue, onError } = unrefOptions
+    const { sync, pickFirst, onError } = unrefOptions
 
     // --- Initialize onSnapshot watcher.
     loading.value = true
 
     if (sync && isBrowser) {
-      unsubscribe = onSnapshot<any>(<any>query, unrefOptions, {
-        next: (snapshot) => { data.value = snapshot ? getSnapshotData(snapshot, pickFirst) : initialValue },
+      unsubscribe = onSnapshot(query, unrefOptions, {
+        next: (snapshot) => {
+          const snapshotData = getSnapshotData(snapshot, pickFirst)
+          if (snapshotData) data.value = snapshotData
+        },
         complete: () => { loading.value = false },
         error: onError,
       })
@@ -82,8 +87,9 @@ export const useFirestore: UseFirestore = <T = any>(
     // --- Fetch data once.
     else {
       const snapshotPromise = isDocumentReference(query) ? getDoc(query) : getDocs(query)
-      const snapshot = await snapshotPromise.catch(onError)
-      data.value = snapshot ? getSnapshotData(snapshot, pickFirst) : <any>initialValue
+      const snapshot: any = await snapshotPromise.catch(onError)
+      const snapshotData = getSnapshotData(snapshot, pickFirst)
+      if (snapshotData) data.value = snapshotData
       loading.value = false
     }
 
@@ -109,7 +115,7 @@ export const useFirestore: UseFirestore = <T = any>(
     data,
     loading,
     update,
-    save: (options: SetOptions) => save(unref(path), unref(data), options),
-    erase: (options: EraseOptions) => erase(unref(path), unref(data), options),
-  } as UseFirestoreReturnType<T | T[]>
+    save: (_options: SaveOptions) => save(unref(path), unref(data), { ...unref(options), ..._options }).catch(unref(options).onError),
+    erase: (_options: EraseOptions) => erase(unref(path), unref(data), { ...unref(options), ..._options }).catch(unref(options).onError),
+  } as any
 }
