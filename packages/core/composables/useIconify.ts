@@ -1,4 +1,4 @@
-import { isReactive, ref, unref, watch } from 'vue-demi'
+import { isReactive, isRef, ref, unref, watch } from 'vue-demi'
 import { MaybeRef } from '@vueuse/shared'
 import { IconifyIcon, IconifyIconCustomisations } from '@iconify/iconify'
 import { expandIconSet, fullIconData, iconToSVG, replaceIDs } from '@iconify/utils'
@@ -63,7 +63,7 @@ export const useIconify = (icon: MaybeRef<string>, options: IconifyIconCustomisa
     .then(svgResult => svg.value = svgResult)
 
   // --- Update on prop changes.
-  const toWatch = [icon, options].filter(isReactive)
+  const toWatch = [icon, options].filter(x => isReactive(x) || isRef(x))
   if (toWatch.length > 0) watch(toWatch, update)
 
   // --- Return SVG ref.
