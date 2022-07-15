@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { Key, ValidationRule, ValidationRulePipe, ValidationRuleSet } from '@hsjm/shared'
+import { Editor, Input, InputList, InputText } from '@hsjm/core'
 import { QueryFilter } from '../composables/utils/createQuery'
 
 /** Firestore Document Reference */
@@ -11,16 +12,11 @@ export interface FirebaseContext {
   functions: typeof import('firebase-functions')
 }
 
-/** Type of form fields */
 export type ModuleFieldType =
-  'text' | 'text:email' | 'text:password' | 'text:url'
-  | 'text:number' | 'text:number:integer' | 'text:number:float'
-  | 'markdown'
-  | 'number'
-  | 'slider'
-  | 'asset'
-  | 'image'
-  | `reference:${string}`
+  | { is: 'Input' } & InstanceType<typeof Input>['$props'] & InstanceType<typeof InputText>['$props'] & InstanceType<typeof InputList>['$props']
+  | { is: 'Editor' } & InstanceType<typeof Editor>['$props']
+  | { is: string } & Record<string, any>
+  | Omit<string, keyof string>
 
 export interface ModuleField<T = unknown> {
   /** The key of the field. */
@@ -35,14 +31,14 @@ export interface ModuleField<T = unknown> {
   group?: string
   /** Rules set used to validate the field. */
   rules?: ValidationRuleSet | ValidationRulePipe | ValidationRule
-  /** The type of the field. */
-  type?: ModuleFieldType
   /** A `@faker-js/faker` template or function to use to mock the field. */
   faker?: string | Function
   /** Should the field be hidden in the form, table or everywhere? */
   isHidden?: boolean | 'table' | 'form'
   /** Should the field be disabled in the form, table or everywhere? */
   isReadonly?: boolean
+  /** The type of the field. */
+  type?: ModuleFieldType
 }
 
 export interface ModuleGroup {
