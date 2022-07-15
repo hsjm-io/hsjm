@@ -30,7 +30,7 @@ export const validateOnWrite = (module: Module, options: ValidateOnWriteOptions)
       if (!value) return
       const __signature = createSignature(value)
       if (createSignature(value) === value.__signature)
-        return console.warn(`[validateOnWrite] Aborting infinite-loop on document "${value.id}", signature: ${__signature})`)
+        return console.warn(`[validateOnWrite] Updated and validated document "${value.id}", signature: ${__signature})`)
 
       // --- Validate data.
       const validationContext = { context, admin, functions, changes, value, before }
@@ -58,12 +58,9 @@ export const validateOnWrite = (module: Module, options: ValidateOnWriteOptions)
       }
 
       // --- Delete `__error` property.
-      else { delete value.__error }
-
-      // --- Log changes.
-      console.warn(`[validateOnWrite] The document "${value.id}" has been validated. Signature: ${__signature}`)
+      else { delete value.__errors }
 
       // --- Update document.
-      changes.after.ref.set({ ...value, __signature })
+      changes.after.ref.set({ ...value, __signature }, { merge: false })
     })
 }
