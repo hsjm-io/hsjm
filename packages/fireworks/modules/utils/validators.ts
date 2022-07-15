@@ -7,8 +7,11 @@ import { FirebaseContext, FirestoreReference } from '../types'
  * @returns true if value is a Firestore user id
  */
 export const isFirestoreUserId = async function(this: FirebaseContext, id: string) {
-  const user = await this.admin.auth().getUser(id)
-  return !!user
+  return await this.admin
+    .auth()
+    .getUser(id)
+    .then(() => true)
+    .catch(() => false)
 }
 
 /**
