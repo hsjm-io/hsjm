@@ -8,7 +8,7 @@ import { MaybeArray, arrayify, isTruthy, pick, toCamelCase } from '@hsjm/shared'
 import { UseInputListOptions, useInputList, useOutsideEvent } from '../composables'
 import { exposeToDevtool, wrapTransition } from '../utils'
 
-export const InputList = /* @__PURE__ */ defineComponent({
+export default /* @__PURE__ */ defineComponent({
   name: 'InputList',
   inheritAttrs: true,
   props: {

@@ -6,7 +6,7 @@ import { exposeToDevtool } from '../utils'
 
 // TODO: Improve tree shaking.
 
-export const Milsymbol = /* @__PURE__ */ defineComponent({
+export default /* @__PURE__ */ defineComponent({
   name: 'Milsymbol',
   props: {
     as: { type: String as PropType<keyof HTMLElementTagNameMap>, default: 'span' },

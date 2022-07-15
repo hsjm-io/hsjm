@@ -5,11 +5,11 @@ import { MaybeArray, ValidateRuleSetResult, ValidationRule, ValidationRulePipe, 
 import { useVModel } from '@vueuse/core'
 import { IconifyIconCustomisations } from '@iconify/iconify'
 import { exposeToDevtool } from '../utils'
-import { Icon } from './Icon'
-import { InputList } from './InputList'
-import { InputText } from './InputText'
+import InputList from './InputList'
+import InputText from './InputText'
+import Icon from './Icon'
 
-export const Input = /* @__PURE__ */ defineComponent({
+export default /* @__PURE__ */ defineComponent({
   name: 'Input',
   inheritAttrs: true,
   props: {

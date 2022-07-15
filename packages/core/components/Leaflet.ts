@@ -2,8 +2,8 @@ import L from 'leaflet'
 import { PropType, computed, defineComponent, h, render, watch } from 'vue-demi'
 import { UseLeafletOptions, useLeaflet } from '../composables'
 
-export const Map = /* @__PURE__ */ defineComponent({
-  name: 'Leaflet',
+export default /* @__PURE__ */ defineComponent({
+  name: 'Map',
   props: {
     options: { type: Object as PropType<UseLeafletOptions>, default: {} },
   },

@@ -38,7 +38,7 @@ export function HsjmUnpluginResolver(options: HsjmResolverOptions = {}): Compone
       if (!components.has(componentName)) return
       return {
         name: componentName,
-        from: '@hsjm/core',
+        from: '@hsjm/core/components',
       }
     },
   }

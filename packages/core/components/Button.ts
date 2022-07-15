@@ -3,12 +3,12 @@
 import { PropType, computed, defineComponent, h, mergeProps, resolveComponent } from 'vue-demi'
 import { useVModel } from '@vueuse/core'
 import { RouteLocationRaw } from 'vue-router'
-import { debounce, noop, throttle } from '@hsjm/shared'
+import { debounce, isNuxt3, noop, throttle } from '@hsjm/shared'
 import { IconifyIconCustomisations } from '@iconify/iconify'
 import { exposeToDevtool, resolveComponentType } from '../utils'
-import { Icon } from './Icon'
+import Icon from './Icon'
 
-export const Button = /* @__PURE__ */ defineComponent({
+export default /* @__PURE__ */ defineComponent({
   name: 'Button',
   inheritAttrs: false,
   props: {
@@ -61,7 +61,7 @@ export const Button = /* @__PURE__ */ defineComponent({
 
     // --- Compute component type.
     const is = computed(() => {
-      if (isInternalLink.value) return resolveComponent('RouterLink')
+      if (isInternalLink.value) return resolveComponent(isNuxt3 ? 'NuxtLink' : 'RouterLink')
       if (isExternalLink.value) return 'a'
       return resolveComponentType<any>(props.as)
     })

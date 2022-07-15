@@ -7,7 +7,7 @@ import { EditorView } from 'codemirror'
 import { EditorViewConfig } from '@codemirror/view'
 import { exposeToDevtool } from '../utils'
 
-export const Editor = /* @__PURE__ */ defineComponent({
+export default /* @__PURE__ */ defineComponent({
   name: 'Editor',
   inheritAttrs: false,
   props: {
