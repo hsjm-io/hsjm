@@ -2,7 +2,7 @@
 import { PropType, defineComponent, h, mergeProps, ref, watch } from 'vue-demi'
 import { useVModel } from '@vueuse/core'
 import { tryOnMounted } from '@vueuse/shared'
-import { isBrowser } from '@hsjm/shared'
+import { isBrowser, pick } from '@hsjm/shared'
 import { EditorView } from 'codemirror'
 import { EditorViewConfig } from '@codemirror/view'
 import { exposeToDevtool } from '../utils'
@@ -60,6 +60,9 @@ export const Editor = /* @__PURE__ */ defineComponent({
 
     // --- Create the editor on mount.
     if (isBrowser) tryOnMounted(createEditor)
-    return () => h('div', mergeProps(attrs, { ref: editorElement }))
+    return () => h('div', mergeProps(
+      pick(attrs, ['class', 'style']),
+      { ref: editorElement },
+    ))
   },
 })
