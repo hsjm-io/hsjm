@@ -14,30 +14,23 @@ export const getModuleFormGroups = <T>(module?: Module<T>): ModuleFormGroup<T>[]
 
   // --- Get fields as an array and apply the key to each field.
   const fields = Object.entries(module.fields)
-    .map(([key, field]) => ({ key, ...field }))
+    .map(([key, field], order) => ({ key, order, ...field }))
     .filter(field => field.isHidden !== true && field.isHidden !== 'form')
+    .sort((a, b) => a.order - b.order)
 
   // --- If there is no group, return a single group with the fields.
-  if (module.groups === undefined)
-    return [{ fields: fields as any }]
+  if (module.groups === undefined) return [{ fields: fields as any }]
 
   // --- Group fields by group.
+  // --- Create a form group for each group.
+  // --- Filter out groups with no fields.
   const formGroups = Object.entries(module.groups)
-
-    // --- Create a form group for each group.
-    .map(([key, value]) => ({
-      key,
-      ...value,
-      fields: fields.filter(field => field.group === key),
-    }))
-
-    // --- Filter out groups with no fields.
+    .map(([key, value]) => ({ key, ...value, fields: fields.filter(field => field.group === key) }))
     .filter(group => group.fields.length > 0)
 
   // --- Get fields without group.
   const formGroupKeys = new Set(formGroups.map(group => group.key))
-  const fieldsWithoutGroup = fields
-    .filter(field => !field.group || !formGroupKeys.has(field.group))
+  const fieldsWithoutGroup = fields.filter(field => !field.group || !formGroupKeys.has(field.group))
   if (fieldsWithoutGroup.length > 0) formGroups.push({ fields: fieldsWithoutGroup } as any)
 
   // --- Return groups sorted by order.
