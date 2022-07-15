@@ -64,6 +64,6 @@ export const validateOnWrite = (module: Module, options: ValidateOnWriteOptions)
       console.warn(`[validateOnWrite] The document "${value.id}" has been validated. Signature: ${__signature}`)
 
       // --- Update document.
-      changes.after.ref.set({ ...value, __signature, __signature2: createSignature(value) })
+      changes.after.ref.set({ ...value, __signature })
     })
 }
