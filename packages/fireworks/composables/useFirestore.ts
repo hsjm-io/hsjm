@@ -77,7 +77,7 @@ export const useFirestore: UseFirestore = (
       unsubscribe = onSnapshot(query, unrefOptions, {
         next: (snapshot) => {
           const snapshotData = getSnapshotData(snapshot, pickFirst)
-          if (snapshotData) data.value = snapshotData
+          if (snapshotData !== undefined) data.value = snapshotData
         },
         complete: () => { loading.value = false },
         error: onError,
@@ -89,7 +89,7 @@ export const useFirestore: UseFirestore = (
       const snapshotPromise = isDocumentReference(query) ? getDoc(query) : getDocs(query)
       const snapshot: any = await snapshotPromise.catch(onError)
       const snapshotData = getSnapshotData(snapshot, pickFirst)
-      if (snapshotData) data.value = snapshotData
+      if (snapshotData !== undefined) data.value = snapshotData
       loading.value = false
     }
 
@@ -99,8 +99,10 @@ export const useFirestore: UseFirestore = (
   }
 
   // --- Start `filter` watcher.
+  const manual = unref(options).manual
   const toWatch = [path, filter, options].filter(x => isReactive(x) || isRef(x))
-  if (!unref(options).manual && toWatch.length > 0) unwatch = watch(toWatch, update, { immediate: true })
+  if (!manual && toWatch.length > 0) unwatch = watch(toWatch, update, { immediate: true })
+  if (!manual) update()
 
   // --- Stop the watchers/listeners on scope dispose.
   tryOnScopeDispose(() => {
