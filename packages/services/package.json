@@ -1,5 +1,6 @@
 {
   "name": "@hsjm/services",
+  "type": "module",
   "version": "1.0.0",
   "author": "Stanley Horwood <stanley@hsjm.io>",
   "description": "Common web-service utilities.",
@@ -10,18 +11,18 @@
     "directory": "/home/shorwood/workspaces/hsjm/packages/services"
   },
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./openai": {
-      "require": "./dist/openai/index.js",
-      "import": "./dist/openai/index.mjs",
+      "require": "./dist/openai/index.cjs",
+      "import": "./dist/openai/index.js",
       "types": "./dist/openai/index.d.ts"
     },
     "./package.json": "./package.json"

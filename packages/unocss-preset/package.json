@@ -1,5 +1,6 @@
 {
   "name": "@hsjm/unocss-preset",
+  "type": "module",
   "version": "1.0.0",
   "author": "Stanley Horwood <stanley@hsjm.io>",
   "description": "UnoCSS presets for HSJM projects.",
@@ -10,13 +11,13 @@
     "directory": "/home/shorwood/workspaces/hsjm/packages/unocss-preset"
   },
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./package.json": "./package.json"

@@ -1,5 +1,6 @@
 {
   "name": "@hsjm/fireworks",
+  "type": "module",
   "version": "1.0.0",
   "author": "Stanley Horwood <stanley@hsjm.io>",
   "description": "Extended & opinionated integration with Firebase.",
@@ -10,28 +11,28 @@
     "directory": "/home/shorwood/workspaces/hsjm/packages/fireworks"
   },
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./composables": {
-      "require": "./dist/composables/index.js",
-      "import": "./dist/composables/index.mjs",
+      "require": "./dist/composables/index.cjs",
+      "import": "./dist/composables/index.js",
       "types": "./dist/composables/index.d.ts"
     },
     "./functions": {
-      "require": "./dist/functions/index.js",
-      "import": "./dist/functions/index.mjs",
+      "require": "./dist/functions/index.cjs",
+      "import": "./dist/functions/index.js",
       "types": "./dist/functions/index.d.ts"
     },
     "./modules": {
-      "require": "./dist/modules/index.js",
-      "import": "./dist/modules/index.mjs",
+      "require": "./dist/modules/index.cjs",
+      "import": "./dist/modules/index.js",
       "types": "./dist/modules/index.d.ts"
     },
     "./package.json": "./package.json"

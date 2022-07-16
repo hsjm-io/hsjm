@@ -1,5 +1,6 @@
 {
   "name": "@hsjm/brain",
+  "type": "module",
   "version": "1.0.0",
   "author": "Stanley Horwood <stanley@hsjm.io>",
   "description": "Set of models ready to be executed with brain.js.",
@@ -10,23 +11,23 @@
     "directory": "/home/shorwood/workspaces/hsjm/packages/brain"
   },
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./code": {
-      "require": "./dist/code/index.js",
-      "import": "./dist/code/index.mjs",
+      "require": "./dist/code/index.cjs",
+      "import": "./dist/code/index.js",
       "types": "./dist/code/index.d.ts"
     },
     "./color": {
-      "require": "./dist/color/index.js",
-      "import": "./dist/color/index.mjs",
+      "require": "./dist/color/index.cjs",
+      "import": "./dist/color/index.js",
       "types": "./dist/color/index.d.ts"
     },
     "./package.json": "./package.json"

@@ -1,5 +1,6 @@
 {
   "name": "@hsjm/core",
+  "type": "module",
   "version": "1.0.0",
   "author": "Stanley Horwood <stanley@hsjm.io>",
   "description": "Opinionated collection of common components, composables and utils for Vue projects.",
@@ -10,28 +11,28 @@
     "directory": "/home/shorwood/workspaces/hsjm/packages/core"
   },
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./components": {
-      "require": "./dist/components/index.js",
-      "import": "./dist/components/index.mjs",
+      "require": "./dist/components/index.cjs",
+      "import": "./dist/components/index.js",
       "types": "./dist/components/index.d.ts"
     },
     "./composables": {
-      "require": "./dist/composables/index.js",
-      "import": "./dist/composables/index.mjs",
+      "require": "./dist/composables/index.cjs",
+      "import": "./dist/composables/index.js",
       "types": "./dist/composables/index.d.ts"
     },
     "./utils": {
-      "require": "./dist/utils/index.js",
-      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.cjs",
+      "import": "./dist/utils/index.js",
       "types": "./dist/utils/index.d.ts"
     },
     "./package.json": "./package.json"
