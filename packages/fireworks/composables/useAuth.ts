@@ -1,9 +1,8 @@
 /* eslint-disable unicorn/consistent-destructuring */
 
 import { ActionCodeSettings, Auth, AuthError, AuthProvider, ConfirmationResult, CustomParameters, GithubAuthProvider, GoogleAuthProvider, OAuthProvider, RecaptchaVerifier, User, UserCredential, browserPopupRedirectResolver, createUserWithEmailAndPassword, getAuth, getRedirectResult, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signInWithPhoneNumber, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth'
-import { tryOnMounted, tryOnScopeDispose } from '@vueuse/shared'
 import { isBrowser } from '@hsjm/shared'
-import { ref } from 'vue-demi'
+import { nextTick, onMounted, onScopeDispose, ref } from 'vue-demi'
 import { FirebaseApp } from 'firebase/app'
 
 export interface UseAuthOptions extends Partial<ActionCodeSettings> {
@@ -40,14 +39,15 @@ export const useAuth = (options: UseAuthOptions = {}) => {
   // --- Restore & watch user.
   const user = ref<User | null>()
   const unsubscribe = onAuthStateChanged(auth, state => user.value = state, onError)
-  tryOnScopeDispose(unsubscribe)
+  onScopeDispose(unsubscribe)
 
   // --- Create a RecaptchaVerifier on mount
   if (isBrowser) {
-    tryOnMounted(() => {
+    onMounted(async() => {
+      await nextTick()
       const recaptchaElement = document.createElement('div')
       recaptchaVerifier = new RecaptchaVerifier(recaptchaElement, { size: 'invisible' }, auth)
-    }, false)
+    })
   }
 
   // --- Anon auth.

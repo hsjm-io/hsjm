@@ -49,16 +49,29 @@
     "build:lint": "eslint package.json --fix --no-ignore"
   },
   "peerDependencies": {
+    "@faker-js/faker": "^6.3.1",
+    "@firebase/app-compat": "^0.1.28",
+    "@firebase/app-types": "^0.7.0",
     "@vue/composition-api": "^1.0.0-rc.1",
-    "firebase-admin": "^10.0.0",
-    "firebase-functions": "^3.0.0",
+    "firebase": "^9.8.4",
+    "firebase-admin": "^10.3.0",
+    "firebase-functions": "^3.22.0",
     "vue": "^2.0.0 || >=3.0.0"
   },
   "peerDependenciesMeta": {
-    "@vue/composition-api": {
+    "@faker-js/faker": {
       "optional": true
     },
-    "vue": {
+    "@firebase/app-compat": {
+      "optional": true
+    },
+    "@firebase/app-types": {
+      "optional": true
+    },
+    "@vueuse/shared": {
+      "optional": true
+    },
+    "@vue/composition-api": {
       "optional": true
     },
     "firebase-admin": {
@@ -66,21 +79,22 @@
     },
     "firebase-functions": {
       "optional": true
+    },
+    "vue": {
+      "optional": true
     }
   },
   "dependencies": {
+    "@hsjm/shared": "workspace:*"
+  },
+  "devDependencies": {
     "@faker-js/faker": "^6.3.1",
     "@firebase/app-compat": "^0.1.28",
     "@firebase/app-types": "^0.7.0",
-    "@hsjm/shared": "workspace:*",
-    "@vueuse/shared": "^8.7.5",
+    "@hsjm/core": "workspace:^1.0.0",
     "firebase": "^9.8.4",
     "firebase-admin": "^10.3.0",
     "firebase-functions": "^3.22.0",
-    "vue-demi": "*"
-  },
-  "devDependencies": {
-    "@hsjm/core": "workspace:^1.0.0",
     "vue": "^3.2.37"
   }
 }

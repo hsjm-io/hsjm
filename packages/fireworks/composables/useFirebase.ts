@@ -6,7 +6,6 @@ import { connectDatabaseEmulator, getDatabase } from 'firebase/database'
 import { connectStorageEmulator, getStorage } from 'firebase/storage'
 import { Persistence, PopupRedirectResolver, browserLocalPersistence, browserPopupRedirectResolver, browserSessionPersistence, connectAuthEmulator, inMemoryPersistence, indexedDBLocalPersistence, initializeAuth, useDeviceLanguage } from 'firebase/auth'
 import { getVariable, isDevelopment, isNotNil, pick } from '@hsjm/shared'
-import { createSharedComposable } from '@vueuse/shared'
 
 interface UseFirebaseOptions extends FirebaseOptions, FirestoreSettings {
   /** Local application instance identifier. */
@@ -42,7 +41,7 @@ interface UseFirebaseOptions extends FirebaseOptions, FirestoreSettings {
  * Get the default one if it already exists.
  * @param {UseFirebaseOptions} [options] Options to configure the app's services.
  */
-export const useFirebase = createSharedComposable((options: UseFirebaseOptions) => {
+export const useFirebase = (options: UseFirebaseOptions) => {
   // --- Destructure and defaults options.
   const {
     name = '[DEFAULT]',
@@ -122,4 +121,4 @@ export const useFirebase = createSharedComposable((options: UseFirebaseOptions) 
 
   // --- Return instances.
   return app
-})
+}

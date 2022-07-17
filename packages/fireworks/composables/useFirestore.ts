@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 import { Ref, isReactive, isRef, ref, unref, watch } from 'vue-demi'
+import { MaybeRef } from '@hsjm/core'
 import { isBrowser } from '@hsjm/shared'
-import { MaybeRef, tryOnScopeDispose, until } from '@vueuse/shared'
 import { FirestoreError, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { EraseOptions, QueryFilter, SaveOptions, createQuery, erase, getSnapshotData, isDocumentReference, save } from './utils'
 
@@ -94,7 +94,7 @@ export const useFirestore: UseFirestore = (
     }
 
     // --- Await until the data is loaded.
-    await until(loading).toBe(false)
+    await ready(loading)
     return data.value
   }
 
@@ -105,7 +105,7 @@ export const useFirestore: UseFirestore = (
   if (!manual) update()
 
   // --- Stop the watchers/listeners on scope dispose.
-  tryOnScopeDispose(() => {
+  onScopeDispose(() => {
     if (unref(options).keepAlive) {
       unwatch?.()
       unsubscribe?.()
