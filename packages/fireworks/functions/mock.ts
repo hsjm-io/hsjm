@@ -1,4 +1,5 @@
-import { FirebaseContext, Module, getModuleMock } from '../modules/utils'
+import { FirebaseContext, Module } from '../modules'
+import { getModuleMock } from './utils'
 
 /**
  * Generate and add a random document in the firestore database.

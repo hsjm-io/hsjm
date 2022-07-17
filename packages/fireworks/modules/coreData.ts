@@ -1,7 +1,8 @@
 import { arrayify, isArray, isArrayNotEmpty, isNil, isString, isStringNotEmpty, isStringTimestamp, toContext, toKebabCase, trim } from '@hsjm/shared'
-import { FirestoreReference, defineModule, isFirestoreReference, isFirestoreUserId, isFirestoreUserIds, toFirestoreIdentity } from './utils'
+import { defineModule, isFirestoreReference, isFirestoreUserId, isFirestoreUserIds, toFirestoreIdentity } from './utils'
 import { Asset } from './coreAsset'
 import { Identity } from './coreIdentity'
+import { FirestoreReference } from './types'
 
 /** Data properties common to all documents. */
 export interface Data {

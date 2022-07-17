@@ -1,5 +1,5 @@
 import { isNotNil, isNotUndefined, mapValues, pick, validateSchema } from '@hsjm/shared'
-import { FirebaseContext, Module, getModuleValidationSchema } from '../modules/utils'
+import { FirebaseContext, Module, getModuleValidationSchema } from '../modules'
 import { createSignature } from './utils'
 
 export interface ValidateOnWriteOptions extends FirebaseContext {

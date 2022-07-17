@@ -1,9 +1,8 @@
 import { expect, it } from 'vitest'
-import { Module } from '../types'
 import { getModuleMock } from './getModuleMock'
 
 it('returns a mock data object for a given module', () => {
-  const module: Module = {
+  const module = {
     path: 'posts',
     fields: {
       id: { faker: () => 42 },

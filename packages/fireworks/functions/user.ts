@@ -1,7 +1,7 @@
 import { CloudFunction } from 'firebase-functions/v1'
 import { UserRecord } from 'firebase-functions/v1/auth'
 import { identityModule } from '../modules/coreIdentity'
-import { FirebaseContext } from '../modules/utils'
+import { FirebaseContext } from '../modules'
 
 /**
  * Creates an identity document for a new user.

@@ -1,5 +1,5 @@
 import faker from '@faker-js/faker'
-import { Module } from '../types'
+import { Module } from '../../modules'
 
 /**
  * Returns a mock data object for a given module.
