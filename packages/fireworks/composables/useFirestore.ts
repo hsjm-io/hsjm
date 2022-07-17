@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/consistent-function-scoping */
-import { Ref, isReactive, isRef, ref, unref, watch } from 'vue-demi'
+import { Ref, isReactive, isRef, onScopeDispose, ref, unref, watch } from 'vue-demi'
 import { MaybeRef } from '@hsjm/core'
 import { isBrowser } from '@hsjm/shared'
 import { FirestoreError, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
