@@ -1,3 +1,5 @@
 export * from './exposeToDevtool'
+export * from './ready'
 export * from './resolveComponentType'
 export * from './wrapTransition'
+export * from './types'
