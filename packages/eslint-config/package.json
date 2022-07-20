@@ -1,0 +1,62 @@
+{
+  "name": "@hsjm/eslint-config",
+  "version": "1.0.3",
+  "author": "Stanley Horwood",
+  "description": "ESLint config for HSJM projects.",
+  "keywords": [
+    "eslint",
+    "eslint-config"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/hsjm-io/eslint-config#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hsjm-io/eslint-config.git"
+  },
+  "main": "basic.js",
+  "exports": {
+    ".": "./basic.js",
+    "./basic": "./basic.js",
+    "./typescript": "./typescript.js"
+  },
+  "files": [
+    "basic.js",
+    "typescript.js",
+    "LICENCE",
+    "README.md"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "pnpm lint --fix"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "5.16.0",
+    "@typescript-eslint/parser": "5.16.0",
+    "eslint-config-standard": "17.0.0-1",
+    "eslint-plugin-eslint-comments": "3.2.0",
+    "eslint-plugin-html": "6.2.0",
+    "eslint-plugin-import": "2.25.4",
+    "eslint-plugin-jsonc": "2.2.1",
+    "eslint-plugin-markdown": "2.2.1",
+    "eslint-plugin-n": "^14.0.0",
+    "eslint-plugin-promise": "6.0.0",
+    "eslint-plugin-unicorn": "41.0.1",
+    "eslint-plugin-yml": "0.14.0",
+    "jsonc-eslint-parser": "2.1.0",
+    "typescript": ">=2.8.0"
+  },
+  "devDependencies": {
+    "eslint": "8.11.0"
+  },
+  "eslintConfig": {
+    "ignorePatterns": [
+      "dist/",
+      "node_modules/",
+      ".github/"
+    ],
+    "extends": [
+      "./basic.js",
+      "./typescript.js"
+    ]
+  }
+}
