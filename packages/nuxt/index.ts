@@ -7,11 +7,9 @@ import VitePluginCompress from 'vite-plugin-compress'
 type VitePluginCompressOptions = Parameters<typeof VitePluginCompress>[0]
 
 const packages = [
+  '@hsjm/core',
   '@hsjm/shared',
-  '@hsjm/core/utils',
-  '@hsjm/core/composables',
-  '@hsjm/fireworks/modules',
-  '@hsjm/fireworks/composables',
+  // '@hsjm/fireworks',
 ]
 
 export interface HsjmNuxtOptions {
@@ -38,6 +36,12 @@ export interface HsjmNuxtOptions {
    * @see https://github.com/alloc/vite-plugin-compress
    */
   compress?: VitePluginCompressOptions
+  /**
+   * Enable dependency optimization.
+   * @default true
+   * @see https://vitejs.dev/config/dep-optimization-options.html
+   */
+  optimizeDependencies?: boolean
 }
 
 /**
@@ -101,18 +105,32 @@ export default defineNuxtModule<HsjmNuxtOptions>({
       })
     }
 
+    if (options.optimizeDependencies) {
+      nuxt.options.vite = nuxt.options.vite || {}
+      nuxt.options.vite.optimizeDeps = nuxt.options.vite.optimizeDeps || {}
+      nuxt.options.vite.optimizeDeps.include = nuxt.options.vite.optimizeDeps.include || []
+      nuxt.options.vite.optimizeDeps.include.push(...packages)
+    }
+
     // --- Auto imports
     if (options.autoImports) {
       nuxt.hook('autoImports:sources', (sources: any[]) => {
         // --- Avoid duplicate imports
-        if (sources.some(source => packages.includes(source.from))) return
+        // if (sources.some(source => packages.includes(source.from))) return
+
+        console.log(packages)
 
         // --- Add Hsjm imports
         for (const from of packages) {
-          if (!moduleExists(from)) continue
+          if (!moduleExists(from)) {
+            console.warn(`Module ${from} not found.`)
+            continue
+          }
 
           const imports = requireSafe(from)
           const names = Object.keys(imports)
+
+          console.log(`[hsjm] auto-importing ${names.length} functions from ${from}`)
 
           sources.push({
             from: resolve('./node_modules', from),
