@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { Key, ValidationRule, ValidationRulePipe, ValidationRuleSet } from '@hsjm/shared'
 import { Editor, Input, InputList, InputText } from '@hsjm/core'
-import { QueryFilter } from '../composables/utils/createQuery'
+import { QueryFilter } from '../utils/createQuery'
 
 /** Firestore Document Reference */
 export type FirestoreReference<T = any> = import('firebase/compat/app').default.firestore.DocumentReference<T>

@@ -3,7 +3,7 @@ import { Ref, isReactive, isRef, onScopeDispose, ref, unref, watch } from 'vue-d
 import { MaybeRef, ready } from '@hsjm/core'
 import { isBrowser } from '@hsjm/shared'
 import { FirestoreError, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
-import { EraseOptions, QueryFilter, SaveOptions, createQuery, erase, getSnapshotData, isDocumentReference, save } from './utils'
+import { EraseOptions, QueryFilter, SaveOptions, createQuery, erase, getSnapshotData, isDocumentReference, save } from '../utils'
 
 export interface UseFirestoreOptions<T = any> extends
   SaveOptions,
