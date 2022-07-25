@@ -1,6 +1,6 @@
-import L from 'leaflet'
+import { divIcon as createDivIcon, marker as createMarker } from 'leaflet'
 import { PropType, computed, defineComponent, h, render, watch } from 'vue-demi'
-import { UseLeafletOptions, useLeaflet } from '../composables'
+import { UseLeafletOptions, useLeaflet } from '../composables/useLeaflet'
 
 export default /** @__PURE__ */ defineComponent({
   name: 'Map',
@@ -24,12 +24,11 @@ export default /** @__PURE__ */ defineComponent({
           const div = document.createElement('div')
           render(vnode, div)
           const { lat, lng } = vnode.props
-          const icon = L.divIcon({
+          const icon = createDivIcon({
             html: div.children?.[0] as HTMLElement,
             className: 'w-0 h-0',
           })
-          const marker = L.marker([lat, lng], { icon })
-          return marker
+          return createMarker([lat, lng], { icon })
         })),
     )
 
