@@ -76,7 +76,7 @@ export interface Data {
 }
 
 /** Data Module. */
-export const dataModule = /* @__PURE__ */ defineModule<Data>({
+export const dataModule = /** @__PURE__ */ defineModule<Data>({
   path: 'data',
   fields: {
     id: {

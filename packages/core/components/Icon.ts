@@ -5,7 +5,7 @@ import { tryOnMounted } from '@vueuse/shared'
 import { useIconify } from '../composables'
 import { exposeToDevtool } from '../utils'
 
-export default /* @__PURE__ */ defineComponent({
+export default /** @__PURE__ */ defineComponent({
   name: 'Icon',
   props: {
     icon: { type: String, required: true },

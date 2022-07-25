@@ -19,7 +19,7 @@ export interface Column {
   [x: string]: any
 }
 
-export default /* @__PURE__ */ defineComponent({
+export default /** @__PURE__ */ defineComponent({
   name: 'Table',
   props: {
     // --- State.

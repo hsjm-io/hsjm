@@ -5,7 +5,7 @@ import { useVModel } from '@vueuse/core'
 import { PropType, computed, defineComponent, h, mergeProps, toRefs } from 'vue-demi'
 import { exposeToDevtool } from '../utils'
 
-export default /* @__PURE__ */ defineComponent({
+export default /** @__PURE__ */ defineComponent({
   name: 'Switch',
   props: {
     as: { type: String as PropType<keyof HTMLElementTagNameMap>, default: 'button' },

@@ -24,7 +24,7 @@ export interface Asset extends Data {
   description?: string
 }
 
-export const assetModule = /* @__PURE__ */ mergeModules<Asset>(dataModule, {
+export const assetModule = /** @__PURE__ */ mergeModules<Asset>(dataModule, {
   path: 'assets',
   fields: {
     url: {

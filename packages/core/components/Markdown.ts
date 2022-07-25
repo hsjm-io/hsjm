@@ -2,7 +2,7 @@ import { PropType, computed, defineComponent, h, markRaw, mergeProps } from 'vue
 import MarkdownIt from 'markdown-it'
 import { exposeToDevtool } from '../utils'
 
-export default /* @__PURE__ */ defineComponent({
+export default /** @__PURE__ */ defineComponent({
   name: 'Markdown',
   inheritAttrs: false,
   props: {

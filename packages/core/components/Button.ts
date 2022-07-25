@@ -8,7 +8,7 @@ import { IconifyIconCustomisations } from '@iconify/iconify'
 import { exposeToDevtool, resolveComponentType } from '../utils'
 import Icon from './Icon'
 
-export default /* @__PURE__ */ defineComponent({
+export default /** @__PURE__ */ defineComponent({
   name: 'Button',
   inheritAttrs: false,
   props: {

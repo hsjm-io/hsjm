@@ -9,7 +9,7 @@ import InputList from './InputList'
 import InputText from './InputText'
 import Icon from './Icon'
 
-export default /* @__PURE__ */ defineComponent({
+export default /** @__PURE__ */ defineComponent({
   name: 'Input',
   inheritAttrs: true,
   props: {

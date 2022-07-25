@@ -6,7 +6,7 @@ import { isBrowser, pick } from '@hsjm/shared'
 import { EditorView, EditorViewConfig } from '@codemirror/view'
 import { exposeToDevtool } from '../utils'
 
-export default /* @__PURE__ */ defineComponent({
+export default /** @__PURE__ */ defineComponent({
   name: 'Editor',
   inheritAttrs: false,
   props: {

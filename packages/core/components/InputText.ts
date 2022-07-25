@@ -6,7 +6,7 @@ import { useVModel } from '@vueuse/core'
 import { UseInputListOptions, useInputList } from '../composables'
 import { exposeToDevtool } from '../utils'
 
-export default /* @__PURE__ */ defineComponent({
+export default /** @__PURE__ */ defineComponent({
   name: 'InputText',
   inheritAttrs: true,
   props: {

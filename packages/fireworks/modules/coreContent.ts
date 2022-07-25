@@ -46,7 +46,7 @@ export interface Content extends Data {
   order: number
 }
 
-export const contentModule = /* @__PURE__ */ mergeModules<Content>(dataModule, {
+export const contentModule = /** @__PURE__ */ mergeModules<Content>(dataModule, {
   path: 'content',
   fields: {
     type: {

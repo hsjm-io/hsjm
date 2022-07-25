@@ -33,7 +33,7 @@ export interface Website extends Data {
 }
 
 /** Module for `Website` documents. */
-export const websiteModule = /* @__PURE__ */ mergeModules<Website>(dataModule, {
+export const websiteModule = /** @__PURE__ */ mergeModules<Website>(dataModule, {
   path: 'website',
   fields: {
     cannonicalUrl: {

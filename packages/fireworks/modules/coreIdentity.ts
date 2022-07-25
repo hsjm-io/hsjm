@@ -26,7 +26,7 @@ const toFullname = function(this: any) {
 }
 
 /** Module for `Identity` documents. */
-export const identityModule = /* @__PURE__ */ mergeModules<Identity>(dataModule, {
+export const identityModule = /** @__PURE__ */ mergeModules<Identity>(dataModule, {
   path: 'identity',
   fields: {
     // image: {
