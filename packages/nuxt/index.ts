@@ -7,9 +7,11 @@ import VitePluginCompress from 'vite-plugin-compress'
 type VitePluginCompressOptions = Parameters<typeof VitePluginCompress>[0]
 
 const packages = [
-  '@hsjm/core',
   '@hsjm/shared',
-  // '@hsjm/fireworks',
+  '@hsjm/core/utils',
+  '@hsjm/core/composables',
+  '@hsjm/fireworks/modules',
+  '@hsjm/fireworks/composables',
 ]
 
 export interface HsjmNuxtOptions {
@@ -65,6 +67,7 @@ export default defineNuxtModule<HsjmNuxtOptions>({
   defaults: {
     components: true,
     autoImports: true,
+    optimizeDependencies: true,
   },
   setup(options, nuxt) {
     // opt-out Vite deps optimization for Hsjm
@@ -105,6 +108,7 @@ export default defineNuxtModule<HsjmNuxtOptions>({
       })
     }
 
+    // --- Push dependency names to `optimizeDeps.include`
     if (options.optimizeDependencies) {
       nuxt.options.vite = nuxt.options.vite || {}
       nuxt.options.vite.optimizeDeps = nuxt.options.vite.optimizeDeps || {}
@@ -114,25 +118,31 @@ export default defineNuxtModule<HsjmNuxtOptions>({
 
     // --- Auto imports
     if (options.autoImports) {
-      nuxt.hook('autoImports:sources', (sources: any[]) => {
+      nuxt.hook('autoImports:sources', (presets) => {
         // --- Avoid duplicate imports
-        // if (sources.some(source => packages.includes(source.from))) return
-
-        console.log(packages)
+        const presetFroms = new Set(presets.map(preset => preset.from))
+        const presetImports = new Set(presets.flatMap(preset => preset.imports))
 
         // --- Add Hsjm imports
         for (const from of packages) {
-          if (!moduleExists(from)) {
-            console.warn(`Module ${from} not found.`)
+          // --- Avoid duplicate imports
+          if (presetFroms.has(from)) {
+            console.warn(`[hsjm] Skipping duplicate import from ${from}`)
             continue
           }
 
+          // --- Make sure the module exists
+          if (!moduleExists(from)) {
+            console.warn(`[hsjm] Skipping auto-import of ${from} because it does not exist.`)
+            continue
+          }
+
+          // --- List all exports of the module
           const imports = requireSafe(from)
           const names = Object.keys(imports)
 
-          console.log(`[hsjm] auto-importing ${names.length} functions from ${from}`)
-
-          sources.push({
+          // --- Push import preset
+          presets.push({
             from: resolve('./node_modules', from),
             names,
             imports: names,
