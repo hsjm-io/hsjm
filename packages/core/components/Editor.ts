@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { PropType, defineComponent, h, mergeProps, ref, watch } from 'vue-demi'
 import { useVModel } from '@vueuse/core'
-import { tryOnMounted } from '@vueuse/shared'
+import { tryOnMounted, tryOnUnmounted } from '@vueuse/shared'
 import { isBrowser, pick } from '@hsjm/shared'
-import { EditorView } from 'codemirror'
-import { EditorViewConfig } from '@codemirror/view'
+import { EditorView, EditorViewConfig } from '@codemirror/view'
 import { exposeToDevtool } from '../utils'
 
 export default /* @__PURE__ */ defineComponent({
@@ -21,13 +20,13 @@ export default /* @__PURE__ */ defineComponent({
   ],
   setup(props, { attrs, emit }) {
     const modelValue = useVModel(props, 'modelValue', emit, { passive: true })
-    const editorElement = ref<HTMLDivElement>()
-    const editor = ref<EditorView>()
+    const editor = ref<HTMLDivElement>()
+    const view = ref<EditorView>()
 
-    // --- Declare function to instantiate the editor.
-    const createEditor = () => editor.value = new EditorView({
+    // --- Declare function to instantiate the view.
+    const createEditor = () => view.value = new EditorView({
       doc: modelValue.value,
-      parent: editorElement.value,
+      parent: editor.value,
       ...props.options,
       extensions: [
         props.options.extensions ?? [],
@@ -41,28 +40,36 @@ export default /* @__PURE__ */ defineComponent({
     // --- Expose the contentMarkdown to the devtool.
     exposeToDevtool({
       modelValue,
-      editorElement,
       editor,
+      view,
     })
 
     // --- Watch for external changes to the modelValue.
     watch(modelValue, (value) => {
-      if (editor.value && !editor.value?.hasFocus) {
-        editor.value.dispatch({
+      if (view.value && !view.value?.hasFocus) {
+        view.value.dispatch({
           changes: {
             from: 0,
-            to: editor.value.state.doc.length,
+            to: view.value.state.doc.length,
             insert: value,
           },
         })
       }
     })
 
-    // --- Create the editor on mount.
-    if (isBrowser) tryOnMounted(createEditor)
+    // --- Declare lifecycle.
+    if (isBrowser) tryOnMounted(createEditor, false)
+    tryOnUnmounted(() => view.value?.destroy())
+
+    // --- Render the editor.
     return () => h('div', mergeProps(
       pick(attrs, ['class', 'style']),
-      { ref: editorElement },
+      {
+        tabindex: -1,
+        ref: editor,
+        onFocus: () => view.value?.focus(),
+        style: { cursor: 'text' },
+      },
     ))
   },
 })
