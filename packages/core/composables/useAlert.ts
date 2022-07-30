@@ -1,4 +1,3 @@
-import { createGlobalState } from '@vueuse/shared'
 import { reactive } from 'vue-demi'
 
 export interface Alert {
@@ -55,7 +54,7 @@ let index = 0
  * Return a composable to manage the global alert pool.
  * @returns {UseAlertReturnType} A composable to manage the global alert pool.
  */
-export const useAlert = createGlobalState((): UseAlertReturnType => {
+export const useAlert = (): UseAlertReturnType => {
   // --- Initialize global alert pool.
   const alerts = reactive<Alert[]>([])
 
@@ -82,4 +81,4 @@ export const useAlert = createGlobalState((): UseAlertReturnType => {
 
   // --- Return pool and methods.
   return { alerts, alert, alertError, alertSuccess, alertWarning, dismiss }
-})
+}
