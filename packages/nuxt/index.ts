@@ -1,12 +1,11 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 import { resolve } from 'node:path'
 import { defineNuxtModule } from '@nuxt/kit'
-import { moduleExists, requireSafe } from '@hsjm/shared'
 import { VitePluginFonts, VitePluginFontsOptions } from 'vite-plugin-fonts'
 import VitePluginCompress from 'vite-plugin-compress'
 type VitePluginCompressOptions = Parameters<typeof VitePluginCompress>[0]
 
-const packages = [
+const moduleNames = [
   '@hsjm/shared',
   '@hsjm/core/utils',
   '@hsjm/core/composables',
@@ -63,24 +62,21 @@ export default defineNuxtModule<HsjmNuxtOptions>({
   meta: {
     name: 'hsjm',
     configKey: 'hsjm',
+    compatibility: {
+      nuxt: '>=3.0.0',
+      bridge: true,
+    },
   },
   defaults: {
     components: true,
     autoImports: true,
     optimizeDependencies: true,
   },
-  setup(options, nuxt) {
-    // opt-out Vite deps optimization for Hsjm
-    nuxt.hook('vite:extend', ({ config }: any) => {
-      config.optimizeDeps = config.optimizeDeps || {}
-      config.optimizeDeps.exclude = config.optimizeDeps.exclude || []
-      config.optimizeDeps.exclude.push(...packages)
-    })
-
+  async setup(options, nuxt) {
     // add pacages to transpile target for alias resolution
-    nuxt.options.build = nuxt.options.build || {}
-    nuxt.options.build.transpile = nuxt.options.build.transpile || []
-    nuxt.options.build.transpile.push(...packages)
+    // nuxt.options.build = nuxt.options.build || {}
+    // nuxt.options.build.transpile = nuxt.options.build.transpile || []
+    // nuxt.options.build.transpile.push(...moduleNames)
 
     // --- Inject `vite-plugin-fonts` plugin.
     if (options.fonts) {
@@ -109,46 +105,27 @@ export default defineNuxtModule<HsjmNuxtOptions>({
     }
 
     // --- Push dependency names to `optimizeDeps.include`
-    if (options.optimizeDependencies) {
+    if (typeof options.optimizeDependencies === 'boolean') {
+      const key = options.optimizeDependencies ? 'include' : 'exclude'
       nuxt.options.vite = nuxt.options.vite || {}
       nuxt.options.vite.optimizeDeps = nuxt.options.vite.optimizeDeps || {}
-      nuxt.options.vite.optimizeDeps.include = nuxt.options.vite.optimizeDeps.include || []
-      nuxt.options.vite.optimizeDeps.include.push(...packages)
+      nuxt.options.vite.optimizeDeps[key] = nuxt.options.vite.optimizeDeps[key] || []
+      nuxt.options.vite.optimizeDeps[key]?.push(...moduleNames)
     }
 
     // --- Auto imports
     if (options.autoImports) {
-      nuxt.hook('autoImports:sources', (presets) => {
-        // --- Avoid duplicate imports
+      // --- Get all imports from modules
+      const modules = await Promise.all(moduleNames.map(async(moduleName) => {
+        const module = await import(moduleName)
+        return { from: moduleName, imports: Object.keys(module) }
+      }))
+
+      // --- Hook `autoImports:sources` to inject imports
+      nuxt.hook('autoImports:sources', async(presets) => {
         const presetFroms = new Set(presets.map(preset => preset.from))
-        const presetImports = new Set(presets.flatMap(preset => preset.imports))
-
-        // --- Add Hsjm imports
-        for (const from of packages) {
-          // --- Avoid duplicate imports
-          if (presetFroms.has(from)) {
-            console.warn(`[hsjm] Skipping duplicate import from ${from}`)
-            continue
-          }
-
-          // --- Make sure the module exists
-          if (!moduleExists(from)) {
-            console.warn(`[hsjm] Skipping auto-import of ${from} because it does not exist.`)
-            continue
-          }
-
-          // --- List all exports of the module
-          const imports = requireSafe(from)
-          const names = Object.keys(imports)
-
-          // --- Push import preset
-          presets.push({
-            from: resolve('./node_modules', from),
-            names,
-            imports: names,
-            priority: -1,
-          })
-        }
+        const modulesToImport = modules.filter(module => (!presetFroms.has(module.from)))
+        for (const { from, imports } of modulesToImport) presets.push({ from, imports, priority: -1 })
       })
     }
   },
