@@ -8,18 +8,18 @@
     "start": "node .output/server/index.mjs"
   },
   "devDependencies": {
-    "@headlessui/vue": "^1.6.5",
+    "@headlessui/vue": "^1.6.7",
     "@hsjm/core": "workspace:^1.0.0",
     "@hsjm/shared": "workspace:^1.0.0",
     "@nuxt/ufo": "^0.5.4",
-    "@unocss/nuxt": "^0.33.5",
-    "@unocss/reset": "^0.33.5",
-    "@vueuse/core": "^8.7.5",
-    "@vueuse/nuxt": "^8.7.5",
+    "@unocss/nuxt": "^0.45.1",
+    "@unocss/reset": "^0.45.1",
+    "@vueuse/core": "^9.0.2",
+    "@vueuse/nuxt": "^9.0.2",
     "milsymbol": "^2.0.0",
     "nuxt": "^3.0.0-rc.4",
-    "vite": "^2.9.13",
+    "vite": "^3.0.4",
     "vue": "^3.2.37",
-    "webpack": "^5.73.0"
+    "webpack": "^5.74.0"
   }
 }

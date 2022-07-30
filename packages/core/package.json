@@ -54,9 +54,6 @@
     "vue-router": "^3.0.0 || >=4.0.0"
   },
   "peerDependenciesMeta": {
-    "vee-validate": {
-      "optional": true
-    },
     "@vue/composition-api": {
       "optional": true
     },
@@ -68,8 +65,8 @@
     "@codemirror/view": "^6.1.2",
     "@hsjm/shared": "workspace:*",
     "@iconify/utils": "^1.0.33",
-    "@vueuse/core": "^9.0.0",
-    "@vueuse/shared": "^9.0.0",
+    "@vueuse/core": "^9.0.2",
+    "@vueuse/shared": "^9.0.2",
     "codemirror": "^6.0.1",
     "leaflet": "^1.8.0",
     "markdown-it": "^13.0.1",

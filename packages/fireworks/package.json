@@ -65,8 +65,8 @@
     "@hsjm/shared": "workspace:*"
   },
   "devDependencies": {
-    "firebase": "^9.8.4",
-    "firebase-admin": "^10.3.0",
+    "firebase": "^9.9.1",
+    "firebase-admin": "^11.0.1",
     "firebase-functions": "^3.22.0",
     "vue": "^3.2.37"
   },

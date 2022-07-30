@@ -6,13 +6,13 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@firebase/app-compat": "^0.1.28",
+    "@firebase/app-compat": "^0.1.30",
     "@firebase/app-types": "^0.7.0",
-    "firebase-admin": "^10.3.0",
+    "firebase-admin": "^11.0.1",
     "firebase-functions": "^3.22.0"
   },
   "devDependencies": {
-    "tsup": "^6.1.2"
+    "tsup": "^6.2.1"
   },
   "engines": {
     "node": "16",

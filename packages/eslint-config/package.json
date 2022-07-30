@@ -41,7 +41,7 @@
     "eslint-plugin-n": "^15.2.4",
     "eslint-plugin-promise": "6.0.0",
     "eslint-plugin-unicorn": "43.0.2",
-    "eslint-plugin-yml": "1.0.0",
+    "eslint-plugin-yml": "1.1.0",
     "jsonc-eslint-parser": "2.1.0",
     "typescript": "^4.7.4"
   },

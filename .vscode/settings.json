@@ -1,5 +1,7 @@
 {
   "eslint.validate": ["javascript", "typescript", "json", "markdown"],
+  "eslint.packageManager": "pnpm",
+
   "prettier.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
   "unocss.root": "./playground",

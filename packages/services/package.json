@@ -51,8 +51,8 @@
     "@hsjm/shared": "workspace:^1.0.0",
     "@mapbox/mapbox-sdk": "^0.13.4",
     "@types/mapbox__mapbox-sdk": "^0.13.4",
-    "@vueuse/core": "^9.0.0",
-    "@vueuse/shared": "^9.0.0",
+    "@vueuse/core": "^9.0.2",
+    "@vueuse/shared": "^9.0.2",
     "vue-demi": "*"
   },
   "devDependencies": {
