@@ -1,9 +1,9 @@
 /* eslint-disable spaced-comment */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import { isReactive, nextTick, ref, unref, watch } from 'vue-demi'
-import { MaybeRef } from '@vueuse/shared'
 import { isDevelopment, isNode } from '@hsjm/shared'
 import Milsymbol, { SymbolOptions } from 'milsymbol'
+import { MaybeRef } from '../utils'
 
 /**
  * Resolve the SVG for a given sidc with `milsymbol`.

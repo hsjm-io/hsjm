@@ -1,5 +1,5 @@
-import { MaybeRef, tryOnMounted, tryOnScopeDispose } from '@vueuse/shared'
-import { VNodeRef, unref } from 'vue-demi'
+import { VNodeRef, unref, onMounted, onScopeDispose } from 'vue-demi'
+import { MaybeRef } from '../utils'
 
 // TODO: Support multiple event names
 // TODO: Support ref as event name
@@ -29,6 +29,6 @@ export const useOutsideEvent = (eventName: string, callback: (event: Event) => v
   const unregister = () => document.body.removeEventListener(eventName, handleOutsideEvent)
 
   // --- Register/unregister outside event.
-  tryOnMounted(register)
-  tryOnScopeDispose(unregister)
+  onMounted(register)
+  onScopeDispose(unregister)
 }

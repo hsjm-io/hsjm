@@ -1,9 +1,9 @@
 import { isReactive, isRef, ref, unref, watch } from 'vue-demi'
-import { MaybeRef } from '@vueuse/shared'
 import { IconifyIcon, IconifyIconCustomisations } from '@iconify/iconify'
 import { expandIconSet, fullIconData, iconToSVG, replaceIDs } from '@iconify/utils'
 import { defaults } from '@iconify/utils/lib/customisations'
 import { memoize } from '@hsjm/shared'
+import { MaybeRef } from '../utils'
 
 /** Fetch an icon data from cache or remote */
 const fetchIconData = memoize(async(icon: string): Promise<Required<IconifyIcon> | undefined> => {

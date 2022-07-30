@@ -1,5 +1,5 @@
-import { MaybeRef } from '@vueuse/shared'
 import { computed, isRef, ref, unref } from 'vue-demi'
+import { MaybeRef } from '../utils'
 
 type UseFileInputValue = Array<string | File> | string | File | undefined
 
