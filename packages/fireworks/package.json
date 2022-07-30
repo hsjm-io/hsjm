@@ -35,6 +35,11 @@
       "import": "./dist/modules/index.js",
       "types": "./dist/modules/index.d.ts"
     },
+    "./utils": {
+      "require": "./dist/utils/index.cjs",
+      "import": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -48,17 +53,28 @@
     "build:post": "esno ../../scripts/buildPost.ts",
     "build:lint": "eslint package.json --fix --no-ignore"
   },
+  "peerDependencies": {
+    "@faker-js/faker": ">=6.0.0",
+    "firebase": ">=9.0.0",
+    "firebase-admin": ">=10.0.0 <11.0.0",
+    "firebase-functions": ">=3.0.0",
+    "vue-demi": "*"
+  },
   "dependencies": {
-    "@faker-js/faker": "^6.3.1",
-    "@firebase/app-types": "^0.7.0",
     "@hsjm/core": "workspace:*",
-    "@hsjm/shared": "workspace:*",
+    "@hsjm/shared": "workspace:*"
+  },
+  "devDependencies": {
     "firebase": "^9.8.4",
     "firebase-admin": "^10.3.0",
     "firebase-functions": "^3.22.0",
-    "vue-demi": "*"
-  },
-  "devDependencies": {
     "vue": "^3.2.37"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@firebase/app-types"
+      ]
+    }
   }
 }

@@ -65,16 +65,16 @@
     }
   },
   "dependencies": {
-    "@codemirror/view": "^6.0.3",
+    "@codemirror/view": "^6.1.2",
     "@hsjm/shared": "workspace:*",
     "@iconify/utils": "^1.0.33",
-    "@vueuse/core": "^8.7.5",
-    "@vueuse/shared": "^8.7.5",
+    "@vueuse/core": "^9.0.0",
+    "@vueuse/shared": "^9.0.0",
     "codemirror": "^6.0.1",
     "leaflet": "^1.8.0",
     "markdown-it": "^13.0.1",
     "milsymbol": "^2.0.0",
-    "unplugin-vue-components": "^0.19.9",
+    "unplugin-vue-components": "^0.21.2",
     "vue-demi": "*"
   },
   "devDependencies": {
@@ -82,6 +82,6 @@
     "@types/leaflet": "^1.7.11",
     "@types/markdown-it": "^12.2.3",
     "vue": "^3.2.37",
-    "vue-router": "^4.0.16"
+    "vue-router": "^4.1.3"
   }
 }
