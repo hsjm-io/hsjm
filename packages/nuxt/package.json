@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@hsjm/core": "workspace:^1.0.0",
+    "@hsjm/fireworks": "workspace:^1.0.0",
     "@hsjm/shared": "workspace:^1.0.0",
     "@nuxt/kit": "^3.0.0-rc.6",
     "@nuxt/schema": "^3.0.0-rc.6",
