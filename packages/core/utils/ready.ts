@@ -3,7 +3,7 @@ import { Ref, watch } from 'vue-demi'
 /**
  * Create a promise that is resolved once the ref is equal to the value.
  * @param {Ref} reference The ref to watch.
- * @param {any} [value=true] The value to watch for.
+ * @param {any} [value=true] The value to watch for. (Default: `true`)
  */
 export const ready = (reference: Ref<any>, value: any = true): Promise<void> =>
   new Promise((resolve) => {
