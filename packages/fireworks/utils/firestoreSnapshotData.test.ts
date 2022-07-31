@@ -1,8 +1,8 @@
 import { expect, it, vi } from 'vitest'
 import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore'
-import { getSnapshotData } from './getSnapshotData'
+import { firestoreSnapshotData } from './firestoreSnapshotData'
 
-// --- Create and save data references
+// --- Create and firestoreSave data references
 vi.mock('firebase/firestore')
 const collectionReference = collection(<any>undefined, 'getSnapshot')
 const references = Array.from({ length: 600 }).map(() => doc(collectionReference))
@@ -10,14 +10,14 @@ await Promise.all(references.map(async reference => await setDoc(reference, { fo
 
 it('should return a snapshot data and its ID', async() => {
   const snapshot = await getDoc(references[0])
-  const result = getSnapshotData(snapshot)
+  const result = firestoreSnapshotData(snapshot)
   expect(result?.id).toEqual(references[0].id)
   expect(result?.foo).toEqual('bar')
 })
 
 it('should return a query snapshot data and their ids', async() => {
   const snapshots = await getDocs(collectionReference)
-  const result = getSnapshotData(snapshots)
+  const result = firestoreSnapshotData(snapshots)
   expect(result.every(x => typeof x.id === 'string')).toEqual(true)
   expect(result.every(x => x.foo === 'bar')).toEqual(true)
   expect(result.length).toEqual(600)
@@ -25,7 +25,7 @@ it('should return a query snapshot data and their ids', async() => {
 
 it('should return the query snapshot first entry data and id', async() => {
   const snapshots = await getDocs(collectionReference)
-  const result = getSnapshotData(snapshots, true)
+  const result = firestoreSnapshotData(snapshots, true)
   expect(result?.id).toEqual(references[0].id)
   expect(result?.foo).toEqual('bar')
 })

@@ -1,13 +1,13 @@
 /* eslint-disable unicorn/consistent-function-scoping */
+import { FirestoreError, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
 import { Ref, isReactive, isRef, onScopeDispose, ref, unref, watch } from 'vue-demi'
 import { MaybeRef, ready } from '@hsjm/core'
 import { isNode } from '@hsjm/shared'
-import { FirestoreError, SnapshotListenOptions, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
-import { EraseOptions, QueryFilter, SaveOptions, createQuery, erase, getSnapshotData, isDocumentReference, save } from '../utils'
+import { FirestoreEraseOptions, QueryFilter, SaveOptions, firestoreCreateQuery, firestoreErase, firestoreSnapshotData, isDocumentReference, firestoreSave } from '../utils'
 
 export interface UseFirestoreOptions<T = any> extends
   SaveOptions,
-  EraseOptions,
+  FirestoreEraseOptions,
   SnapshotListenOptions {
   /** Sync the data using `onSnapshot` method. */
   sync?: boolean
@@ -63,11 +63,8 @@ export const useFirestore: UseFirestore = (
     unsubscribe?.()
     const unrefPath = unref(path)
     const unrefFilter = unref(filter)
-    if (!unrefPath) return console.warn('[useFirestore] Invalid path or filter.')
-    if (!unrefFilter) return
-    const query: any = createQuery(unrefPath, unrefFilter)
-
     const unrefOptions = unref(options)
+    const query: any = firestoreCreateQuery(unrefPath, unrefFilter)
     const { sync, pickFirst, onError } = unrefOptions
 
     // --- Initialize onSnapshot watcher.
@@ -76,7 +73,7 @@ export const useFirestore: UseFirestore = (
     if (sync && !isNode) {
       unsubscribe = onSnapshot(query, unrefOptions, {
         next: (snapshot) => {
-          const snapshotData = getSnapshotData(snapshot, pickFirst)
+          const snapshotData = firestoreSnapshotData(snapshot, pickFirst)
           if (snapshotData !== undefined) data.value = snapshotData
         },
         complete: () => { loading.value = false },
@@ -87,8 +84,8 @@ export const useFirestore: UseFirestore = (
     // --- Fetch data once.
     else {
       const snapshotPromise = isDocumentReference(query) ? getDoc(query) : getDocs(query)
-      const snapshot: any = await snapshotPromise.catch(onError)
-      const snapshotData = getSnapshotData(snapshot, pickFirst)
+      const snapshot: any = await snapshotPromise
+      const snapshotData = firestoreSnapshotData(snapshot, pickFirst)
       if (snapshotData !== undefined) data.value = snapshotData
       loading.value = false
     }
@@ -101,8 +98,7 @@ export const useFirestore: UseFirestore = (
   // --- Start `filter` watcher.
   const manual = unref(options).manual
   const toWatch = [path, filter, options].filter(x => isReactive(x) || isRef(x))
-  if (!manual && toWatch.length > 0) unwatch = watch(toWatch, update, { immediate: true })
-  if (!manual) update()
+  if (!manual && toWatch.length > 0) unwatch = watch(toWatch, () => update().catch(unref(options).onError))
 
   // --- Stop the watchers/listeners on scope dispose.
   onScopeDispose(() => {
@@ -117,7 +113,7 @@ export const useFirestore: UseFirestore = (
     data,
     loading,
     update,
-    save: (_options: SaveOptions) => save(unref(path), unref(data), { ...unref(options), ..._options }).catch(unref(options).onError),
-    erase: (_options: EraseOptions) => erase(unref(path), unref(data), { ...unref(options), ..._options }).catch(unref(options).onError),
+    save: (_options: SaveOptions) => firestoreSave(unref(path), unref(data), { ...unref(options), ..._options }).catch(unref(options).onError),
+    erase: (_options: FirestoreEraseOptions) => firestoreErase(unref(path), unref(data), { ...unref(options), ..._options }).catch(unref(options).onError),
   } as any
 }

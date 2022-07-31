@@ -1,4 +1,4 @@
-import { FirebaseOptions, getApp, initializeApp } from 'firebase/app'
+import { FirebaseApp, FirebaseOptions, getApp, initializeApp } from 'firebase/app'
 import { FirestoreSettings, connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore'
 import { AppCheckOptions, CustomProvider, ReCaptchaEnterpriseProvider, ReCaptchaV3Provider, initializeAppCheck } from 'firebase/app-check'
 // import { connectFunctionsEmulator, getFunctions } from 'firebase/functions'
@@ -54,18 +54,19 @@ const defaultFirebaseOptions = getVariables<UseFirebaseOptions>('FIREBASE', {
   persistence: value => value.split(/\s*,\s*/) as any,
 })
 
+// --- Global initialized firebase apps.
+export const apps: Record<string, UseFirebaseOptions & { app: FirebaseApp }> = {}
+
 /**
  * Creates and initializes a Firebase app instance.
  * Get the default one if it already exists.
  * @param {UseFirebaseOptions} [options] Options to configure the app's services.
  */
 export const useFirebase = (options: UseFirebaseOptions = {}) => {
-  // --- Defaults options.
+  // --- Defaults and destructure options.
   options = { ...defaultFirebaseOptions, ...options }
-
-  // --- Destructuring options.
   const {
-    name,
+    name = '[DEFAULT]',
     apiKey,
     // authDomain,
     // databaseURL,
@@ -84,8 +85,7 @@ export const useFirebase = (options: UseFirebaseOptions = {}) => {
   } = options
 
   // --- If the app already exists, return it.
-  try { return getApp(name) }
-  catch {}
+  if (apps[name]) return apps[name].app
 
   // --- Prepare auth persistence.
   const persistenceNormalized = !isNode
@@ -128,5 +128,6 @@ export const useFirebase = (options: UseFirebaseOptions = {}) => {
   }
 
   // --- Return instances.
+  apps[app.name] = { ...options, app }
   return app
 }

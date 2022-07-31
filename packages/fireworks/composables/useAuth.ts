@@ -1,9 +1,8 @@
-/* eslint-disable unicorn/consistent-destructuring */
-
 import { ActionCodeSettings, Auth, AuthError, AuthProvider, ConfirmationResult, CustomParameters, GithubAuthProvider, GoogleAuthProvider, OAuthProvider, RecaptchaVerifier, User, UserCredential, browserPopupRedirectResolver, createUserWithEmailAndPassword, getAuth, getRedirectResult, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, signInWithPhoneNumber, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth'
 import { isBrowser } from '@hsjm/shared'
 import { nextTick, onMounted, onScopeDispose, ref } from 'vue-demi'
 import { FirebaseApp } from 'firebase/app'
+import { appExists } from '../utils'
 
 export interface UseAuthOptions extends Partial<ActionCodeSettings> {
   onError?: (error: AuthError) => void
@@ -29,9 +28,12 @@ export interface LoginWithProviderOptions extends CustomParameters {
  */
 export const useAuth = (options: UseAuthOptions = {}) => {
   // --- Destructure and default options.
-  const { onError = console.error, onLogin, onLogout, auth = getAuth(options.app) } = options
-  if (!auth) throw new Error('No auth instance found')
+  const { app, onError, onLogin, onLogout, auth } = options
 
+  // --- Handle edge cases.
+  if (!app && !appExists()) throw new Error('Firebase app is not initialized.')
+  const authInstance = auth ?? getAuth(app ?? '[DEFAULT]')
+  
   // --- Initialize variables.
   let confirmationResult: ConfirmationResult | undefined
   let recaptchaVerifier: RecaptchaVerifier | undefined

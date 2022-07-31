@@ -16,21 +16,18 @@ export const isDocumentSnapshot = (value: any): value is DocumentSnapshot => val
   && typeof value.id === 'string'
   && value.ref.type === 'document'
 
-export interface GetSnapshotData {
-  <T = DocumentData>(snapshot: DocumentSnapshot<T>): T | undefined
-  <T = DocumentData>(snapshot: QuerySnapshot<T>): T[]
-  <T = DocumentData>(snapshot: QuerySnapshot<T>, pickFirst: true): T | undefined
-  <T = DocumentData>(snapshot?: DocumentSnapshot<T> | QuerySnapshot<T>, pickFirst?: boolean): T | T[] | undefined
-}
-
 /**
  * Extract data from a snapshot of any type.
  * @param snapshot Snapshot to extract from.
  * @param pickFirst If true, return the first item in the snapshot.
  * @returns The data or undefined.
  */
-export const getSnapshotData: GetSnapshotData = (snapshot?: DocumentSnapshot | QuerySnapshot, pickFirst?: any): any => {
-  if (!snapshot) return undefined
+export function firestoreSnapshotData<T = DocumentData>(snapshot: QuerySnapshot<T>): T[]
+export function firestoreSnapshotData<T = DocumentData>(snapshot: QuerySnapshot<T>, pickFirst: true): T | undefined
+export function firestoreSnapshotData<T = DocumentData>(snapshot: DocumentSnapshot<T>): T | undefined
+export function firestoreSnapshotData<T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>, pickFirst?: boolean): T | T[] | undefined
+export function firestoreSnapshotData<T = DocumentData>(snapshot: DocumentSnapshot<T> | QuerySnapshot<T>, pickFirst?: boolean): T | T[] | undefined {
+  if (!snapshot) return
 
   // --- If the data is a document, return the data.
   if (isDocumentSnapshot(snapshot)) {

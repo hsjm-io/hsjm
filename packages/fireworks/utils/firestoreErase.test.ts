@@ -1,10 +1,10 @@
 import { expect, it, vi } from 'vitest'
 import { collection, doc, getDoc, setDoc } from 'firebase/firestore'
-import { erase } from './erase'
+import { firestoreErase } from './firestoreErase'
 
-// --- Create and save data references
+// --- Create and firestoreSave data references
 vi.mock('firebase/firestore')
-const references = Array.from({ length: 600 }).map(() => doc(collection(<any>undefined, 'erased')))
+const references = Array.from({ length: 600 }).map(() => doc(collection(<any>undefined, 'firestoreErased')))
 await Promise.all(references.map(async reference => await setDoc(reference, { foo: 'bar' })))
 
 it('should remove a firestore document from the database', async() => {
@@ -12,7 +12,7 @@ it('should remove a firestore document from the database', async() => {
 
   // --- Get state before/after erasing
   const existing = await getDoc(reference)
-  const result = await erase('erased', reference)
+  const result = await firestoreErase('firestoreErased', reference)
   const deleted = await getDoc(reference)
 
   // --- Assert.
@@ -26,7 +26,7 @@ it('should remove multiple firestore documents from the database', async() => {
 
   // --- Get state before/after erasing
   const existing = await Promise.all(references100.map(getDoc))
-  const result = await erase('erased', references100)
+  const result = await firestoreErase('firestoreErased', references100)
   const deleted = await Promise.all(references100.map(getDoc))
 
   // --- Assert.

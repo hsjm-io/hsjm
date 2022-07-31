@@ -1,14 +1,10 @@
-/* eslint-disable unicorn/consistent-destructuring */
 /* eslint-disable unicorn/prefer-switch */
-import { DocumentData, DocumentReference, Firestore, OrderByDirection, Query, QueryConstraint, collection, doc, endAt, endBefore, getFirestore, limit, limitToLast, orderBy, query, startAfter, startAt, where } from 'firebase/firestore'
+import { CollectionReference, DocumentData, DocumentReference, OrderByDirection, Query, QueryConstraint, collection, doc, endAt, endBefore, getFirestore, limit, limitToLast, orderBy, query, startAfter, startAt, where } from 'firebase/firestore'
 import { Key, MaybeArray, Value, arrayify, isNotNil } from '@hsjm/shared'
 import { FirebaseApp } from 'firebase/app'
 
-// --- Field filters suffixes
-export type QueryFilterSuffix = '_lt' | '_lte' | '_ne' | '_gt' | '_gte' | '_in' | '_nin' | '_ac' | '_aca'
-
 // --- Base query filter
-export type QueryFilter<T = any> = {
+export type QueryFilter<T = DocumentData> = {
   $limit?: number
   $limitToLast?: number
   $startAt?: number
@@ -18,42 +14,28 @@ export type QueryFilter<T = any> = {
   $orderBy?: MaybeArray<keyof T | [keyof T, OrderByDirection]>
   [key: string]: any
 } & {
-  [ K in `${Key<T>}${QueryFilterSuffix}`]?: Value<T, K>
-}
-
-// --- Query options.
-export interface CreateQueryOptions {
-  /** The Firebase app to use. */
-  app?: FirebaseApp
-  /** The Firestore instance to use. */
-  firestore?: Firestore
-}
-
-// --- Overloads.
-export interface CreateQuery {
-  <T = DocumentData>(path: string, id: string, options?: CreateQueryOptions): DocumentReference<T>
-  <T = DocumentData>(path: string, filter: QueryFilter<T>, options?: CreateQueryOptions): Query<T>
-  <T = DocumentData>(path?: string, idOrFilter?: string | QueryFilter<T>, options?: CreateQueryOptions): DocumentReference<T> | Query<T> | undefined
+  [ K in `${Key<T>}${'_lt' | '_lte' | '_ne' | '_gt' | '_gte' | '_in' | '_nin' | '_ac' | '_aca'}`]?: Value<T, K>
 }
 
 /**
  * Creates a Firestore query from a path and filter object or document id.
- * @param path The path to the collection.
- * @param filter The query filter object or document id.
- * @param options The options to use.
- * @returns The query or document reference.
+ * @param {FirebaseApp} [this] The Firebase app to use.
+ * @param {string} path The path to the collection.
+ * @param {string | QueryFilter} [filter] The query filter object or document id.
+ * @returns {DocumentReference | Query} The Firestore query or document reference.
  */
-export const createQuery: CreateQuery = (path?: string, filter?: string | QueryFilter, options: CreateQueryOptions = {}): any => {
-  // --- Destructure and default options.
-  const { firestore = getFirestore(options.app) } = options
-
+export function firestoreCreateQuery<T = DocumentData>(path: string, filter: QueryFilter<T>): Query<T>
+export function firestoreCreateQuery<T = DocumentData>(path: string, filter?: string): DocumentReference<T>
+export function firestoreCreateQuery<T = DocumentData>(path: string, filter?: string | QueryFilter<T>): DocumentReference<T> | Query<T>
+export function firestoreCreateQuery<T = DocumentData>(this: FirebaseApp | undefined, path: string, filter?: string | QueryFilter<T>): DocumentReference<T> | Query<T> {
   // --- Handle edge cases.
-  if (!path) return console.warn('[createQuery] Path is not defined.')
+  if (!path) throw new Error('[firestoreCreateQuery] Path is not defined.')
 
   // --- Resolve collection or document reference.
-  const colReference = collection(firestore, path)
-  if (typeof filter === 'string') return doc(colReference, filter) as any
-  if (typeof filter === 'undefined') return doc(colReference) as any
+  const firestore = getFirestore(this)
+  const colReference = collection(firestore, path) as CollectionReference<T>
+  if (typeof filter === 'string') return doc(colReference, filter)
+  if (typeof filter === 'undefined') return doc(colReference)
 
   // --- Build constraints from `QueryFilter`.
   const constraints: QueryConstraint[] = []
@@ -79,5 +61,5 @@ export const createQuery: CreateQuery = (path?: string, filter?: string | QueryF
   }
 
   // --- Return query.
-  return query(colReference, ...constraints) as any
+  return query(colReference, ...constraints)
 }
